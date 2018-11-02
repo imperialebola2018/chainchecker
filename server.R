@@ -8,6 +8,7 @@ library(gridExtra)
 fun_get_onset = function(input){
   df = data.frame("ID" = input$id)
   
+  
   #then add other dates
   if(input$death_avail){
     df$Death = input$death
@@ -29,19 +30,35 @@ fun_get_onset = function(input){
   df$Exposure_min = as.Date(df$Onset - input$max_incubation)
   df$Exposure_max = as.Date(df$Onset - input$min_incubation)
   
+  
   return(df)
 }
 
+#function to get file in right format
+fun_format_file = function(df, input){
+  
+  #input parameters
+  df$bleeding_correction = input$bleeding_correction
+  df$diarrhea_correction = input$diarrhea_correction
+  df$max_incubation = input$max_incubation
+  df$min_incubation = input$min_incubation
+  df$symptomatic = input$symptomatic
+  
+  #true false
+  df$death_avail = !is.na(df$death)
+  
+  return(df)
+}
 
 ### SERVER ###
 
 # Define server logic required to draw a histogram
 function(input, output) {
   
+  ### TIMELINE ###
   output$exposure_plot <- renderPlot({
     
     df = fun_get_onset(input)
-    
     
     #plot
     g = ggplot(df) 
@@ -88,38 +105,9 @@ function(input, output) {
            ".")
   })
   
-  # output$prob_intro = renderText({
-  #   "We may be interested in how likely the reported onset date is, 
-  #   given the date of death and the average incubation and symptomatic 
-  #   periods as shown. To calculate this, we assign probability 
-  #   distributions to both periods and use these to calculate the 
-  #   probability of the reported onset given the observed date of death."
-  # })
-  # 
-  # output$dist_plot = renderPlot({
-  #   
-  #   df_dist = data.frame("Days" = 0:50,
-  #                        "Density_Symptomatic" = dlnorm(0:50,
-  #                                                       meanlog = log(input$symptomatic),
-  #                                                       sdlog = log(4)),
-  #                        "Density_Incubation" = dlnorm(0:50,
-  #                                                      meanlog = log(input$incubation),
-  #                                                      sdlog = log(4)))
-  #   
-  #   g1 = ggplot(df_dist) + 
-  #     geom_col( aes(x = Days, y = Density_Symptomatic, 
-  #                   fill = "Symptomatic")) +
-  #     geom_vline(xintercept = as.numeric(input$death - input$report_onset)) + 
-  #     ylab("Density") +
-  #     labs(fill = "Key")+
-  #     theme(panel.background = element_rect(fill = "white", colour = "grey50"),
-  #           text = element_text(size = 14),
-  #           axis.text.x = element_text(angle = 45, hjust = 1)) +
-  #     xlab("Duration") +
-  #     ylim(0,0.1)
-  #   
-  #   g1
-  # })
+  
+  
+  ### UPLOAD ###
   
   output$download_ctemplate = downloadHandler(
     filename = function(){
@@ -136,55 +124,72 @@ function(input, output) {
     },
     content = function(file){
       write.csv(data.frame("id" = "EG1", 
-                           "onset" = Sys.Date(),
+                           "report_onset" = Sys.Date(),
                            "death" = Sys.Date(),
-                           "characteristic1" = "eg. age",
-                           "characteristic2" = "eg. location"), file, row.names = FALSE )
+                           "bleeding" = "eg. TRUE",
+                           "diarrhea" = "eg. FALSE"), file, row.names = FALSE )
     }
   )
   
-  output$death_onset_plot = renderPlot({
+  ### ANALYSIS ###
+  
+  output$onset_plot = renderPlot({
     
     file_upload = input$file_line
     if(is.null(file_upload)){
-      print("No linelist uploaded")
+      
     } else {
       df = read.csv(file_upload$datapath, stringsAsFactors = FALSE)
+      df$report_onset = as.Date(df$report_onset, format = "%d/%m/%Y")
+      df$death = as.Date(df$death, format = "%d/%m/%Y")
       
-      df$onset = as.Date(df$onset)
-      df$death = as.Date(df$death)
+      #format
+      df = fun_format_file(df, input)
       
-      g = ggplot(df) +
-        geom_rect( aes( xmin = death-input$symptomatic,
-                        xmax = death,
-                        ymin = id,
-                        ymax = id,
-                        color = "Symptomatic period"), 
-                   size = 1.1) +
-        geom_rect( aes( xmin = death-input$symptomatic-input$incubation,
-                        xmax = death-input$symptomatic,
-                        ymin = id,
-                        ymax = id,
-                        color = "Incubation period"), 
-                   size = 1.1) +
-        
-        geom_point( aes( x = onset,
-                         y = id,
-                         color = "Reported onset"),
-                    size = 5) +
-        
-        geom_point( aes( x = death,
-                         y = id,
+      #get onset
+      df_out = NULL
+      for(i in 1:nrow(df)){
+        tmp = fun_get_onset(df[i,])
+        df_out = rbind(df_out, tmp)
+      }
+      
+      g = ggplot(df_out) 
+      g = g + geom_rect(aes(xmin = Exposure_min,
+                            xmax = Exposure_max,
+                            ymin = ID, 
+                            ymax = ID,
+                            color = "Exposure period"),
+                        size = 1.1) +
+        geom_point( aes( x = Death,
+                         y = ID,
                          color = "Death"),
                     size = 5) +
+        geom_point(aes(x = Onset,
+                       y = ID,
+                       color = "Estimated onset"),
+                   size = 5) +
+        geom_point(aes(x = Reported_Onset,
+                       y = ID,
+                       color = "Reported onset"),
+                   size = 5, shape = 4, stroke = 2) +
+        ylab("Identifier") +
+        labs(colour = "Key")+
         theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+              text = element_text(size = 14),
               axis.text.x = element_text(angle = 45, hjust = 1)) +
-        scale_x_date(date_breaks = "1 week", date_labels = "%b %d")+
+        #scale_x_date(date_breaks = "1 week", date_labels = "%b %d")+
         xlab("Date")
       
       g
     }
   })
+  
+  
+  ### METHOD ###
+  output$Diagram = renderImage({
+    list(src = "./images/Diagram.png",
+         alt = "Digram of relative dates.")
+  }, deleteFile = FALSE)
   
 }
 
