@@ -78,19 +78,19 @@ navbarPage("Calculating Ebola exposure dates",
                     sidebarPanel(
                       
                       #standard inputs
-                      numericInput("min_incubation",
+                      numericInput("min_incubation_all",
                                    "Duration of incubation period min:",
                                    value = 14),
-                      numericInput("max_incubation",
+                      numericInput("max_incubation_all",
                                    "Duration of incubation period max:",
                                    value = 21),
-                      numericInput("symptomatic",
+                      numericInput("symptomatic_all",
                                    "Duration of period from onset to death:",
                                    value = 9),
-                      numericInput("bleeding_correction",
+                      numericInput("bleeding_correction_all",
                                    "Estimate of time from onset to bleeding:",
                                    value = 6),
-                      numericInput("diarrhea_correction",
+                      numericInput("diarrhea_correction_all",
                                    "Estimate of time from onset to diarrhea:",
                                    value = 4)
 
