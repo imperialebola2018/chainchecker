@@ -92,6 +92,71 @@ function(input, output) {
     g1
   })
   
+  output$download_ctemplate = downloadHandler(
+    filename = function(){
+      paste0("contact_template", ".csv")
+    },
+    content = function(file){
+      write.csv(data.frame("from" = "EG1", "to" = "EG2"), file, row.names = FALSE )
+    }
+  )
+  
+  output$download_ltemplate = downloadHandler(
+    filename = function(){
+      paste0("linelist_template", ".csv")
+    },
+    content = function(file){
+      write.csv(data.frame("id" = "EG1", 
+                           "onset" = Sys.Date(),
+                           "death" = Sys.Date(),
+                           "characteristic1" = "eg. age",
+                           "characteristic2" = "eg. location"), file, row.names = FALSE )
+    }
+  )
+  
+  output$death_onset_plot = renderPlot({
+    
+    file_upload = input$file_line
+    if(is.null(file_upload)){
+      print("No linelist uploaded")
+    } else {
+      df = read.csv(file_upload$datapath, stringsAsFactors = FALSE)
+      
+      df$onset = as.Date(df$onset)
+      df$death = as.Date(df$death)
+      
+      g = ggplot(df) +
+        geom_rect( aes( xmin = death-input$symptomatic,
+                        xmax = death,
+                        ymin = id,
+                        ymax = id,
+                        color = "Symptomatic period"), 
+                   size = 1.1) +
+        geom_rect( aes( xmin = death-input$symptomatic-input$incubation,
+                        xmax = death-input$symptomatic,
+                        ymin = id,
+                        ymax = id,
+                        color = "Incubation period"), 
+                   size = 1.1) +
+        
+        geom_point( aes( x = onset,
+                         y = id,
+                         color = "Reported onset"),
+                    size = 5) +
+        
+        geom_point( aes( x = death,
+                         y = id,
+                         color = "Death"),
+                    size = 5) +
+        theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+              axis.text.x = element_text(angle = 45, hjust = 1)) +
+        scale_x_date(date_breaks = "1 week", date_labels = "%b %d")+
+        xlab("Date")
+      
+      g
+    }
+  })
+  
 }
 
 

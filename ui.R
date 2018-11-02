@@ -36,9 +36,12 @@ fluidPage(
                            plotOutput("dist_plot"),
                            textOutput("prob_onset")),
                   tabPanel("Upload",
+                           downloadButton("download_ctemplate", "Download contacts template"),
+                           downloadButton("download_ltemplate", "Download linelist template"),
                            fileInput("file_line", h3("Upload linelist")),
                            fileInput("file_contact", h3("Upload contacts"))),
-                  tabPanel("Analysis"
+                  tabPanel("Analysis",
+                           plotOutput("death_onset_plot")
                   )
       )
       
