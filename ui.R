@@ -18,7 +18,7 @@ fluidPage(
                    value = 21),
       numericInput("symptomatic",
                    "Duration of period from onset to death:",
-                   value = 7),
+                   value = 9),
       
       textInput("id",
                 "Identifier:",
@@ -42,7 +42,7 @@ fluidPage(
           condition = "input.bleeding == true",
           numericInput("bleeding_correction",
                        "Estimate of time from onset to bleeding:",
-                       value = 4)
+                       value = 6)
         ),
         conditionalPanel(
           condition = "input.bleeding == false",
@@ -69,10 +69,10 @@ fluidPage(
                            plotOutput("exposure_plot"),
                            textOutput("estimated_onset"),
                            textOutput("exposure_window")),
-                  tabPanel("Probability", 
-                           textOutput("prob_intro"),
-                           plotOutput("dist_plot"),
-                           textOutput("prob_onset")),
+                  # tabPanel("Probability", 
+                  #          textOutput("prob_intro"),
+                  #          plotOutput("dist_plot"),
+                  #          textOutput("prob_onset")),
                   tabPanel("Upload",
                            downloadButton("download_ctemplate", "Download contacts template"),
                            downloadButton("download_ltemplate", "Download linelist template"),
