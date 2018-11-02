@@ -12,7 +12,7 @@ fluidPage(
       #standard inputs
       numericInput("min_incubation",
                    "Duration of incubation period min:",
-                   value = 21),
+                   value = 14),
       numericInput("max_incubation",
                    "Duration of incubation period max:",
                    value = 21),
@@ -36,7 +36,7 @@ fluidPage(
         condition = "input.death_avail == false",
         dateInput("report_onset",
                   "Reported onset date:",
-                  value = (Sys.Date()-7)),
+                  value = Sys.Date()-7),
         checkboxInput("bleeding", "Check box if the individual was bleeding*.", value = TRUE),
         conditionalPanel(
           condition = "input.bleeding == true",
@@ -66,8 +66,9 @@ fluidPage(
     mainPanel(
       tabsetPanel(type = "tabs",
                   tabPanel("Timeline", 
-                           plotOutput("onset_plot"),
-                           textOutput("earliest_onset")),
+                           plotOutput("exposure_plot"),
+                           textOutput("estimated_onset"),
+                           textOutput("exposure_window")),
                   tabPanel("Probability", 
                            textOutput("prob_intro"),
                            plotOutput("dist_plot"),

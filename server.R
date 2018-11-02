@@ -4,39 +4,56 @@ library(shiny)
 library(ggplot2)
 library(gridExtra)
 
-
+fun_get_onset = function(input){
+  df = data.frame("ID" = input$id)
+  
+  #then add other dates
+  if(input$death_avail){
+    df$Death = input$death
+    df$Onset = as.Date(input$death - input$symptomatic)
+    df$Reported_Onset = as.Date(NA)
+  } else {
+    df$Death = as.Date(NA)
+    df$Reported_Onset = input$report_onset
+    
+    if(input$bleeding){
+      df$Onset = as.Date(df$Reported_Onset - input$bleeding_correction)
+    } else if(input$diarrhea){
+      df$Onset = as.Date(df$Reported_Onset - input$diarrhea_correction)
+    } else {
+      df$Onset = input$report_onset
+    }
+  }
+  #calculate exposure period
+  df$Exposure_min = as.Date(df$Onset - input$max_incubation)
+  df$Exposure_max = as.Date(df$Onset - input$min_incubation)
+  
+  return(df)
+}
 
 # Define server logic required to draw a histogram
 function(input, output) {
   
-  output$onset_plot <- renderPlot({
+  output$exposure_plot <- renderPlot({
     
-    df = data.frame("ID" = input$id,
-                    "Death" = input$death,
-                    "Symptomatic" = input$death - input$symptomatic,
-                    "Exposure" = input$death - input$symptomatic- input$incubation,
-                    "Reported_Onset" = input$report_onset)
+    df = fun_get_onset(input)
     
+    
+    #plot
     g = ggplot(df) 
-    g = g + geom_rect(aes(xmin = Exposure,
-                          xmax = Symptomatic,
+    g = g + geom_rect(aes(xmin = Exposure_min,
+                          xmax = Exposure_max,
                           ymin = ID, 
                           ymax = ID,
-                          color = "Incubation period"),
-                      size = 1.1)
-    g = g + geom_rect(aes(xmin = Symptomatic,
-                          xmax = Death,
-                          ymin = ID, 
-                          ymax = ID,
-                          color = "Symptomatic period"),
-                      size = 1.1)+
+                          color = "Exposure period"),
+                      size = 1.1) +
       geom_point( aes( x = Death,
                        y = ID,
                        color = "Death"),
                   size = 5) +
-      geom_point(aes(x = Symptomatic,
+      geom_point(aes(x = Onset,
                      y = ID,
-                     color = "Earliest possible onset"),
+                     color = "Estimated onset"),
                  size = 5) +
       geom_point(aes(x = Reported_Onset,
                      y = ID,
@@ -53,9 +70,17 @@ function(input, output) {
     g
   })
   
-  output$earliest_onset = renderText({
-    paste0("Earliest possible onset of symptoms for these parameters is ", 
-           format(input$death - input$symptomatic, format = "%d %B"), 
+  output$estimated_onset = renderText({
+    paste0("Estimated onset of symptoms for these parameters is ", 
+           format(fun_get_onset(input)$Onset, format = "%d %B"), 
+           ".")
+  })
+  
+  output$exposure_window = renderText({
+    paste0("The exposure window for these parameters is ", 
+           format(fun_get_onset(input)$Exposure_min, format = "%d %B"), 
+           " to ",
+           format(fun_get_onset(input)$Exposure_max, format = "%d %B"),
            ".")
   })
   
