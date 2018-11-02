@@ -144,7 +144,12 @@ function(input, output) {
       df$death = as.Date(df$death, format = "%d/%m/%Y")
       
       #format
-      df = fun_format_file(df, input)
+      input_all = data.frame("bleeding_correction" = input$bleeding_correction_all,
+                             "diarrhea_correction" = input$diarrhea_correction_all,
+                             "symptomatic" = input$symptomatic_all,
+                             "min_incubation" = input$min_incubation_all,
+                             "max_incubation" = input$max_incubation_all)
+      df = fun_format_file(df, input_all)
       
       #get onset
       df_out = NULL
