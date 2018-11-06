@@ -104,11 +104,11 @@ navbarPage("Calculating Ebola exposure dates",
            ),
            tabPanel("Transmission tree for uploaded linelist and contacts",
                     sidebarPanel(
-                      checkboxInput("adjust_tree", "Show adjusted tree: ", value = TRUE),
+                      checkboxInput("adjust_tree", "Show tree with estimated onset dates.", value = TRUE),
                       uiOutput("linelist_group"),
                       uiOutput("contact_group"),
                       numericInput("min_incubation_tree",
-                                   "Duration of incubation period min:",
+                                   "Serial interval minimum",
                                    value = 4)
                     ),
                     mainPanel(plotlyOutput("tree"))),

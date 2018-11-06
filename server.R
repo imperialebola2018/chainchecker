@@ -285,7 +285,7 @@ function(input, output) {
                              group = input$group, 
                              contactsgroup = input$groupcontact,
                              anon = TRUE,
-                             incubation = input$min_incubation_tree) %>% 
+                             serial = input$min_incubation_tree) %>% 
         layout(height = 800)
     }
   })
