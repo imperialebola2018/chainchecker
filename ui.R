@@ -1,4 +1,5 @@
 library(shiny)
+library(plotly)
 # Define UI for application that draws a histogram
 navbarPage("Calculating Ebola exposure dates", 
            selected = "Timeline",
@@ -9,6 +10,8 @@ navbarPage("Calculating Ebola exposure dates",
              type="text/css",
              "#Diagram img {max-height: 100%; height: 100%; width: auto}"
            )),
+           
+
            
            # Sidebar with a slider input for number of bins 
            tabPanel("Timeline",
@@ -73,7 +76,7 @@ navbarPage("Calculating Ebola exposure dates",
                     fileInput("file_line", h3("Upload linelist")),
                     fileInput("file_contact", h3("Upload contacts"))
            ),
-           tabPanel("Analysis of upload",
+           tabPanel("Exposure windows for uploaded linelist",
                     
                     sidebarPanel(
                       
@@ -92,11 +95,22 @@ navbarPage("Calculating Ebola exposure dates",
                                    value = 6),
                       numericInput("diarrhea_correction_all",
                                    "Estimate of time from onset to diarrhea:",
-                                   value = 4)
+                                   value = 4),
+                      
+                      downloadButton("download_window", "Download")
 
                     ),
-                    mainPanel(plotOutput("onset_plot"))
+                    mainPanel(plotlyOutput("onset_plot"))
            ),
+           tabPanel("Transmission tree for uploaded linelist and contacts",
+                    sidebarPanel(
+                      checkboxInput("adjust_tree", "Show adjusted tree: ", value = TRUE),
+                      textInput("group", "Enter a characteristic to show on the plot: ", 
+                                value = "classification"),
+                      textInput("groupcontact", "Enter a transmission type to show on the plot: ", 
+                                value = "NA")
+                    ),
+                    mainPanel(plotlyOutput("tree"))),
            tabPanel("Method and definitions",
                     "We make certain assumptions about how disease prgresses from one stage to the next. 
                            We assume individuals are exposed, become infectious with some symptoms and then, 
