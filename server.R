@@ -116,7 +116,7 @@ function(input, output) {
       paste0("contact_template", ".csv")
     },
     content = function(file){
-      write.csv(data.frame("from" = "EG1", "to" = "EG2"), file, row.names = FALSE )
+      write.csv(data.frame("from" = "EG1", "to" = "EG2", "type" = "TRUE"), file, row.names = FALSE )
     }
   )
   
@@ -356,6 +356,7 @@ function(input, output) {
     selectInput("groupcontact", "Enter a transmission type to show on the plot: ", names(contacts))
   })
   
+
   ### METHOD ###
   output$Diagram = renderImage({
     list(src = "./images/Diagram.png",
