@@ -358,10 +358,10 @@ function(input, output) {
   
 
   ### METHOD ###
-  output$Diagram = renderImage({
-    list(src = "./images/Diagram.png",
-         alt = "Diagram of relative dates.")
-  }, deleteFile = FALSE)
+  # output$Diagram = renderImage({
+  #   list(src = "./images/Diagram.png",
+  #        alt = "Diagram of relative dates.")
+  # }, deleteFile = FALSE)
   
 }
 

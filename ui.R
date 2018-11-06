@@ -1,5 +1,6 @@
 library(shiny)
 library(plotly)
+library(shinythemes)
 # Define UI for application that draws a histogram
 navbarPage("Calculating Ebola exposure dates", 
            selected = "Timeline",
@@ -11,7 +12,7 @@ navbarPage("Calculating Ebola exposure dates",
              "#Diagram img {max-height: 100%; height: 100%; width: auto}"
            )),
            
-
+           theme = shinytheme("cerulean"),
            
            # Sidebar with a slider input for number of bins 
            tabPanel("Timeline",
@@ -20,7 +21,7 @@ navbarPage("Calculating Ebola exposure dates",
                       #standard inputs
                       numericInput("min_incubation",
                                    "Duration of incubation period min:",
-                                   value = 14),
+                                   value = 4),
                       numericInput("max_incubation",
                                    "Duration of incubation period max:",
                                    value = 21),
@@ -113,13 +114,7 @@ navbarPage("Calculating Ebola exposure dates",
                     ),
                     mainPanel(plotlyOutput("tree"))),
            tabPanel("Method and definitions",
-                    "We make certain assumptions about how disease prgresses from one stage to the next. 
-                           We assume individuals are exposed, become infectious with some symptoms and then, 
-                           in some cases, die. The different stages and definitions are shown below.",
-                    br(),
-                    imageOutput("Diagram"),
-                    br(),
-                    "*Bleeding is defined as ..."
+                    includeMarkdown("Methods.md")
            )
            
 )
