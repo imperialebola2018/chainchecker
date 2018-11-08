@@ -8,8 +8,8 @@ source('~/Eb_general/TransmissionTree/vis_epicontacts_ggplot.R')
 
 #function for workflow
 fun_get_onset = function(input){
-  df = data.frame("ID" = input$id)
   
+  df = data.frame("ID" = input$id)
   
   #then add other dates
   if(input$death_avail){
@@ -50,6 +50,74 @@ fun_format_file = function(df, input){
   df$death_avail = !is.na(df$death)
   
   return(df)
+}
+
+### function to make tree if data is uploaded 
+fun_make_tree = function(input){
+  
+  file_uploadl = input$file_line
+  file_uploadc = input$file_contact
+  
+  if(is.null(file_uploadl) | is.null(file_uploadc)){
+    
+  } else {
+    
+    #adjust or not?
+    if(input$adjust_tree){
+      df = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
+      df$report_onset = as.Date(df$report_onset, format = "%d/%m/%Y")
+      df$death = as.Date(df$death, format = "%d/%m/%Y")
+      
+      #format
+      input_all = data.frame("bleeding_correction" = input$bleeding_correction_all,
+                             "diarrhea_correction" = input$diarrhea_correction_all,
+                             "symptomatic" = input$symptomatic_all,
+                             "min_incubation" = input$min_incubation_all,
+                             "max_incubation" = input$max_incubation_all)
+      df = fun_format_file(df, input_all)
+      
+      #get onset
+      df_out = NULL
+      for(i in 1:nrow(df)){
+        tmp = fun_get_onset(df[i,])
+        df_out = rbind(df_out, tmp)
+      }
+      
+      df_out2 = tibble::add_column(df, onset = df_out$Onset, 
+                                   exposure_min = df_out$Exposure_min, 
+                                   exposure_max = df_out$Exposure_max,
+                                   .after = "report_onset")
+      
+      df = df_out2
+      df$onset = as.Date(df$onset, format = "%d/%m/%Y")
+      
+    } else {
+      df = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
+      df$onset = as.Date(df$report_onset, format = "%d/%m/%Y")
+      df$death = as.Date(df$death, format = "%d/%m/%Y")
+    }
+    
+    linelist = df
+    contacts = read.csv(file_uploadc$datapath, stringsAsFactors = FALSE, na.strings = "")
+    
+    #covering extras
+    linelist$name = linelist$code = linelist$id
+    contacts[is.na(contacts)] = FALSE
+    
+    #make epicontacts
+    x = epicontacts::make_epicontacts(linelist, contacts)
+    
+    #visualise
+    p = vis_epicontacts_ggplot(x,
+                               group = input$group, 
+                               contactsgroup = input$groupcontact,
+                               anon = TRUE,
+                               serial = input$min_incubation_tree) %>% 
+      layout(height = 800)
+    
+    return(p)
+  }
+  
 }
 
 ### SERVER ###
@@ -228,66 +296,7 @@ function(input, output) {
   ### ANALYSIS - TREE ###
   output$tree = renderPlotly({
     
-    file_uploadl = input$file_line
-    file_uploadc = input$file_contact
-    
-    if(is.null(file_uploadl) | is.null(file_uploadc)){
-      
-    } else {
-      
-      #adjust or not?
-      if(input$adjust_tree){
-        df = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
-        df$report_onset = as.Date(df$report_onset, format = "%d/%m/%Y")
-        df$death = as.Date(df$death, format = "%d/%m/%Y")
-        
-        #format
-        input_all = data.frame("bleeding_correction" = input$bleeding_correction_all,
-                               "diarrhea_correction" = input$diarrhea_correction_all,
-                               "symptomatic" = input$symptomatic_all,
-                               "min_incubation" = input$min_incubation_all,
-                               "max_incubation" = input$max_incubation_all)
-        df = fun_format_file(df, input_all)
-        
-        #get onset
-        df_out = NULL
-        for(i in 1:nrow(df)){
-          tmp = fun_get_onset(df[i,])
-          df_out = rbind(df_out, tmp)
-        }
-        
-        df_out2 = tibble::add_column(df, onset = df_out$Onset, 
-                                     exposure_min = df_out$Exposure_min, 
-                                     exposure_max = df_out$Exposure_max,
-                                     .after = "report_onset")
-        
-        df = df_out2
-        df$onset = as.Date(df$onset, format = "%d/%m/%Y")
-        
-      } else {
-        df = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
-        df$onset = as.Date(df$report_onset, format = "%d/%m/%Y")
-        df$death = as.Date(df$death, format = "%d/%m/%Y")
-      }
-      
-      linelist = df
-      contacts = read.csv(file_uploadc$datapath, stringsAsFactors = FALSE, na.strings = "")
-      
-      #covering extras
-      linelist$name = linelist$code = linelist$id
-      contacts[is.na(contacts)] = FALSE
-      
-      #make epicontacts
-      x = epicontacts::make_epicontacts(linelist, contacts)
-      
-      #visualise
-      vis_epicontacts_ggplot(x,
-                             group = input$group, 
-                             contactsgroup = input$groupcontact,
-                             anon = TRUE,
-                             serial = input$min_incubation_tree) %>% 
-        layout(height = 800)
-    }
+    fun_make_tree(input)
   })
   
   
@@ -356,12 +365,17 @@ function(input, output) {
     selectInput("groupcontact", "Enter a transmission type to show on the plot: ", names(contacts))
   })
   
+output$tree_download = downloadHandler(
+  filename = function(){ paste0("Transmission_Tree_", Sys.Date(), ".html")},
+  content = function(file){
+    
+    p = fun_make_tree(input)
+    
+    htmlwidgets::saveWidget(as.widget(p), file)
+    
+  }
+)
 
-  ### METHOD ###
-  # output$Diagram = renderImage({
-  #   list(src = "./images/Diagram.png",
-  #        alt = "Diagram of relative dates.")
-  # }, deleteFile = FALSE)
   
 }
 

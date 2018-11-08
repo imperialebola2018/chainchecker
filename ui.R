@@ -110,7 +110,8 @@ navbarPage("Calculating Ebola exposure dates",
                       uiOutput("contact_group"),
                       numericInput("min_incubation_tree",
                                    "Serial interval minimum",
-                                   value = 4)
+                                   value = 4),
+                      downloadButton("tree_download", "Download Tree as HTML")
                     ),
                     mainPanel(plotlyOutput("tree"))),
            tabPanel("Method and definitions",
