@@ -51,10 +51,10 @@ fun_format_file = function(df, input){
 ### import and adjust ###
 fun_import_adjust = function(input){
   
-  file_uploadl = input$file_line
+  #import
+  df = read.csv(input$file_line$datapath, stringsAsFactors = FALSE, na.strings = "")
   
-  df = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
-  
+  #make sure as dates
   df = df %>% mutate(report_onset = as.Date(report_onset, format = "%d/%m/%Y"),
                      death = as.Date(death, format = "%d/%m/%Y"))
   
@@ -70,8 +70,7 @@ fun_import_adjust = function(input){
   #get onset
   df_out = NULL
   for(i in 1:nrow(df)){
-    tmp = fun_get_onset(df[i,])
-    df_out = rbind(df_out, tmp)
+    df_out = rbind(df_out, fun_get_onset(df[i,]))
   }
   
   df = df %>% 
@@ -109,7 +108,6 @@ fun_make_tree = function(input){
     #covering extras
     if(is.null(linelist$name)){ linelist = linelist %>% mutate(name = id)}
     if(is.null(linelist$code)){ linelist = linelist %>% mutate(code = id)}
-    
     contacts[is.na(contacts)] = FALSE
     
     #make epicontacts
