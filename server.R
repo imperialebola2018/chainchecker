@@ -4,33 +4,36 @@ library(shiny)
 library(ggplot2)
 library(gridExtra)
 library(epicontacts)
+library(tibble)
 source('~/Eb_general/TransmissionTree/vis_epicontacts_ggplot.R')
 
 #function for workflow
 fun_get_onset = function(input){
   
-  df = data.frame("ID" = input$id)
+  df = tibble("ID" = input$id)
   
   #then add other dates
   if(input$death_avail){
-    df$Death = input$death
-    df$Onset = as.Date(input$death - input$symptomatic)
-    df$Reported_Onset = as.Date(NA)
-  } else {
-    df$Death = as.Date(NA)
-    df$Reported_Onset = input$report_onset
     
+    df = df %>% add_column(Death = input$death,
+                            Onset = as.Date(input$death - input$symptomatic),
+                            Reported_Onset = as.Date(NA))
+
+  } else {
+    df = df %>% add_column(Death = as.Date(NA),
+                            Reported_Onset = input$report_onset)
     if(input$bleeding){
-      df$Onset = as.Date(df$Reported_Onset - input$bleeding_correction)
+      df = df %>% add_column( Onset = as.Date(df$Reported_Onset - input$bleeding_correction))
     } else if(input$diarrhea){
-      df$Onset = as.Date(df$Reported_Onset - input$diarrhea_correction)
+      df = df %>% add_column( Onset = as.Date(df$Reported_Onset - input$diarrhea_correction))
     } else {
-      df$Onset = input$report_onset
+      df = df %>% add_column( Onset = input$report_onset)
     }
   }
+  
   #calculate exposure period
-  df$Exposure_min = as.Date(df$Onset - input$max_incubation)
-  df$Exposure_max = as.Date(df$Onset - input$min_incubation)
+  df = df %>% add_column( Exposure_min = as.Date(df$Onset - input$max_incubation),
+                          Exposure_max = as.Date(df$Onset - input$min_incubation))
   
   
   return(df)
@@ -38,16 +41,14 @@ fun_get_onset = function(input){
 
 #function to get file in right format
 fun_format_file = function(df, input){
-  
-  #input parameters
-  df$bleeding_correction = input$bleeding_correction
-  df$diarrhea_correction = input$diarrhea_correction
-  df$max_incubation = input$max_incubation
-  df$min_incubation = input$min_incubation
-  df$symptomatic = input$symptomatic
-  
-  #true false
-  df$death_avail = !is.na(df$death)
+
+  df = df %>% add_column( bleeding_correction = input$bleeding_correction,
+                          diarrhea_correction = input$diarrhea_correction,
+                          max_incubation = input$max_incubation,
+                          min_incubation = input$min_incubation,
+                          symptomatic = input$symptomatic,
+                          death_avail = !is.na(df$death))
+
   
   return(df)
 }
