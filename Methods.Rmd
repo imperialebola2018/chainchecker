@@ -2,11 +2,15 @@
 title: "Methods"
 author: "Katy Gaythorpe"
 date: "6 November 2018"
-output: md_document
+output: 
+  word_document:
+    df_print:
+      "kable"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+options(knitr.table.format = 'markdown')
 ```
 
 # Introduction
@@ -59,6 +63,24 @@ The calculator uses the following steps to estimate onset and exposure dates.
 5. `Earliest exposure date = estimated onset - maximum incubation period`.
 6. `Latest exposure date = estimated onset - minimum incubation period`.
 
+# Defaults
+
+There are a few default values set for the periods of interest. These are taken from the literature and we detail the ranges below.
+
+### Incubation
+
+We take the default maximum incubation period to be 21 days and the minimum to be 4 days.
+This has been estimated in numerous studies; selected reading includes, `Eichner, Dowell & Firese, 2011`, `Bull. WHO, 1978`, `Bwaka et al. 1999` and `Ebola virus disease, WHO, 2018`.
+
+
+### Developing symptoms
+
+There are two correction factors, one for bleeding and one for dirrhea with defaults 6 and 4 days respectively. These denote the average time to develop each symptom after disease onset. There are multiple studies detailing the development of Ebola symptoms; `Valasquez et al. 2015` produced a systematic review on the time from infection to disease.
+
+### Time from onset to death
+
+If an individual does not recover, we set the default time from symptom onset to death at 9 days. This value usually falls within the range of 8 to 10 days with further discussion found in `Valasquez et al. 2015`.
+
 # Definitions
 
-*Bleeding is defined as `bleeding from the nose, bleeding from the mouth/gums, blood in their vomit, blood in their stool and /or bleeding from puncture sites`.
+*Bleeding is defined as `bleeding from the nose, bleeding from the mouth/gums, blood in their vomit, blood in their stool and /or bleeding from puncture sites` -at time of reported onset-.
