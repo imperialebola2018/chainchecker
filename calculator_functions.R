@@ -1,25 +1,27 @@
+##################################
+### ONSET CALCULATOR FUNCTIONS ###
+##################################
 
-
-#function for workflow
+### calculator logic steps ###
 fun_get_onset = function(input){
   
   df = tibble("ID" = input$id)
   
   #then add other dates
-  if(input$death_avail){
+  if(input$death_avail){ #if there is a death date
     
     df = df %>% add_column(Death = input$death,
                            Onset = as.Date(input$death - input$symptomatic),
                            Reported_Onset = as.Date(NA))
     
-  } else {
+  } else { #no death date
     df = df %>% add_column(Death = as.Date(NA),
                            Reported_Onset = input$report_onset)
-    if(input$bleeding){
+    if(input$bleeding){ #with bleading
       df = df %>% add_column( Onset = as.Date(df$Reported_Onset - input$bleeding_correction))
-    } else if(input$diarrhea){
+    } else if(input$diarrhea){ #with diarrhea
       df = df %>% add_column( Onset = as.Date(df$Reported_Onset - input$diarrhea_correction))
-    } else {
+    } else { #no wet symptoms
       df = df %>% add_column( Onset = input$report_onset)
     }
   }
@@ -32,7 +34,7 @@ fun_get_onset = function(input){
   return(df)
 }
 
-#function to get file in right format
+### formatting the file with settings for download ###
 fun_format_file = function(df, input){
   
   df = df %>% add_column( bleeding_correction = input$bleeding_correction,
@@ -46,7 +48,41 @@ fun_format_file = function(df, input){
   return(df)
 }
 
-
+### import and adjust ###
+fun_import_adjust = function(input){
+  
+  file_uploadl = input$file_line
+  
+  df = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
+  
+  df = df %>% mutate(report_onset = as.Date(report_onset, format = "%d/%m/%Y"),
+                     death = as.Date(death, format = "%d/%m/%Y"))
+  
+  #format
+  input_all = tibble("bleeding_correction" = input$bleeding_correction_all,
+                     "diarrhea_correction" = input$diarrhea_correction_all,
+                     "symptomatic" = input$symptomatic_all,
+                     "min_incubation" = input$min_incubation_all,
+                     "max_incubation" = input$max_incubation_all)
+  
+  df = fun_format_file(df, input_all)
+  
+  #get onset
+  df_out = NULL
+  for(i in 1:nrow(df)){
+    tmp = fun_get_onset(df[i,])
+    df_out = rbind(df_out, tmp)
+  }
+  
+  df = df %>% 
+    add_column( onset = df_out$Onset, 
+                exposure_min = df_out$Exposure_min, 
+                exposure_max = df_out$Exposure_max,
+                .after = "report_onset") %>% 
+    mutate(onset = as.Date(onset, format = "%d/%m/%Y"))
+  
+  return(df)
+}
 
 ### function to make tree if data is uploaded ###
 fun_make_tree = function(input){
@@ -54,49 +90,20 @@ fun_make_tree = function(input){
   file_uploadl = input$file_line
   file_uploadc = input$file_contact
   
-  if(is.null(file_uploadl) | is.null(file_uploadc)){
+  if(!is.null(file_uploadl) & !is.null(file_uploadc)){
     
-  } else {
-    
-    #adjust or not?
-    if(input$adjust_tree){
+    if(input$adjust_tree){ #adjusted tree?
       
-      df = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
-      
-      df = df %>% mutate(report_onset = as.Date(report_onset, format = "%d/%m/%Y"),
-                         death = as.Date(death, format = "%d/%m/%Y"))
-      
-      #format
-      input_all = tibble("bleeding_correction" = input$bleeding_correction_all,
-                         "diarrhea_correction" = input$diarrhea_correction_all,
-                         "symptomatic" = input$symptomatic_all,
-                         "min_incubation" = input$min_incubation_all,
-                         "max_incubation" = input$max_incubation_all)
-      
-      df = fun_format_file(df, input_all)
-      
-      #get onset
-      df_out = NULL
-      for(i in 1:nrow(df)){
-        tmp = fun_get_onset(df[i,])
-        df_out = rbind(df_out, tmp)
-      }
-      
-      df = df %>% 
-        add_column( onset = df_out$Onset, 
-                    exposure_min = df_out$Exposure_min, 
-                    exposure_max = df_out$Exposure_max,
-                    .after = "report_onset") %>% 
-        mutate(onset = as.Date(onset, format = "%d/%m/%Y"))
+      linelist = fun_import_adjust(input)
       
     } else {
-      df = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
+      linelist = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
       
-      df = df %>% mutate(onset = as.Date(report_onset, format = "%d/%m/%Y"),
+      linelist = linelist %>% mutate(onset = as.Date(report_onset, format = "%d/%m/%Y"),
                          death = as.Date(death, format = "%d/%m/%Y"))
     }
     
-    linelist = df
+
     contacts = read.csv(file_uploadc$datapath, stringsAsFactors = FALSE, na.strings = "")
     
     #covering extras
