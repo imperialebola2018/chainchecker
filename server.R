@@ -2,18 +2,17 @@
 # dependencies
 library(shiny)
 library(ggplot2)
-library(gridExtra)
 library(epicontacts)
 library(tibble)
 source('~/Eb_general/TransmissionTree/vis_epicontacts_ggplot.R')
 source('calculator_functions.R')
 
 ### SERVER ###
-
-# Define server logic required to draw a histogram
 function(input, output) {
   
-  ### TIMELINE ###
+  ### TIMELINE ###-----------------------------------------------------------------------------------
+  
+  # PLOT #
   output$exposure_plot <- renderPlot({
     
     df = fun_get_onset(input)
@@ -64,8 +63,9 @@ function(input, output) {
   
   
   
-  ### UPLOAD ###
+  ### UPLOAD ###-----------------------------------------------------------------------------------
   
+  # DOWNLOAD LINELIST #
   output$download_ctemplate = downloadHandler(
     filename = function(){
       paste0("contact_template", ".csv")
@@ -77,6 +77,7 @@ function(input, output) {
     }
   )
   
+  # DOWNLOAD CONTACT #
   output$download_ltemplate = downloadHandler(
     filename = function(){
       paste0("linelist_template", ".csv")
@@ -90,13 +91,15 @@ function(input, output) {
     }
   )
   
-  ### ANALYSIS - WINDOWS ###
+  ### ANALYSIS - WINDOWS ###-----------------------------------------------------------------------------------
+  
+  # PLOT #
   output$onset_plot = renderPlotly({
     
     file_upload = input$file_line
     
     if(!is.null(file_upload)){
-    
+      
       df_out = fun_import_adjust(input)
       
       g = ggplot(df_out) 
@@ -126,10 +129,9 @@ function(input, output) {
     }
   })
   
+  # DOWNLOAD #
   output$download_window = downloadHandler(
-    filename = function(){
-      "linelist_with_estimated_exposure.csv"
-    },
+    filename = function(){paste0("linelist_with_estimated_exposure_", Sys.Date(), ".csv")},
     content = function(file){
       
       file_upload = input$file_line
@@ -144,15 +146,18 @@ function(input, output) {
     }
   )
   
-  ### ANALYSIS - TREE ###
+  ### ANALYSIS - TREE ###-----------------------------------------------------------------------------------
+  
+  # PLOT #
   output$tree = renderPlotly({
     
     fun_make_tree(input)
     
   })
   
-  
+  # DROP DOWN MENU LINELIST #
   output$linelist_group = renderUI({
+    
     file_uploadl = input$file_line
     
     if(!is.null(file_uploadl)){
@@ -166,7 +171,7 @@ function(input, output) {
         linelist = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
         
         linelist = linelist %>% mutate(report_onset = as.Date(report_onset, format = "%d/%m/%Y"),
-                           death = as.Date(death, format = "%d/%m/%Y"))
+                                       death = as.Date(death, format = "%d/%m/%Y"))
       }
       
     }
@@ -174,7 +179,7 @@ function(input, output) {
     selectInput("group", "Enter a characteristic to show on the plot: ", names(linelist))
   })
   
-  
+  # DROP DOWN MENU CONTACT #
   output$contact_group = renderUI({
     
     file_uploadc = input$file_contact
@@ -186,17 +191,18 @@ function(input, output) {
     selectInput("groupcontact", "Enter a transmission type to show on the plot: ", names(contacts))
   })
   
-output$tree_download = downloadHandler(
-  filename = function(){ paste0("Transmission_Tree_", Sys.Date(), ".html")},
-  content = function(file){
-    
-    p = fun_make_tree(input)
-    
-    htmlwidgets::saveWidget(as.widget(p), file)
-    
-  }
-)
-
+  # DOWNLOAD #
+  output$tree_download = downloadHandler(
+    filename = function(){ paste0("Transmission_Tree_", Sys.Date(), ".html")},
+    content = function(file){
+      
+      p = fun_make_tree(input)
+      
+      htmlwidgets::saveWidget(as.widget(p), file)
+      
+    }
+  )
+  
   
 }
 

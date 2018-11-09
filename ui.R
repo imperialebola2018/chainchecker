@@ -1,7 +1,8 @@
 library(shiny)
 library(plotly)
 library(shinythemes)
-# Define UI for application that draws a histogram
+
+
 navbarPage("Calculating Ebola exposure dates", 
            selected = "Timeline",
            
@@ -34,7 +35,9 @@ navbarPage("Calculating Ebola exposure dates",
                                 value = "ID1"),
                       
                       #conditions
-                      checkboxInput("death_avail", "Check box if the date of death is available", value = TRUE), 
+                      checkboxInput("death_avail", 
+                                    "Check box if the date of death is available", 
+                                    value = TRUE), 
                       conditionalPanel(
                         condition = "input.death_avail == true",
                         dateInput("death",
@@ -46,7 +49,9 @@ navbarPage("Calculating Ebola exposure dates",
                         dateInput("report_onset",
                                   "Reported onset date:",
                                   value = Sys.Date()-7),
-                        checkboxInput("bleeding", "Check box if the individual was bleeding*.", value = TRUE),
+                        checkboxInput("bleeding", 
+                                      "Check box if the individual was bleeding*.", 
+                                      value = TRUE),
                         conditionalPanel(
                           condition = "input.bleeding == true",
                           numericInput("bleeding_correction",
@@ -55,7 +60,8 @@ navbarPage("Calculating Ebola exposure dates",
                         ),
                         conditionalPanel(
                           condition = "input.bleeding == false",
-                          checkboxInput("diarrhea", "Check box if the individual had diarrhea."),
+                          checkboxInput("diarrhea", 
+                                        "Check box if the individual had diarrhea."),
                           conditionalPanel(
                             condition = "input.diarrhea == true",
                             numericInput("diarrhea_correction",
@@ -105,7 +111,9 @@ navbarPage("Calculating Ebola exposure dates",
            ),
            tabPanel("Transmission tree for uploaded linelist and contacts",
                     sidebarPanel(
-                      checkboxInput("adjust_tree", "Show tree with estimated onset dates.", value = TRUE),
+                      checkboxInput("adjust_tree", 
+                                    "Show tree with estimated onset dates.", 
+                                    value = TRUE),
                       uiOutput("linelist_group"),
                       uiOutput("contact_group"),
                       numericInput("min_incubation_tree",
