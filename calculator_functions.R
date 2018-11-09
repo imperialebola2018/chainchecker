@@ -34,19 +34,6 @@ fun_get_onset = function(input){
   return(df)
 }
 
-### formatting the file with settings for download ###
-fun_format_file = function(df, input){
-  
-  df = df %>% add_column( bleeding_correction = input$bleeding_correction,
-                          diarrhea_correction = input$diarrhea_correction,
-                          max_incubation = input$max_incubation,
-                          min_incubation = input$min_incubation,
-                          symptomatic = input$symptomatic,
-                          death_avail = !is.na(df$death))
-  
-  
-  return(df)
-}
 
 ### import and adjust ###
 fun_import_adjust = function(input){
@@ -59,13 +46,12 @@ fun_import_adjust = function(input){
                      death = as.Date(death, format = "%d/%m/%Y"))
   
   #format
-  input_all = tibble("bleeding_correction" = input$bleeding_correction_all,
-                     "diarrhea_correction" = input$diarrhea_correction_all,
-                     "symptomatic" = input$symptomatic_all,
-                     "min_incubation" = input$min_incubation_all,
-                     "max_incubation" = input$max_incubation_all)
-  
-  df = fun_format_file(df, input_all)
+  df = df %>% add_column( bleeding_correction = input$bleeding_correction_all,
+                          diarrhea_correction = input$diarrhea_correction_all,
+                          max_incubation = input$max_incubation_all,
+                          min_incubation = input$min_incubation_all,
+                          symptomatic = input$symptomatic_all,
+                          death_avail = !is.na(df$death))
   
   #get onset
   df_out = NULL

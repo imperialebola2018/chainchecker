@@ -43,7 +43,6 @@ function(input, output) {
       theme(panel.background = element_rect(fill = "white", colour = "grey50"),
             text = element_text(size = 14),
             axis.text.x = element_text(angle = 45, hjust = 1)) +
-      #scale_x_date(date_breaks = "1 week", date_labels = "%b %d")+
       xlab("Date")
     
     g
@@ -72,7 +71,9 @@ function(input, output) {
       paste0("contact_template", ".csv")
     },
     content = function(file){
-      write.csv(data.frame("from" = "EG1", "to" = "EG2", "type" = "TRUE"), file, row.names = FALSE )
+      write.csv(data.frame("from" = "EG1", 
+                           "to" = "EG2", 
+                           "type" = "TRUE"), file, row.names = FALSE )
     }
   )
   
@@ -90,46 +91,28 @@ function(input, output) {
   )
   
   ### ANALYSIS - WINDOWS ###
-  
   output$onset_plot = renderPlotly({
     
     file_upload = input$file_line
-    if(is.null(file_upload)){
-      
-    } else {
-      df = read.csv(file_upload$datapath, stringsAsFactors = FALSE)
-      df$report_onset = as.Date(df$report_onset, format = "%d/%m/%Y")
-      df$death = as.Date(df$death, format = "%d/%m/%Y")
-      
-      #format
-      input_all = data.frame("bleeding_correction" = input$bleeding_correction_all,
-                             "diarrhea_correction" = input$diarrhea_correction_all,
-                             "symptomatic" = input$symptomatic_all,
-                             "min_incubation" = input$min_incubation_all,
-                             "max_incubation" = input$max_incubation_all)
-      df = fun_format_file(df, input_all)
-      
-      #get onset
-      df_out = NULL
-      for(i in 1:nrow(df)){
-        tmp = fun_get_onset(df[i,])
-        df_out = rbind(df_out, tmp)
-      }
+    
+    if(!is.null(file_upload)){
+    
+      df_out = fun_import_adjust(input)
       
       g = ggplot(df_out) 
-      g = g + geom_rect(aes(xmin = Exposure_min,
-                            xmax = Exposure_max,
-                            ymin = ID, 
-                            ymax = ID,
+      g = g + geom_rect(aes(xmin = exposure_min,
+                            xmax = exposure_max,
+                            ymin = id, 
+                            ymax = id,
                             color = "Exposure period")) +
-        geom_point( aes( x = Death,
-                         y = ID,
+        geom_point( aes( x = death,
+                         y = id,
                          color = "Death")) +
-        geom_point(aes(x = Onset,
-                       y = ID,
+        geom_point(aes(x = onset,
+                       y = id,
                        color = "Estimated onset")) +
-        geom_point(aes(x = Reported_Onset,
-                       y = ID,
+        geom_point(aes(x = report_onset,
+                       y = id,
                        color = "Reported onset"),
                    shape = 4, stroke = 2) +
         ylab("Identifier") +
@@ -148,105 +131,55 @@ function(input, output) {
       "linelist_with_estimated_exposure.csv"
     },
     content = function(file){
+      
       file_upload = input$file_line
-      if(is.null(file_upload)){
+      
+      if(!is.null(file_upload)){
         
-      } else {
-        df = read.csv(file_upload$datapath, stringsAsFactors = FALSE)
-        df$report_onset = as.Date(df$report_onset, format = "%d/%m/%Y")
-        df$death = as.Date(df$death, format = "%d/%m/%Y")
+        df_out = fun_import_adjust(input)
         
-        #format
-        input_all = data.frame("bleeding_correction" = input$bleeding_correction_all,
-                               "diarrhea_correction" = input$diarrhea_correction_all,
-                               "symptomatic" = input$symptomatic_all,
-                               "min_incubation" = input$min_incubation_all,
-                               "max_incubation" = input$max_incubation_all)
-        df = fun_format_file(df, input_all)
-        #get onset
-        df_out = NULL
-        for(i in 1:nrow(df)){
-          tmp = fun_get_onset(df[i,])
-          df_out = rbind(df_out, tmp)
-        }
-        
-        df_out2 = tibble::add_column(df, onset = df_out$Onset, 
-                                     exposure_min = df_out$Exposure_min, 
-                                     exposure_max = df_out$Exposure_max,
-                                     .after = "report_onset")
-        
-        
-        write.csv(df_out2, file, row.names = FALSE)
+        write.csv(df_out, file, row.names = FALSE)
       }
       
     }
   )
+  
   ### ANALYSIS - TREE ###
   output$tree = renderPlotly({
     
     fun_make_tree(input)
+    
   })
   
   
   output$linelist_group = renderUI({
     file_uploadl = input$file_line
-    file_uploadc = input$file_contact
     
-    if(is.null(file_uploadl) | is.null(file_uploadc)){
-      
-    } else {
+    if(!is.null(file_uploadl)){
       
       #adjust or not?
       if(input$adjust_tree){
-        df = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
-        df$report_onset = as.Date(df$report_onset, format = "%d/%m/%Y")
-        df$death = as.Date(df$death, format = "%d/%m/%Y")
         
-        #format
-        input_all = data.frame("bleeding_correction" = input$bleeding_correction_all,
-                               "diarrhea_correction" = input$diarrhea_correction_all,
-                               "symptomatic" = input$symptomatic_all,
-                               "min_incubation" = input$min_incubation_all,
-                               "max_incubation" = input$max_incubation_all)
-        df = fun_format_file(df, input_all)
-        
-        #get onset
-        df_out = NULL
-        for(i in 1:nrow(df)){
-          tmp = fun_get_onset(df[i,])
-          df_out = rbind(df_out, tmp)
-        }
-        
-        df_out2 = tibble::add_column(df, onset = df_out$Onset, 
-                                     exposure_min = df_out$Exposure_min, 
-                                     exposure_max = df_out$Exposure_max,
-                                     .after = "report_onset")
-        
-        df = df_out2
-        df$onset = as.Date(df$onset, format = "%d/%m/%Y")
+        linelist = fun_import_adjust(input)
         
       } else {
-        df = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
-        df$onset = as.Date(df$report_onset, format = "%d/%m/%Y")
-        df$death = as.Date(df$death, format = "%d/%m/%Y")
+        linelist = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
+        
+        linelist = linelist %>% mutate(report_onset = as.Date(report_onset, format = "%d/%m/%Y"),
+                           death = as.Date(death, format = "%d/%m/%Y"))
       }
       
     }
     
-    
-    
-    selectInput("group", "Enter a characteristic to show on the plot: ", names(df))
+    selectInput("group", "Enter a characteristic to show on the plot: ", names(linelist))
   })
   
   
   output$contact_group = renderUI({
-    file_uploadl = input$file_line
+    
     file_uploadc = input$file_contact
     
-    if(is.null(file_uploadl) | is.null(file_uploadc)){
-      
-    } else {
-      
+    if(!is.null(file_uploadc)){
       contacts = read.csv(file_uploadc$datapath, stringsAsFactors = FALSE, na.strings = "")
     }
     
