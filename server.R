@@ -4,7 +4,7 @@ library(shiny)
 library(ggplot2)
 library(epicontacts)
 library(tibble)
-source('~/Eb_general/TransmissionTree/vis_epicontacts_ggplot.R')
+source('vis_epicontacts_ggplot.R')
 source('calculator_functions.R')
 
 ### SERVER ###
