@@ -105,7 +105,7 @@ vis_epicontacts_ggplot = function(x,
 }
 
 
-
+#-------------------------------------------------------------------------------------------------#
 #' swap contact ids for 'ranking' (the order with which to plot nodes on the y axis)
 #' 
 #' @param x epicontacts object
@@ -144,7 +144,7 @@ fun_rank_contacts = function(x){
 }
 
 
-
+#-------------------------------------------------------------------------------------------------#
 #' add extra column stating which cluster each individual is in
 #' 
 #' @param x epicontacts object including both linelist and contacts
@@ -154,35 +154,27 @@ fun_rank_contacts = function(x){
 
 fun_get_clusters = function(x){
   
-  
-  #add onset dates of "from"
-  id_to_cluster = x$contacts %>% 
+  #create df and order
+  df = x$contacts %>% 
     add_column(onset = x$linelist$onset[match(x$contacts$from, 
-                                               x$linelist$id)])
+                                              x$linelist$id)],
+               cluster = rep(NA, nrow(x$contacts))) %>%
+    arrange( onset )
   
-  #order by onset of "from"
-  id_to_cluster = arrange(id_to_cluster, onset )
   
-  #get index cases of each cluster
-  cluster_index_case = unique(id_to_cluster$from)
+  #get Cluster Index Case
+  cic = unique(df$from)
   
-  #define cluster
-  id_to_cluster$cluster = rep(NA, nrow(id_to_cluster))
-  for(i in  1 : length(cluster_index_case) ){
-    
-    from_ind = which(id_to_cluster$from %in% cluster_index_case[i])
-    to_ind = which(id_to_cluster$to %in% cluster_index_case[i])
-    
-    id_to_cluster$cluster[from_ind] = i
-    id_to_cluster$cluster[to_ind] = i
-    
+  #assign clusters
+  for(i in  1 : length(cic) ){
+    df$cluster[df$from %in% cic[i] | df$to %in% cic[i]] = i
   }
   
-  return(id_to_cluster)
+  return(df)
 }
 
 
-
+#-------------------------------------------------------------------------------------------------#
 #' add extra column stating which tree each individual is in
 #' 
 #' @param id_to_contacts output of fun_get_cluster
@@ -216,6 +208,7 @@ fun_get_trees = function(id_to_cluster){
   return(id_to_cluster)
 }
 
+#-------------------------------------------------------------------------------------------------#
 #' join cluster and trees to linelist and order
 #' 
 #' @param x epicontacts object
@@ -267,6 +260,7 @@ fun_link_linelist_cluster = function(x, id_to_cluster){
   return(x)
 }
 
+#-------------------------------------------------------------------------------------------------#
 #' rank based on the trees
 #' 
 #' @param x epicontacts object
@@ -275,16 +269,16 @@ fun_link_linelist_cluster = function(x, id_to_cluster){
 #' @export
 
 fun_rank_linelist = function(x){
+  
   # distribute by tree
   max_space = 100 # top of the plot (doesn't really matter what this is)
   
   n_trees = max(x$linelist$tree)
   
-  n_points = nrow(x$linelist)
-  
   #declare
   x$linelist$rank = rep(NA, nrow(x$linelist))
   for(t in 1:n_trees){
+    
     #get number of individuals in tree
     tree_size = nrow( dplyr::filter(x$linelist, tree == t))
     
@@ -293,8 +287,8 @@ fun_rank_linelist = function(x){
     
     
     #get area to distribute points over
-    tree_area = c((max_space/n_trees)*tree_previous_size, 
-                  (max_space/n_trees)*(tree_size + tree_previous_size) )
+    tree_area = c((max_space/n_trees) * tree_previous_size, 
+                  (max_space/n_trees) * (tree_size + tree_previous_size) )
     
     if(tree_size == 1){
       x$linelist$rank[ x$linelist$tree == t] = -1
@@ -310,18 +304,20 @@ fun_rank_linelist = function(x){
     }
   }
   
-  #for the unconnected cases, we need to stack by onset date
-  if(min(x$linelist$rank)>-1){
+  #for the unconnected cases, we need to stack by onset date- this works because they are ordered by onset
+  if(min(x$linelist$rank)<0){
     
-  } else{
     unconnected = which(x$linelist$rank == -1)
     no_unconnected = length(unconnected)
+    
     for(u in 2:no_unconnected){
-      if( x$linelist$onset[unconnected[u]]==x$linelist$onset[unconnected[u-1]] &
-          !is.na(x$linelist$onset[unconnected[u]]) & 
-          !is.na(x$linelist$onset[unconnected[u-1]])){
-        x$linelist$rank[unconnected[u]] = x$linelist$rank[unconnected[u-1]] - 100/nrow(x$linelist)
+      
+      if( x$linelist$onset[unconnected[u]] == x$linelist$onset[unconnected[u-1]] &
+          !anyNA(x$linelist$onset[unconnected[c(u, u-1)]]) ){
+        
+        x$linelist$rank[unconnected[u]] = x$linelist$rank[unconnected[u-1]] - max_space/nrow(x$linelist)
       }
+      
     }
   }
   return(x)
