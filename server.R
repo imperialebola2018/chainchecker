@@ -188,7 +188,7 @@ function(input, output) {
       contacts = read.csv(file_uploadc$datapath, stringsAsFactors = FALSE, na.strings = "")
     }
     
-    selectInput("groupcontact", "Enter a transmission type to show on the plot: ", names(contacts))
+    selectInput("groupcontact", "Enter a transmission type to show on the plot: ", c(names(contacts),NA), selected = NA )
   })
   
   # DOWNLOAD #
