@@ -13,7 +13,7 @@ function(input, output) {
   ### TIMELINE ###-----------------------------------------------------------------------------------
   
   # PLOT #
-  output$exposure_plot <- renderPlot({
+  output$exposure_plot <- renderPlotly({
     
     df = fun_get_onset(input)
     
@@ -44,7 +44,7 @@ function(input, output) {
             axis.text.x = element_text(angle = 45, hjust = 1)) +
       xlab("Date")
     
-    g
+    ggplotly(g)
   })
   
   output$estimated_onset = renderText({

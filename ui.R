@@ -73,7 +73,7 @@ navbarPage("Calculating Ebola exposure dates",
                       
                       
                     ),
-                    mainPanel(plotOutput("exposure_plot"),
+                    mainPanel(plotlyOutput("exposure_plot"),
                               textOutput("estimated_onset"),
                               textOutput("exposure_window"))
            ),
