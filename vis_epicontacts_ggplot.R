@@ -224,6 +224,7 @@ fun_link_linelist_cluster = function(x, df){
   
   #link to clusters in df
   x$linelist = x$linelist %>% add_column(cluster = df$cluster[match( x$linelist$id, df$to)])
+
   
   #unconnected cases will be NA
   x$linelist$cluster[is.na(x$linelist$cluster) & 
