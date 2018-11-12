@@ -44,7 +44,7 @@ function(input, output) {
             axis.text.x = element_text(angle = 45, hjust = 1)) +
       xlab("Date")
     
-    ggplotly(g)
+    plotly::ggplotly(g, height = 400) 
   })
   
   output$estimated_onset = renderText({
