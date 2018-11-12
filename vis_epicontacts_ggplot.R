@@ -158,7 +158,7 @@ fun_get_clusters = function(x){
   df = x$contacts %>% 
     add_column(onset = x$linelist$onset[match(x$contacts$from, 
                                               x$linelist$id)],
-               cluster = rep(NA, nrow(x$contacts))) %>%
+               cluster = NA) %>%
     arrange( onset )
   
   
@@ -177,55 +177,55 @@ fun_get_clusters = function(x){
 #-------------------------------------------------------------------------------------------------#
 #' add extra column stating which tree each individual is in
 #' 
-#' @param id_to_contacts output of fun_get_cluster
+#' @param df output of fun_get_cluster
 #' 
 #' @return the contacts with attached onset, cluster and tree
 #' @export
 
-fun_get_trees = function(id_to_cluster){
+fun_get_trees = function(df){
+  
+  df = df %>% add_column(tree = NA)
   
   #find index cases for each tree
-  index_cases = unique( id_to_cluster$from[ which(!id_to_cluster$from %in% id_to_cluster$to)])
-  
-  n_trees = length(index_cases)
-  
-  id_to_cluster$tree = rep(NA, nrow(id_to_cluster))
-  for(t in 1:n_trees){
+  ic = unique( df$from[ !df$from %in% df$to])
+                         
+  for(t in 1:length(ic)){
     
-    tree_from = index_cases[t]
+    tree_from = ic[t]
     
     while(length(tree_from)>0){
       # primary, secondary etc. infections
       
-      id_to_cluster$tree[ which(id_to_cluster$from %in% tree_from)] = t 
+      df$tree[ df$from %in% tree_from] = t 
       
-      tree_from = id_to_cluster$to[which(id_to_cluster$from %in% tree_from)]
+      tree_from = df$to[df$from %in% tree_from]
       
     }
     
   }
   
-  return(id_to_cluster)
+  return(df)
 }
 
 #-------------------------------------------------------------------------------------------------#
 #' join cluster and trees to linelist and order
 #' 
 #' @param x epicontacts object
-#' @param id_to_cluster contacts with onset, cluster and trees
+#' @param df contacts with onset, cluster and trees
 #' 
 #' @return x with an ordered linelist
 #' @export
 
-fun_link_linelist_cluster = function(x, id_to_cluster){
+fun_link_linelist_cluster = function(x, df){
   
   #order linelist by onset
-  x$linelist = dplyr::arrange(x$linelist, desc(onset) )
+  x$linelist = x$linelist %>% 
+               arrange( desc(onset) ) 
   
-  #link to clusters in id_to_cluster
-  x$linelist$cluster = id_to_cluster$cluster[match( x$linelist$id, id_to_cluster$to)]
+  #link to clusters in df
+  x$linelist = x$linelist %>% add_column(cluster = df$cluster[match( x$linelist$id, df$to)])
   
-  #cases outside clusters will be NA
+  #unconnected cases will be NA
   x$linelist$cluster[is.na(x$linelist$cluster) & 
                        !x$linelist$id %in% x$contacts$from] = 
     max(x$linelist$cluster, na.rm=TRUE)+1
@@ -233,17 +233,17 @@ fun_link_linelist_cluster = function(x, id_to_cluster){
   #cases that are only index cases will also be NA- these need to be linked to their cluster
   missing_ind = which(is.na(x$linelist$cluster) & x$linelist$id %in% x$contacts$from)
   for(i in missing_ind){
-    x$linelist$cluster[i] = id_to_cluster$cluster[match(x$linelist$id[i], id_to_cluster$from)]
+    x$linelist$cluster[i] = df$cluster[match(x$linelist$id[i], df$from)]
   }
   
   
-  #Link to trees in id_to_cluster
-  x$linelist$tree = id_to_cluster$tree[match( x$linelist$id, id_to_cluster$to)]
+  #Link to trees in df
+  x$linelist$tree = df$tree[match( x$linelist$id, df$to)]
   
   #index cases 
   missing_ind = which(is.na(x$linelist$tree) & x$linelist$id %in% x$contacts$from)
   for(i in missing_ind){
-    x$linelist$tree[i] = id_to_cluster$tree[match(x$linelist$id[i], id_to_cluster$from)]
+    x$linelist$tree[i] = df$tree[match(x$linelist$id[i], df$from)]
   }
   
   #cases outside trees will be NA
