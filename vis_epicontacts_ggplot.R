@@ -10,11 +10,12 @@ vis_epicontacts_ggplot = function(x,
                                   group = "onset",
                                   contactsgroup = NA,
                                   anon = TRUE,
-                                  serial = 4){
+                                  serial = 4,
+                                  with_epicurve = FALSE){
   if(anon){
-    tooltip = c("onset",  "code", group)
+    tooltip = c("onset",  group)
   } else {
-    tooltip = c("onset", "id", "fullname", "code", group)
+    tooltip = c("onset", "id", group)
   }
   
   
@@ -98,9 +99,9 @@ vis_epicontacts_ggplot = function(x,
   
   m = ggplotly(m, tooltip = c(group))
   
-  g
-  # plotly::subplot(m ,g, nrows = 2, heights = c(0.2, 0.8), 
-  #                 shareX = TRUE)
+  if(with_epicurve){} else {
+    g
+  }
 }
 
 
@@ -155,13 +156,12 @@ fun_get_clusters = function(x){
   
   
   #add onset dates of "from"
-  id_to_cluster = cbind(x$contacts, 
-                        x$linelist$onset[match(x$contacts$from, 
+  id_to_cluster = x$contacts %>% 
+    add_column(onset = x$linelist$onset[match(x$contacts$from, 
                                                x$linelist$id)])
-  names(id_to_cluster)[ncol(id_to_cluster)] = "onset"
   
   #order by onset of "from"
-  id_to_cluster = dplyr::arrange(id_to_cluster, onset )
+  id_to_cluster = arrange(id_to_cluster, onset )
   
   #get index cases of each cluster
   cluster_index_case = unique(id_to_cluster$from)
@@ -192,7 +192,7 @@ fun_get_clusters = function(x){
 
 fun_get_trees = function(id_to_cluster){
   
-  #find index cases
+  #find index cases for each tree
   index_cases = unique( id_to_cluster$from[ which(!id_to_cluster$from %in% id_to_cluster$to)])
   
   n_trees = length(index_cases)
