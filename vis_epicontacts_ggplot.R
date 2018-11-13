@@ -2,6 +2,10 @@
 #' 
 #' @param x epicontacts object
 #' @param group group to adjust colour of nodes by, defaults to NA
+#' @param contactsgroup group to adjust colour of links by, defaults to NA
+#' @param anon whether to show id on hover, defaults to TRUE
+#' @param serial minimum serial interval for link highlighting
+#' @param with_epicurve whether to plot epicurve as part of output, defaults to FALSE
 #' 
 #' @return plot of transmissin tree
 #' @export
@@ -45,13 +49,8 @@ vis_epicontacts_ggplot = function(x,
                                        ifelse(rank_contacts$from_onset-rank_contacts$to_onset>-serial,
                                               "darkorange3",
                                               "black")))
-  if(is.na(contactsgroup) | is.null(contactsgroup) | !contactsgroup %in% names(rank_contacts)){
-    g = g + geom_segment(data = rank_contacts,
-                         aes( x= from_onset,
-                              xend = from_onset,
-                              y = to,
-                              yend = from))
-  } else {
+  
+  if(contactsgroup %in% names(rank_contacts)){
     g = g + geom_segment(data = rank_contacts,
                          aes( x= from_onset,
                               xend = from_onset,
@@ -60,9 +59,16 @@ vis_epicontacts_ggplot = function(x,
                          colour = ifelse(rank_contacts[,contactsgroup], "blue", "black"),
                          size = ifelse(rank_contacts[,contactsgroup], 2, 0.5),
                          alpha = ifelse(rank_contacts[,contactsgroup], 0.5, 1))
+  } else {
+    g = g + geom_segment(data = rank_contacts,
+                         aes( x= from_onset,
+                              xend = from_onset,
+                              y = to,
+                              yend = from))
+    
   }
-  #add points
   
+  #add points
   g = g + geom_point(data = linelist,
                      aes_string(x = "onset",
                                 y = "rank",
@@ -118,31 +124,28 @@ vis_epicontacts_ggplot = function(x,
 fun_rank_contacts = function(x){
   
   #add clusters
-  id_to_cluster = fun_get_clusters(x)
+  df = fun_get_clusters(x)
   
   #add trees
-  id_to_cluster = fun_get_trees(id_to_cluster)
+  df = fun_get_trees(df)
   
   #link id_to_cluster and linelist and order
-  x = fun_link_linelist_cluster(x, id_to_cluster)
+  x = fun_link_linelist_cluster(x, df)
   
   #add a rank based on the ordering, distributed by tree
   x = fun_rank_linelist(x)
   
   #use this rank instead of id
-  rank_contacts = x$contacts
+  rc = x$contacts
   
-  contact_order_to = match(rank_contacts$to, x$linelist$id)
-  rank_contacts$to = x$linelist$rank[contact_order_to]
+  rc = rc %>% 
+    mutate(to = x$linelist$rank[match(rc$to, x$linelist$id)],
+           from = x$linelist$rank[match(rc$from , x$linelist$id)]) %>%
+    #add rank onsets
+    add_column(to_onset = x$linelist$onset[match(rc$to, x$linelist$id)],
+               from_onset = x$linelist$onset[match(rc$from , x$linelist$id)])
   
-  contact_order_from = match(rank_contacts$from , x$linelist$id)
-  rank_contacts$from = x$linelist$rank[contact_order_from]
-  
-  #add rank onsets
-  rank_contacts$to_onset = x$linelist$onset[contact_order_to]
-  rank_contacts$from_onset = x$linelist$onset[contact_order_from]
-  
-  return(list(rank_contacts = rank_contacts, linelist = x$linelist))
+  return(list(rank_contacts = rc, linelist = x$linelist))
 }
 
 
@@ -161,15 +164,16 @@ fun_get_clusters = function(x){
     add_column(onset = x$linelist$onset[match(x$contacts$from, 
                                               x$linelist$id)],
                cluster = NA) %>%
-    arrange( onset )
+    arrange(onset)
   
-  
-  #get Cluster Index Case
+  #get Cluster Index Cases
   cic = unique(df$from)
   
   #assign clusters
   for(i in  1 : length(cic) ){
-    df$cluster[df$from %in% cic[i] | df$to %in% cic[i]] = i
+    df = df %>% mutate(cluster = replace(cluster,
+                                         from %in% cic[i] | to %in% cic[i],
+                                         i))
   }
   
   return(df)
@@ -189,7 +193,7 @@ fun_get_trees = function(df){
   df = df %>% add_column(tree = NA)
   
   #find index cases for each tree
-  ic = unique( df$from[ !df$from %in% df$to])
+  ic = unique( df$from[ !df$from %in% df$to ])
                          
   for(t in 1:length(ic)){
     
@@ -221,44 +225,48 @@ fun_get_trees = function(df){
 fun_link_linelist_cluster = function(x, df){
   
   #order linelist by onset
-  x$linelist = x$linelist %>% 
-               arrange( desc(onset) ) 
+  x$linelist = x$linelist %>% arrange( desc(onset) ) 
+  
+  ### CLUSTERS ###
   
   #link to clusters in df
-  x$linelist = x$linelist %>% add_column(cluster = df$cluster[match( x$linelist$id, df$to)])
+  x$linelist = x$linelist %>% 
+               add_column(cluster = df$cluster[match( x$linelist$id, df$to)])
 
   
   #unconnected cases will be NA
-  x$linelist$cluster[is.na(x$linelist$cluster) & 
-                       !x$linelist$id %in% x$contacts$from] = 
-    max(x$linelist$cluster, na.rm=TRUE)+1
+  x$linelist = x$linelist %>% 
+               mutate(cluster = replace(cluster, 
+                                        is.na(cluster) & !id %in% x$contacts$from,  
+                                        max(cluster, na.rm=TRUE) + 1))
   
   #cases that are only index cases will also be NA- these need to be linked to their cluster
-  missing_ind = which(is.na(x$linelist$cluster) & x$linelist$id %in% x$contacts$from)
-  for(i in missing_ind){
-    x$linelist$cluster[i] = df$cluster[match(x$linelist$id[i], df$from)]
-  }
+  x$linelist = x$linelist %>% 
+    mutate(cluster = replace(cluster, 
+                             is.na(cluster) & id %in% x$contacts$from,  
+                             df$cluster[id %in% df$from]))
   
+  ### TREES ###
   
   #Link to trees in df
-  x$linelist$tree = df$tree[match( x$linelist$id, df$to)]
+  x$linelist = x$linelist %>% 
+               add_column(tree = df$tree[match( x$linelist$id, df$to)])
   
-  #index cases 
+  #index cases
   missing_ind = which(is.na(x$linelist$tree) & x$linelist$id %in% x$contacts$from)
   for(i in missing_ind){
     x$linelist$tree[i] = df$tree[match(x$linelist$id[i], df$from)]
   }
   
   #cases outside trees will be NA
-  x$linelist$tree[is.na(x$linelist$tree) ] = 
-    c( (max(x$linelist$tree, na.rm=TRUE) + 1) : 
-         (max(x$linelist$tree, na.rm=TRUE) + length(x$linelist$tree[is.na(x$linelist$tree) ])) )
-  
-  #order by cluster
-  x$linelist = dplyr::arrange(x$linelist, (cluster))
-  
-  #order by tree
-  x$linelist = dplyr::arrange(x$linelist, (tree))
+  x$linelist = x$linelist %>% 
+               mutate(tree = replace(tree,
+                                     is.na(tree), 
+                                     c( (max(tree, na.rm=TRUE) + 1) : 
+                                        (max(tree, na.rm=TRUE) + length(tree)) ))
+                      ) %>%
+               arrange(cluster, 
+                       tree)
   
   return(x)
 }
