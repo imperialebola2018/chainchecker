@@ -287,32 +287,32 @@ fun_rank_linelist = function(x){
   n_trees = max(x$linelist$tree)
   
   #declare
-  x$linelist$rank = rep(NA, nrow(x$linelist))
+  x$linelist = x$linelist %>% add_column(rank = NA)
+  
   for(t in 1:n_trees){
     
     #get number of individuals in tree
-    tree_size = nrow( dplyr::filter(x$linelist, tree == t))
+    tree_size = nrow( filter(x$linelist, tree == t))
     
     #previous points
-    tree_previous_size = nrow( dplyr::filter(x$linelist, tree < t))
-    
+    tree_previous_size = nrow( filter(x$linelist, tree < t))
     
     #get area to distribute points over
     tree_area = c((max_space/n_trees) * tree_previous_size, 
                   (max_space/n_trees) * (tree_size + tree_previous_size) )
     
     if(tree_size == 1){
-      x$linelist$rank[ x$linelist$tree == t] = -1
+      ranked_tree = -1
+    } else if(tree_size==2){
+      ranked_tree = mean(tree_area)
     } else {
-      #if only two points, put in the middle
-      if(tree_size==2){
-        x$linelist$rank[ x$linelist$tree == t] = mean(tree_area)
-      } else {
-        x$linelist$rank[ x$linelist$tree == t] = seq(from = tree_area[1]+1, 
-                                                     to = tree_area[2], #so there is a buffer
-                                                     length.out = tree_size)
-      }
+      ranked_tree = seq(from = tree_area[1]+1,
+                        to = tree_area[2], 
+                        length.out = tree_size)
     }
+    
+    x$linelist = x$linelist %>% mutate(rank = replace(rank, tree == t, ranked_tree))
+    
   }
   
   #for the unconnected cases, we need to stack by onset date- this works because they are ordered by onset
@@ -331,5 +331,6 @@ fun_rank_linelist = function(x){
       
     }
   }
+  
   return(x)
 }
