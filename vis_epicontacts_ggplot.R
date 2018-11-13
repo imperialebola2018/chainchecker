@@ -99,7 +99,9 @@ vis_epicontacts_ggplot = function(x,
   
   m = ggplotly(m, tooltip = c(group))
   
-  if(with_epicurve){} else {
+  if(with_epicurve){
+    subplot(m ,g, nrows = 2, heights = c(0.2, 0.8), shareX = TRUE)
+  } else {
     g
   }
 }
