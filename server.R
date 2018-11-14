@@ -78,10 +78,12 @@ function(input, output) {
       "contact_template.csv"
     },
     content = function(file){
-      write.csv(data.frame("from" = "EG1", 
-                           "to" = "EG2", 
-                           "contact_of_type1" = "TRUE",
-                           "contact_of_type2" = ""), file, row.names = FALSE )
+      write.csv(data.frame("from" = c("EG1","EG1", "EG2", "EG3"), 
+                           "to" = c("EG2", "EG4", "EG5", "EG6") ,
+                           "contact_of_type1" = c("TRUE", "FALSE", "FALSE", 
+                                                  "FALSE"),
+                           "contact_of_type2" = c("FALSE", "FALSE", "TRUE", 
+                                                  "FALSE") ), file, row.names = FALSE )
     }
   )
   
@@ -91,11 +93,17 @@ function(input, output) {
       "linelist_template.csv"
     },
     content = function(file){
-      write.csv(data.frame("id" = c("EG1", "EG2"), 
-                           "reported_onset_date" = format(c(Sys.Date()-2, Sys.Date()), format = "%d/%m/%Y"),
-                           "death_date" = format(c(Sys.Date(), NA), format = "%d/%m/%Y"),
-                           "bleeding_at_reported_onset" = c("TRUE", "FALSE"),
-                           "diarrhea_at_reported_onset" = c("FALSE", "FALSE")), file, row.names = FALSE )
+      write.csv(data.frame("id" = c("EG1", "EG2", "EG3", "EG4", "EG5", "EG6"), 
+                           "reported_onset_date" = format(c(Sys.Date()-7, Sys.Date()-4, Sys.Date()-3, 
+                                                            Sys.Date()-2, Sys.Date()-1, Sys.Date()), 
+                                                          format = "%d/%m/%Y"),
+                           "death_date" = format(c(Sys.Date(), NA, Sys.Date()-2, 
+                                                   Sys.Date()-1, Sys.Date(), NA), 
+                                                 format = "%d/%m/%Y"),
+                           "bleeding_at_reported_onset" = c("TRUE", "FALSE", "FALSE", 
+                                                            "FALSE", "TRUE", "FALSE"),
+                           "diarrhea_at_reported_onset" = c("FALSE", "FALSE", "TRUE", 
+                                                            "FALSE","TRUE", "FALSE")), file, row.names = FALSE )
     }
   )
   
