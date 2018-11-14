@@ -113,60 +113,54 @@ function(input, output) {
   # PLOT #
   output$onset_plot = renderPlotly({
     
-    file_upload = input$file_line
+    df_out = fun_import_adjust(input)
     
-    if(!is.null(file_upload)){
-      
-      df_out = fun_import_adjust(input)
-      
-      df_out = df_out %>% arrange(exposure_date_min)
-      
-      g = ggplot(df_out) 
-      g = g + geom_rect(aes(xmin = exposure_date_min,
-                            xmax = exposure_date_max,
-                            ymin = id, 
-                            ymax = id,
-                            color = "Exposure")) +
-        geom_point( aes( x = death_date,
-                         y = id,
-                         color = "Death")) +
-        geom_point( aes( x = exposure_date_min,
-                         y = id,
-                         color = "Exposure"), size = 0.1) +
-        geom_point( aes( x = exposure_date_max,
-                         y = id,
-                         color = "Exposure"), size = 0.1) +
-        geom_point(aes(x = onset_date,
+    df_out = df_out %>% arrange(exposure_date_min)
+    
+    g = ggplot(df_out) 
+    g = g + geom_rect(aes(xmin = exposure_date_min,
+                          xmax = exposure_date_max,
+                          ymin = id, 
+                          ymax = id,
+                          color = "Exposure")) +
+      geom_point( aes( x = death_date,
                        y = id,
-                       color = "Estimated onset")) +
-        geom_point(aes(x = reported_onset_date,
+                       color = "Death")) +
+      geom_point( aes( x = exposure_date_min,
                        y = id,
-                       color = "Reported onset"),
-                   shape = 4, stroke = 2) +
-        ylab("Identifier") +
-        labs(colour = "Key")+
-        theme(panel.background = element_rect(fill = "white", colour = "grey50"),
-              text = element_text(size = 14),
-              axis.text.x = element_text(angle = 45, hjust = 1)) +
-        xlab("Date")
-      
-      plotly::ggplotly(g, height = 800) 
-    }
+                       color = "Exposure"), size = 0.1) +
+      geom_point( aes( x = exposure_date_max,
+                       y = id,
+                       color = "Exposure"), size = 0.1) +
+      geom_point(aes(x = onset_date,
+                     y = id,
+                     color = "Estimated onset")) +
+      geom_point(aes(x = reported_onset_date,
+                     y = id,
+                     color = "Reported onset"),
+                 shape = 4, stroke = 2) +
+      ylab("Identifier") +
+      labs(colour = "Key")+
+      theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+            text = element_text(size = 14),
+            axis.text.x = element_text(angle = 45, hjust = 1)) +
+      xlab("Date")
+    
+    plotly::ggplotly(g, height = 800) 
+    
   })
   
   # DOWNLOAD #
   output$download_window = downloadHandler(
-    filename = function(){paste0("linelist_with_estimated_exposure_", Sys.Date(), ".csv")},
+    filename = function(){
+      paste0("linelist_with_estimated_exposure_", Sys.Date(), ".csv")
+      },
     content = function(file){
       
-      file_upload = input$file_line
+      df_out = fun_import_adjust(input)
       
-      if(!is.null(file_upload)){
-        
-        df_out = fun_import_adjust(input)
-        
-        write.csv(df_out, file, row.names = FALSE)
-      }
+      write.csv(df_out, file, row.names = FALSE)
+      
       
     }
   )
@@ -183,22 +177,11 @@ function(input, output) {
   # DROP DOWN MENU LINELIST #
   output$linelist_group = renderUI({
     
-    file_uploadl = input$file_line
-    
-    if(!is.null(file_uploadl)){
-      
-      #adjust or not?
-      if(input$adjust_tree){
-        
-        linelist = fun_import_adjust(input)
-        
-      } else {
-        linelist = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
-        
-        linelist = linelist %>% mutate(reported_onset_date = as.Date(reported_onset_date, format = "%d/%m/%Y"),
-                                       death_date = as.Date(death_date, format = "%d/%m/%Y"))
-      }
-      
+    #adjust or not?
+    if(input$adjust_tree){
+      linelist = fun_import_adjust(input)
+    } else {
+      linelist = check_line_upload(input$file_line)
     }
     
     selectInput("group", "Enter a characteristic to show on the plot: ", names(linelist))
@@ -207,18 +190,16 @@ function(input, output) {
   # DROP DOWN MENU CONTACT #
   output$contact_group = renderUI({
     
-    file_uploadc = input$file_contact
-    
-    if(!is.null(file_uploadc)){
-      contacts = read.csv(file_uploadc$datapath, stringsAsFactors = FALSE, na.strings = "")
-    }
+    contacts = check_contacts_upload(input$file_contact)
     
     selectInput("groupcontact", "Enter a transmission type to show on the plot: ", c(names(contacts),NA), selected = NA )
   })
   
   # DOWNLOAD #
   output$tree_download = downloadHandler(
-    filename = function(){ paste0("Transmission_Tree_", Sys.Date(), ".html")},
+    filename = function(){ 
+      paste0("Transmission_Tree_", Sys.Date(), ".html")
+      },
     content = function(file){
       
       p = fun_make_tree(input)

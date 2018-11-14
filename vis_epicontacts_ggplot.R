@@ -319,17 +319,18 @@ fun_rank_linelist = function(x){
   if(min(x$linelist$rank)<0){
     
     unconnected = which(x$linelist$rank == -1)
-    no_unconnected = length(unconnected)
     
-    for(u in 2:no_unconnected){
+    unconnected_onset = x$linelist$onset[unconnected]
+    
+    for(u in 2:length(unconnected)){
       
       if( x$linelist$onset[unconnected[u]] == x$linelist$onset[unconnected[u-1]] &
           !anyNA(x$linelist$onset[unconnected[c(u, u-1)]]) ){
         
         x$linelist$rank[unconnected[u]] = x$linelist$rank[unconnected[u-1]] - max_space/nrow(x$linelist)
       }
-      
     }
+    
   }
   
   return(x)

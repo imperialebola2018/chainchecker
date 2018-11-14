@@ -60,7 +60,7 @@ navbarPage("Calculating Ebola exposure dates",
                         ),
                         conditionalPanel(
                           condition = "input.bleeding_at_reported_onset == false",
-                          checkboxInput("diarrhea_at_onset", 
+                          checkboxInput("diarrhea_at_reported_onset", 
                                         "Check box if the individual had diarrhea when onset was reported."),
                           conditionalPanel(
                             condition = "input.diarrhea_at_reported_onset == true",
