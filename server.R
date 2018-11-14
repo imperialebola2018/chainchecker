@@ -7,6 +7,7 @@ library(tibble)
 library(dplyr)
 source('vis_epicontacts_ggplot.R')
 source('calculator_functions.R')
+source('internals.R')
 
 ### SERVER ###
 function(input, output) {

@@ -42,8 +42,8 @@ fun_import_adjust = function(input){
   df = read.csv(input$file_line$datapath, stringsAsFactors = FALSE, na.strings = "")
   
   #make sure as dates
-  df = df %>% mutate(reported_onset_date = as.Date(reported_onset_date, format = "%d/%m/%Y"),
-                     death_date = as.Date(death_date, format = "%d/%m/%Y"))
+  df = df %>% mutate(reported_onset_date = assert_date(reported_onset_date),
+                     death_date = assert_date(death_date))
   
   #format
   df = df %>% add_column( days_onset_to_bleeding = input$days_onset_to_bleeding_all,
@@ -71,7 +71,7 @@ fun_import_adjust = function(input){
                 exposure_date_min = df_out$exposure_date_min, 
                 exposure_date_max = df_out$exposure_date_max,
                 .after = "reported_onset_date") %>% 
-    mutate(onset_date = as.Date(onset_date, format = "%d/%m/%Y"))
+    mutate(onset_date = assert_date(onset_date))
   
   return(df)
 }
@@ -91,8 +91,8 @@ fun_make_tree = function(input){
     } else {
       linelist = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
       
-      linelist = linelist %>% mutate(onset_date = as.Date(reported_onset_date, format = "%d/%m/%Y"),
-                         death_date = as.Date(death_date, format = "%d/%m/%Y"))
+      linelist = linelist %>% mutate(onset_date = assert_date(reported_onset_date),
+                         death_date = assert_date(death_date))
     }
     
 
@@ -113,7 +113,7 @@ fun_make_tree = function(input){
     p = vis_epicontacts_ggplot(x,
                                group = input$group, 
                                contactsgroup = input$groupcontact,
-                               anon = TRUE,
+                               anon = FALSE,
                                serial = input$min_serial_tree) %>% 
       layout(height = 800)
     
