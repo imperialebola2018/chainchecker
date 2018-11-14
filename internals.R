@@ -16,13 +16,15 @@ assert_date = function(vec){
   return(vec_out)
 }
 
-
+#### ----------------------------------------------------------------------------------- ####
 assert_TF = function(vec){
 
-  if(!typeof(vec) == "logical"){
+  if(sum(!vec %in% c(TRUE, FALSE, NA))>0){
     
     stop("A column that should be TRUE/ FALSE contains other values.")
   }
+  
+  return(vec)
 }
 
 #### ----------------------------------------------------------------------------------- ####
@@ -68,6 +70,12 @@ check_contacts_upload = function(file_upload){
   }
   
   contacts = read.csv(file_upload$datapath, stringsAsFactors = FALSE, na.strings = "")
+  
+  #check for true/false
+  logic_ind = which(!names(contacts) %in% c("to", "from"))
+  for(i in 1:length(logic_ind)){
+    contacts[ ,logic_ind[i]] = assert_TF(contacts[ ,logic_ind[i]])
+  }
   
   return(contacts)
 }
