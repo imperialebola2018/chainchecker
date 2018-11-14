@@ -79,10 +79,12 @@ navbarPage("Calculating Ebola exposure dates",
                               textOutput("exposure_window"))
            ),
            tabPanel("Upload",
+                    sidebarPanel(
                     downloadButton("download_ctemplate", "Download contacts template"),
                     downloadButton("download_ltemplate", "Download linelist template"),
                     fileInput("file_line", h3("Upload linelist")),
-                    fileInput("file_contact", h3("Upload contacts"))
+                    fileInput("file_contact", h3("Upload contacts"))),
+                    mainPanel(includeMarkdown("Upload_Guidelines.md"))
            ),
            tabPanel("Exposure windows for uploaded linelist",
                     
