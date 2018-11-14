@@ -5,30 +5,30 @@
 ### calculator logic steps ###
 fun_get_onset = function(input){
   
-  df = tibble("ID" = input$id)
+  df = tibble("id" = input$id)
   
   #then add other dates
   if(input$death_avail){ #if there is a death date
     
-    df = df %>% add_column(Death = input$death,
-                           Onset = as.Date(input$death - input$symptomatic),
-                           Reported_Onset = as.Date(NA))
+    df = df %>% add_column(death_date = input$death_date,
+                           onset_date = as.Date(input$death_date - input$days_onset_to_death),
+                           reported_onset_date = as.Date(NA))
     
   } else { #no death date
-    df = df %>% add_column(Death = as.Date(NA),
-                           Reported_Onset = input$report_onset)
-    if(input$bleeding){ #with bleading
-      df = df %>% add_column( Onset = as.Date(df$Reported_Onset - input$bleeding_correction))
+    df = df %>% add_column(death_date = as.Date(NA),
+                           reported_onset_date = input$reported_onset_date)
+    if(input$bleeding){ #with bleeding
+      df = df %>% add_column( onset_date = as.Date(df$reported_onset_date - input$days_onset_to_bleeding))
     } else if(input$diarrhea){ #with diarrhea
-      df = df %>% add_column( Onset = as.Date(df$Reported_Onset - input$diarrhea_correction))
+      df = df %>% add_column( onset_date = as.Date(df$reported_onset_date - input$days_onset_to_diarrhea))
     } else { #no wet symptoms
-      df = df %>% add_column( Onset = input$report_onset)
+      df = df %>% add_column( onset_date = input$reported_onset_date)
     }
   }
   
   #calculate exposure period
-  df = df %>% add_column( Exposure_min = as.Date(df$Onset - input$max_incubation),
-                          Exposure_max = as.Date(df$Onset - input$min_incubation))
+  df = df %>% add_column( exposure_date_min = as.Date(df$onset_date - input$max_incubation),
+                          exposure_date_max = as.Date(df$onset_date - input$min_incubation))
   
   
   return(df)
@@ -42,16 +42,23 @@ fun_import_adjust = function(input){
   df = read.csv(input$file_line$datapath, stringsAsFactors = FALSE, na.strings = "")
   
   #make sure as dates
-  df = df %>% mutate(report_onset = as.Date(report_onset, format = "%d/%m/%Y"),
-                     death = as.Date(death, format = "%d/%m/%Y"))
+  df = df %>% mutate(reported_onset_date = as.Date(reported_onset_date, format = "%d/%m/%Y"),
+                     death_date = as.Date(death_date, format = "%d/%m/%Y"))
   
   #format
-  df = df %>% add_column( bleeding_correction = input$bleeding_correction_all,
-                          diarrhea_correction = input$diarrhea_correction_all,
+  df = df %>% add_column( days_onset_to_bleeding = input$days_onset_to_bleeding_all,
+                          days_onset_to_diarrhea = input$days_onset_to_diarrhea_all,
                           max_incubation = input$max_incubation_all,
                           min_incubation = input$min_incubation_all,
-                          symptomatic = input$symptomatic_all,
-                          death_avail = !is.na(df$death))
+                          days_onset_to_death = input$days_onset_to_death_all,
+                          death_avail = !is.na(df$death_date))
+  
+  if(is.null(df$bleeding_at_reported_onset)){
+    df = df %>% add_column(bleeding_at_reported_onset = FALSE)
+  }
+  if(is.null(df$diarrhea_at_reported_onset)){
+    df = df %>% add_column(diarrhea_at_reported_onset = FALSE)
+  }
   
   #get onset
   df_out = NULL
@@ -60,11 +67,11 @@ fun_import_adjust = function(input){
   }
   
   df = df %>% 
-    add_column( onset = df_out$Onset, 
-                exposure_min = df_out$Exposure_min, 
-                exposure_max = df_out$Exposure_max,
-                .after = "report_onset") %>% 
-    mutate(onset = as.Date(onset, format = "%d/%m/%Y"))
+    add_column( onset_date = df_out$onset_date, 
+                exposure_date_min = df_out$exposure_date_min, 
+                exposure_date_max = df_out$exposure_date_max,
+                .after = "reported_onset_date") %>% 
+    mutate(onset_date = as.Date(onset_date, format = "%d/%m/%Y"))
   
   return(df)
 }
@@ -84,8 +91,8 @@ fun_make_tree = function(input){
     } else {
       linelist = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
       
-      linelist = linelist %>% mutate(onset = as.Date(report_onset, format = "%d/%m/%Y"),
-                         death = as.Date(death, format = "%d/%m/%Y"))
+      linelist = linelist %>% mutate(onset_date = as.Date(reported_onset_date, format = "%d/%m/%Y"),
+                         death_date = as.Date(death_date, format = "%d/%m/%Y"))
     }
     
 
@@ -96,6 +103,9 @@ fun_make_tree = function(input){
     if(is.null(linelist$code)){ linelist = linelist %>% mutate(code = id)}
     contacts[is.na(contacts)] = FALSE
     
+    #adjust for epicontacts
+    names(linelist)[names(linelist) == 'onset_date'] <- 'onset'
+    
     #make epicontacts
     x = epicontacts::make_epicontacts(linelist, contacts)
     
@@ -104,7 +114,7 @@ fun_make_tree = function(input){
                                group = input$group, 
                                contactsgroup = input$groupcontact,
                                anon = TRUE,
-                               serial = input$min_incubation_tree) %>% 
+                               serial = input$min_serial_tree) %>% 
       layout(height = 800)
     
     return(p)

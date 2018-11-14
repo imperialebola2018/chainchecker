@@ -4,6 +4,7 @@ library(shiny)
 library(ggplot2)
 library(epicontacts)
 library(tibble)
+library(dplyr)
 source('vis_epicontacts_ggplot.R')
 source('calculator_functions.R')
 
@@ -19,22 +20,28 @@ function(input, output) {
     
     #plot
     g = ggplot(df) 
-    g = g + geom_rect(aes(xmin = Exposure_min,
-                          xmax = Exposure_max,
-                          ymin = ID, 
-                          ymax = ID,
-                          color = "Exposure period"),
+    g = g + geom_rect(aes(xmin = exposure_date_min,
+                          xmax = exposure_date_max,
+                          ymin = id, 
+                          ymax = id,
+                          color = "Exposure"),
                       size = 1.1) +
-      geom_point( aes( x = Death,
-                       y = ID,
+      geom_point( aes( x = death_date,
+                       y = id,
                        color = "Death"),
                   size = 5) +
-      geom_point(aes(x = Onset,
-                     y = ID,
+      geom_point( aes( x = exposure_date_min,
+                       y = id,
+                       color = "Exposure"), size = 0.1) +
+      geom_point( aes( x = exposure_date_max,
+                       y = id,
+                       color = "Exposure"), size = 0.1) +
+      geom_point(aes(x = onset_date,
+                     y = id,
                      color = "Estimated onset"),
                  size = 5) +
-      geom_point(aes(x = Reported_Onset,
-                     y = ID,
+      geom_point(aes(x = reported_onset_date,
+                     y = id,
                      color = "Reported onset"),
                  size = 5, shape = 4, stroke = 2) +
       ylab("Identifier") +
@@ -49,15 +56,15 @@ function(input, output) {
   
   output$estimated_onset = renderText({
     paste0("Estimated onset of symptoms for these parameters is ", 
-           format(fun_get_onset(input)$Onset, format = "%d %B"), 
+           format(fun_get_onset(input)$onset_date, format = "%d %B"), 
            ".")
   })
   
   output$exposure_window = renderText({
     paste0("The exposure window for these parameters is ", 
-           format(fun_get_onset(input)$Exposure_min, format = "%d %B"), 
+           format(fun_get_onset(input)$exposure_date_min, format = "%d %B"), 
            " to ",
-           format(fun_get_onset(input)$Exposure_max, format = "%d %B"),
+           format(fun_get_onset(input)$exposure_date_max, format = "%d %B"),
            ".")
   })
   
@@ -68,26 +75,27 @@ function(input, output) {
   # DOWNLOAD LINELIST #
   output$download_ctemplate = downloadHandler(
     filename = function(){
-      paste0("contact_template", ".csv")
+      "contact_template.csv"
     },
     content = function(file){
       write.csv(data.frame("from" = "EG1", 
                            "to" = "EG2", 
-                           "type" = "TRUE"), file, row.names = FALSE )
+                           "contact_of_type1" = "TRUE",
+                           "contact_of_type2" = ""), file, row.names = FALSE )
     }
   )
   
   # DOWNLOAD CONTACT #
   output$download_ltemplate = downloadHandler(
     filename = function(){
-      paste0("linelist_template", ".csv")
+      "linelist_template.csv"
     },
     content = function(file){
-      write.csv(data.frame("id" = "EG1", 
-                           "report_onset" = Sys.Date(),
-                           "death" = Sys.Date(),
-                           "bleeding" = "eg. TRUE",
-                           "diarrhea" = "eg. FALSE"), file, row.names = FALSE )
+      write.csv(data.frame("id" = c("EG1", "EG2"), 
+                           "reported_onset_date" = format(c(Sys.Date()-2, Sys.Date()), format = "%d/%m/%Y"),
+                           "death_date" = format(c(Sys.Date(), NA), format = "%d/%m/%Y"),
+                           "bleeding_at_reported_onset" = c("TRUE", "FALSE"),
+                           "diarrhea_at_reported_onset" = c("FALSE", "FALSE")), file, row.names = FALSE )
     }
   )
   
@@ -102,19 +110,27 @@ function(input, output) {
       
       df_out = fun_import_adjust(input)
       
+      df_out = df_out %>% arrange(exposure_date_min)
+      
       g = ggplot(df_out) 
-      g = g + geom_rect(aes(xmin = exposure_min,
-                            xmax = exposure_max,
+      g = g + geom_rect(aes(xmin = exposure_date_min,
+                            xmax = exposure_date_max,
                             ymin = id, 
                             ymax = id,
-                            color = "Exposure period")) +
-        geom_point( aes( x = death,
+                            color = "Exposure")) +
+        geom_point( aes( x = death_date,
                          y = id,
                          color = "Death")) +
-        geom_point(aes(x = onset,
+        geom_point( aes( x = exposure_date_min,
+                         y = id,
+                         color = "Exposure"), size = 0.1) +
+        geom_point( aes( x = exposure_date_max,
+                         y = id,
+                         color = "Exposure"), size = 0.1) +
+        geom_point(aes(x = onset_date,
                        y = id,
                        color = "Estimated onset")) +
-        geom_point(aes(x = report_onset,
+        geom_point(aes(x = reported_onset_date,
                        y = id,
                        color = "Reported onset"),
                    shape = 4, stroke = 2) +
@@ -170,8 +186,8 @@ function(input, output) {
       } else {
         linelist = read.csv(file_uploadl$datapath, stringsAsFactors = FALSE, na.strings = "")
         
-        linelist = linelist %>% mutate(report_onset = as.Date(report_onset, format = "%d/%m/%Y"),
-                                       death = as.Date(death, format = "%d/%m/%Y"))
+        linelist = linelist %>% mutate(reported_onset_date = as.Date(reported_onset_date, format = "%d/%m/%Y"),
+                                       death_date = as.Date(death_date, format = "%d/%m/%Y"))
       }
       
     }

@@ -21,13 +21,13 @@ navbarPage("Calculating Ebola exposure dates",
                       
                       #standard inputs
                       numericInput("min_incubation",
-                                   "Duration of incubation period min:",
+                                   "Minimum incubation period (days):",
                                    value = 4),
                       numericInput("max_incubation",
-                                   "Duration of incubation period max:",
+                                   "Maximum incubation period (days):",
                                    value = 21),
-                      numericInput("symptomatic",
-                                   "Duration of period from onset to death:",
+                      numericInput("days_onset_to_death",
+                                   "Mean period from onset to death (days):",
                                    value = 9),
                       
                       textInput("id",
@@ -40,37 +40,38 @@ navbarPage("Calculating Ebola exposure dates",
                                     value = TRUE), 
                       conditionalPanel(
                         condition = "input.death_avail == true",
-                        dateInput("death",
+                        dateInput("death_date",
                                   "Date of death:",
                                   value = Sys.Date())
                       ), 
                       conditionalPanel(
                         condition = "input.death_avail == false",
-                        dateInput("report_onset",
-                                  "Reported onset date:",
+                        dateInput("reported_onset_date",
+                                  "Reported date of symptom onset:",
                                   value = Sys.Date()-7),
-                        checkboxInput("bleeding", 
-                                      "Check box if the individual was bleeding*.", 
+                        checkboxInput("bleeding_at_reported_onset", 
+                                      "Check box if the individual was bleeding when onset was reported*.", 
                                       value = TRUE),
                         conditionalPanel(
-                          condition = "input.bleeding == true",
-                          numericInput("bleeding_correction",
-                                       "Estimate of time from onset to bleeding:",
+                          condition = "input.bleeding_at_reported_onset == true",
+                          numericInput("days_onset_to_bleeding",
+                                       "Mean time from symptom onset to bleeding (days):",
                                        value = 6)
                         ),
                         conditionalPanel(
-                          condition = "input.bleeding == false",
-                          checkboxInput("diarrhea", 
-                                        "Check box if the individual had diarrhea."),
+                          condition = "input.bleeding_at_reported_onset == false",
+                          checkboxInput("diarrhea_at_onset", 
+                                        "Check box if the individual had diarrhea when onset was reported."),
                           conditionalPanel(
-                            condition = "input.diarrhea == true",
-                            numericInput("diarrhea_correction",
-                                         "Estimate of time from onset to diarrhea:",
+                            condition = "input.diarrhea_at_reported_onset == true",
+                            numericInput("days_onset_to_diarrhea",
+                                         "Mean time from symptom onset to diarrhea (days):",
                                          value = 4)
                           )
                         )
-                      )
+                      ),
                       
+                      span("Hover over the plot for more information on each point", style="color:blue")
                       
                     ),
                     mainPanel(plotlyOutput("exposure_plot"),
@@ -89,22 +90,29 @@ navbarPage("Calculating Ebola exposure dates",
                       
                       #standard inputs
                       numericInput("min_incubation_all",
-                                   "Duration of incubation period min:",
+                                   "Minimum incubation period (days):",
                                    value = 4),
                       numericInput("max_incubation_all",
-                                   "Duration of incubation period max:",
+                                   "Maximum incubation period (days):",
                                    value = 21),
-                      numericInput("symptomatic_all",
-                                   "Duration of period from onset to death:",
+                      numericInput("days_onset_to_death_all",
+                                   "Mean period from onset to death (days):",
                                    value = 9),
-                      numericInput("bleeding_correction_all",
-                                   "Estimate of time from onset to bleeding:",
+                      numericInput("days_onset_to_bleeding_all",
+                                   "Mean time from symptom onset to bleeding (days):",
                                    value = 6),
-                      numericInput("diarrhea_correction_all",
-                                   "Estimate of time from onset to diarrhea:",
+                      numericInput("days_onset_to_diarrhea_all",
+                                   "Mean time from symptom onset to diarrhea (days):",
                                    value = 4),
                       
-                      downloadButton("download_window", "Download")
+                      span("Hover over the plot for more information on each point", 
+                           style="color:blue"),
+                      
+                      HTML("<br><br><br>"),
+                      
+                      downloadButton("download_window", "Download results as csv")
+                      
+                      
 
                     ),
                     mainPanel(plotlyOutput("onset_plot"))
@@ -112,13 +120,16 @@ navbarPage("Calculating Ebola exposure dates",
            tabPanel("Transmission tree for uploaded linelist and contacts",
                     sidebarPanel(
                       checkboxInput("adjust_tree", 
-                                    "Show tree with estimated onset dates.", 
-                                    value = TRUE),
+                                    "Show tree with estimated onset dates."),
                       uiOutput("linelist_group"),
                       uiOutput("contact_group"),
-                      numericInput("min_incubation_tree",
-                                   "Serial interval minimum",
+                      numericInput("min_serial_tree",
+                                   "Serial interval minimum (days):",
                                    value = 4),
+                      span("Hover over the plot for more information on each point", 
+                           style="color:blue"),
+                      
+                      HTML("<br><br><br>"),
                       downloadButton("tree_download", "Download Tree as HTML")
                     ),
                     mainPanel(plotlyOutput("tree"))),
