@@ -77,7 +77,7 @@ fun_import_adjust = function(input){
 #### ----------------------------------------------------------------------------------- ####
 ### function to make tree if data is uploaded ###
 fun_make_tree = function(input){
-
+  
   if(input$adjust_tree){ #adjusted tree?
     
     linelist = fun_import_adjust(input)
@@ -112,4 +112,45 @@ fun_make_tree = function(input){
   return(p)
   
   
+}
+
+#### ----------------------------------------------------------------------------------- ####
+### function to plot exposure windows ###
+fun_plot_exposure_windows = function(df, height){
+  
+  g = ggplot(df, aes(text = paste0("ID: ",id))) 
+  g = g + geom_rect(aes(xmin = exposure_date_min,
+                        xmax = exposure_date_max,
+                        ymin = reorder(id, exposure_date_min), 
+                        ymax = reorder(id, exposure_date_min),
+                        color = "Exposure"),
+                    size = 1.1) +
+    geom_point( aes( x = death_date,
+                     y = reorder(id, exposure_date_min),
+                     color = "Death"),
+                size = 5) +
+    geom_point( aes( x = exposure_date_min,
+                     y = reorder(id, exposure_date_min),
+                     color = "Exposure"), size = 0.1) +
+    geom_point( aes( x = exposure_date_max,
+                     y = reorder(id, exposure_date_min),
+                     color = "Exposure"), size = 0.1) +
+    geom_point(aes(x = onset_date,
+                   y = reorder(id, exposure_date_min),
+                   color = "Estimated onset"),
+               size = 5) +
+    geom_point(aes(x = reported_onset_date,
+                   y = reorder(id, exposure_date_min),
+                   color = "Reported onset"),
+               size = 5, shape = 4, stroke = 2) +
+    ylab("Identifier") +
+    labs(colour = "Key")+
+    theme(panel.background = element_rect(fill = "white", colour = "grey50"),
+          text = element_text(size = 14),
+          axis.text.x = element_text(angle = 45, hjust = 1)) +
+    xlab("Date")
+  
+  p = plotly::ggplotly(g, height = height, tooltip = c("x", "text" )) 
+  
+  return(p)
 }

@@ -1,0 +1,8 @@
+To do
+
+say which parts are estimated
+highlight exposure windows
+graph representing steps of disease progression
+different symbol for estimated?
+windows organised by exposure min
+ask Rich about shiny server

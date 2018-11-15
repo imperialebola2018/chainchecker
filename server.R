@@ -19,40 +19,9 @@ function(input, output) {
     
     df = fun_get_onset(input)
     
-    #plot
-    g = ggplot(df) 
-    g = g + geom_rect(aes(xmin = exposure_date_min,
-                          xmax = exposure_date_max,
-                          ymin = id, 
-                          ymax = id,
-                          color = "Exposure"),
-                      size = 1.1) +
-      geom_point( aes( x = death_date,
-                       y = id,
-                       color = "Death"),
-                  size = 5) +
-      geom_point( aes( x = exposure_date_min,
-                       y = id,
-                       color = "Exposure"), size = 0.1) +
-      geom_point( aes( x = exposure_date_max,
-                       y = id,
-                       color = "Exposure"), size = 0.1) +
-      geom_point(aes(x = onset_date,
-                     y = id,
-                     color = "Estimated onset"),
-                 size = 5) +
-      geom_point(aes(x = reported_onset_date,
-                     y = id,
-                     color = "Reported onset"),
-                 size = 5, shape = 4, stroke = 2) +
-      ylab("Identifier") +
-      labs(colour = "Key")+
-      theme(panel.background = element_rect(fill = "white", colour = "grey50"),
-            text = element_text(size = 14),
-            axis.text.x = element_text(angle = 45, hjust = 1)) +
-      xlab("Date")
+    p = fun_plot_exposure_windows(df, height=400)
     
-    plotly::ggplotly(g, height = 400) 
+    p
   })
   
   output$estimated_onset = renderText({
@@ -115,38 +84,9 @@ function(input, output) {
     
     df_out = fun_import_adjust(input)
     
-    df_out = df_out %>% arrange(exposure_date_min)
+    p = fun_plot_exposure_windows(df_out, height=800)
     
-    g = ggplot(df_out) 
-    g = g + geom_rect(aes(xmin = exposure_date_min,
-                          xmax = exposure_date_max,
-                          ymin = id, 
-                          ymax = id,
-                          color = "Exposure")) +
-      geom_point( aes( x = death_date,
-                       y = id,
-                       color = "Death")) +
-      geom_point( aes( x = exposure_date_min,
-                       y = id,
-                       color = "Exposure"), size = 0.1) +
-      geom_point( aes( x = exposure_date_max,
-                       y = id,
-                       color = "Exposure"), size = 0.1) +
-      geom_point(aes(x = onset_date,
-                     y = id,
-                     color = "Estimated onset")) +
-      geom_point(aes(x = reported_onset_date,
-                     y = id,
-                     color = "Reported onset"),
-                 shape = 4, stroke = 2) +
-      ylab("Identifier") +
-      labs(colour = "Key")+
-      theme(panel.background = element_rect(fill = "white", colour = "grey50"),
-            text = element_text(size = 14),
-            axis.text.x = element_text(angle = 45, hjust = 1)) +
-      xlab("Date")
-    
-    plotly::ggplotly(g, height = 800) 
+    p
     
   })
   
