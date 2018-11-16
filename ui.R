@@ -71,7 +71,10 @@ navbarPage("Calculating Ebola exposure dates",
                         )
                       ),
                       
-                      span("Hover over the plot for more information on each point", style="color:blue")
+                      span("Hover over the plot for more information on each point", style="color:blue"),
+                      br(),br(),
+                      span("Dates of death that are inconsistenet with reported onset are denoted with a square.", 
+                           style="color:red")
                       
                     ),
                     mainPanel(plotlyOutput("exposure_plot"),
@@ -112,9 +115,11 @@ navbarPage("Calculating Ebola exposure dates",
                       
                       HTML("<br><br><br>"),
                       
-                      downloadButton("download_window", "Download results as csv")
+                      downloadButton("download_window", "Download results as csv"),
                       
-                      
+                      br(),br(),
+                      span("Dates of death that are inconsistenet with reported onset are denoted with a square.", 
+                           style="color:red")
 
                     ),
                     mainPanel(plotlyOutput("onset_plot"))

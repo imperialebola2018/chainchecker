@@ -119,6 +119,8 @@ fun_make_tree = function(input){
 fun_plot_exposure_windows = function(df, height){
   
   g = ggplot(df, aes(text = paste0("ID: ",id))) 
+  
+  
   g = g + geom_rect(aes(xmin = exposure_date_min,
                         xmax = exposure_date_max,
                         ymin = reorder(id, exposure_date_min), 
@@ -128,6 +130,9 @@ fun_plot_exposure_windows = function(df, height){
     geom_point( aes( x = death_date,
                      y = reorder(id, exposure_date_min),
                      color = "Death"),
+                shape = ifelse(df$dates_in_correct_order != TRUE,
+                               "square",
+                               "circle"),
                 size = 5) +
     geom_point( aes( x = exposure_date_min,
                      y = reorder(id, exposure_date_min),
@@ -144,7 +149,7 @@ fun_plot_exposure_windows = function(df, height){
                    color = "Reported onset"),
                size = 5, shape = 4, stroke = 2) +
     ylab("Identifier") +
-    labs(colour = "Key")+
+    labs(colour = "Key", shape = NULL)+
     theme(panel.background = element_rect(fill = "white", colour = "grey50"),
           text = element_text(size = 14),
           axis.text.x = element_text(angle = 45, hjust = 1)) +

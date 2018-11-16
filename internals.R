@@ -1,6 +1,5 @@
 ### checking functions ###
 
-library(lubridate)
 #### ----------------------------------------------------------------------------------- ####
 assert_date = function(vec){
   
@@ -10,7 +9,7 @@ assert_date = function(vec){
     stop("The dates are not in the correct format. The correct format is dd/mm/yy")
     
   } else {
-    vec_out = dmy(vec)
+    vec_out = as.Date(vec, format = "%d/%m/%Y")
   }
   
   return(vec_out)
@@ -78,4 +77,16 @@ check_contacts_upload = function(file_upload){
   }
   
   return(contacts)
+}
+
+
+#### ----------------------------------------------------------------------------------- ####
+### check the dates are in the right order ###
+check_date_order = function(linelist){
+  #check whether onset reported before death
+  linelist = linelist %>% 
+    add_column(dates_in_correct_order = linelist$reported_onset_date < 
+                                        linelist$death_date)
+  
+  return(linelist)
 }

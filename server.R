@@ -19,6 +19,8 @@ function(input, output) {
     
     df = fun_get_onset(input)
     
+    df = check_date_order(df)
+    
     p = fun_plot_exposure_windows(df, height=400)
     
     p
@@ -84,6 +86,8 @@ function(input, output) {
     
     df_out = fun_import_adjust(input)
     
+    df_out = check_date_order(df_out)
+    
     p = fun_plot_exposure_windows(df_out, height=800)
     
     p
@@ -98,6 +102,8 @@ function(input, output) {
     content = function(file){
       
       df_out = fun_import_adjust(input)
+      
+      df_out = check_date_order(df_out)
       
       write.csv(df_out, file, row.names = FALSE)
       
