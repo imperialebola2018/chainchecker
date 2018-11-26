@@ -78,13 +78,9 @@ fun_import_adjust = function(input){
 ### function to make tree if data is uploaded ###
 fun_make_tree = function(input){
   
-  if(input$adjust_tree){ #adjusted tree?
-    
-    linelist = fun_import_adjust(input)
-    
-  } else {
-    linelist = check_line_upload(input$file_line)
-    
+  linelist = fun_import_adjust(input)
+  
+  if(!input$adjust_tree){ #adjusted tree?
     linelist = linelist %>% mutate(onset_date = reported_onset_date)
   }
   
@@ -93,10 +89,17 @@ fun_make_tree = function(input){
   #covering extras
   if(is.null(linelist$name)){ linelist = linelist %>% mutate(name = id)}
   if(is.null(linelist$code)){ linelist = linelist %>% mutate(code = id)}
+  
+
+  
+  #check links are feasible
+  contacts = check_exposure_timeline(linelist, contacts)
+  
   contacts[is.na(contacts)] = FALSE
   
   #adjust for epicontacts
-  names(linelist)[names(linelist) == 'onset_date'] <- 'onset'
+  names(linelist)[names(linelist) == 'onset_date'] = 'onset'
+  
   
   #make epicontacts
   x = epicontacts::make_epicontacts(linelist, contacts)

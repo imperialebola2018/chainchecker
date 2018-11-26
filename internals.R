@@ -22,7 +22,7 @@ assert_TF = function(vec){
 
   if(sum(!vec %in% c(TRUE, FALSE, NA))>0){
     
-    stop("A column that should be TRUE/ FALSE contains other values.")
+    stop("A column that should be TRUE or FALSE contains other values.")
   }
   
   return(vec)
@@ -91,4 +91,45 @@ check_date_order = function(linelist){
                                         linelist$death_date)
   
   return(linelist)
+}
+
+#### ----------------------------------------------------------------------------------- ####
+### check contact links are in exposure windows ###
+check_exposure_timeline = function(linelist, contacts){
+  
+  #add extra column to contacts to check if the link is feasible wrt exposure windows
+  contacts = contacts %>% add_column(INCONSISTENT = NA, .after = "to")
+  
+  #check each contact
+  for(i in 1:nrow(contacts)){
+    
+    if(sum(linelist$id %in% contacts$from[i])>0
+       & sum(linelist$id %in% contacts$to[i])>0){
+      
+      linelist_index_from = which(linelist$id %in% contacts$from[i])
+      linelist_index_to = which(linelist$id %in% contacts$to[i])
+      
+      if(!is.na(linelist$onset_date[linelist_index_from]) & 
+         !is.na(linelist$exposure_date_max[linelist_index_to])){
+        
+        if(as.numeric(linelist$onset_date[linelist_index_from] - 
+           linelist$exposure_date_max[linelist_index_to]) > 0 ){
+          contacts$INCONSISTENT[i] = TRUE
+        } 
+      }
+      
+      if(!is.na(linelist$death_date[linelist_index_from]) &
+         !is.na(linelist$exposure_date_min[linelist_index_to])){
+
+        if(as.numeric(linelist$death_date[linelist_index_from] -
+           linelist$exposure_date_min[linelist_index_to]) < 0){
+          contacts$INCONSISTENT[i] = TRUE
+        }
+
+      }
+      
+    }
+  }
+
+  return(contacts)
 }

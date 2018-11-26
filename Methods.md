@@ -56,16 +56,15 @@ In this page we visualise two transmission trees. The first is from the
 data as entered; the second is from the data as adjusted through the
 calculator. When visualising the tree, it is possible to colour the
 different nodes by chracteristics from the linelist. Additionally, it is
-possible to colour the vertical lines by characteristics from the
-contact list.
+possible to colour the links by characteristics from the contact list.
 
-The horiontal lines are highlighted <span style="color:red">red</span>
-if the onset times of the two linked individuals are in the wrong order.
-
-The horiontal lines are highlighted <span
-style="color:orange">orange</span> if the onset times of the two linked
-individuals are too close together, as determined by the minimum serial
-interval.
+As default, the link colour is defined by whether it is `INCONSISTENT`.
+If highlighted, this means that either the onset date of the infector is
+after the maximum exposure date of the infectee OR the death date of the
+infector is before the minimum exposure date of the infectee. The
+exposure dates in this case are calculated in the same way as shown in
+the `Exposure windows` tab. The contact list with the `INCONSISTENT`
+status of each link can be downloaded as a .csv file.
 
 Calculator logic
 ================

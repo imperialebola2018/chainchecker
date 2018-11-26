@@ -3,7 +3,7 @@ library(plotly)
 library(shinythemes)
 
 
-navbarPage("Calculating Ebola exposure dates", 
+navbarPage("ChainCheckeR", 
            selected = "Timeline",
            
            
@@ -136,7 +136,11 @@ navbarPage("Calculating Ebola exposure dates",
                            style="color:blue"),
                       
                       HTML("<br><br><br>"),
-                      downloadButton("tree_download", "Download Tree as HTML")
+                      downloadButton("tree_download", "Download Tree as HTML"),
+                      
+                      HTML("<br><br><br>"),
+                      downloadButton("contact_download", 
+                                     "Download contact inconsistencies as .csv")
                     ),
                     mainPanel(plotlyOutput("tree"))),
            tabPanel("Method and definitions",

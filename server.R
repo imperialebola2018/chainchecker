@@ -123,22 +123,37 @@ function(input, output) {
   # DROP DOWN MENU LINELIST #
   output$linelist_group = renderUI({
     
-    #adjust or not?
-    if(input$adjust_tree){
-      linelist = fun_import_adjust(input)
-    } else {
-      linelist = check_line_upload(input$file_line)
+    linelist = fun_import_adjust(input)
+
+    if(!input$adjust_tree){ #adjusted tree?
+      linelist = linelist %>% mutate(onset_date = reported_onset_date)
     }
     
-    selectInput("group", "Enter a characteristic to show on the plot: ", names(linelist))
+    #adjust for epicontacts
+    names(linelist)[names(linelist) == 'onset_date'] = 'onset'
+    
+    selectInput("group", 
+                "Enter a characteristic to show on the plot: ", 
+                names(linelist))
   })
   
   # DROP DOWN MENU CONTACT #
   output$contact_group = renderUI({
     
+    linelist = fun_import_adjust(input)
+    
+    if(!input$adjust_tree){ #adjusted tree?
+      linelist = linelist %>% mutate(onset_date = reported_onset_date)
+    }
+    
     contacts = check_contacts_upload(input$file_contact)
     
-    selectInput("groupcontact", "Enter a transmission type to show on the plot: ", c(names(contacts),NA), selected = NA )
+    #check links are feasible
+    contacts = check_exposure_timeline(linelist, contacts)
+    
+    selectInput("groupcontact", 
+                "Enter a transmission type to show on the plot: ", 
+                names(contacts), selected = "INCONSISTENT" )
   })
   
   # DOWNLOAD #
@@ -155,6 +170,32 @@ function(input, output) {
     }
   )
   
+  
+  output$contact_download = downloadHandler(
+    filename = function(){
+      paste0("contacts_", Sys.Date(), ".csv")
+    },
+    content = function(file){
+      linelist = fun_import_adjust(input)
+      
+      if(!input$adjust_tree){ #adjusted tree?
+        linelist = linelist %>% mutate(onset_date = reported_onset_date)
+      }
+      
+      contacts = check_contacts_upload(input$file_contact)
+      
+      #covering extras
+      if(is.null(linelist$name)){ linelist = linelist %>% mutate(name = id)}
+      if(is.null(linelist$code)){ linelist = linelist %>% mutate(code = id)}
+      
+      contacts[is.na(contacts)] = FALSE
+      
+      #check links are feasible
+      contacts = check_exposure_timeline(linelist, contacts)
+      
+      write.csv(contacts, file, row.names = FALSE)
+    }
+  )
   
 }
 
