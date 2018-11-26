@@ -105,8 +105,7 @@ fun_make_tree = function(input){
   p = vis_epicontacts_ggplot(x,
                              group = input$group, 
                              contactsgroup = input$groupcontact,
-                             anon = FALSE,
-                             serial = input$min_serial_tree) %>% 
+                             anon = FALSE) %>% 
     layout(height = 800)
   
   return(p)

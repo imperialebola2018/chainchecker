@@ -73,7 +73,8 @@ navbarPage("Calculating Ebola exposure dates",
                       
                       span("Hover over the plot for more information on each point", style="color:blue"),
                       br(),br(),
-                      span("Dates of death that are inconsistenet with reported onset are denoted with a square.", 
+                      span("Dates of death that are inconsistent with reported onset date
+                           are denoted with a square.", 
                            style="color:red")
                       
                     ),
@@ -118,7 +119,8 @@ navbarPage("Calculating Ebola exposure dates",
                       downloadButton("download_window", "Download results as csv"),
                       
                       br(),br(),
-                      span("Dates of death that are inconsistenet with reported onset are denoted with a square.", 
+                      span("Dates of death that are inconsistent with reported onset date
+                           are denoted with a square.", 
                            style="color:red")
 
                     ),
@@ -130,9 +132,6 @@ navbarPage("Calculating Ebola exposure dates",
                                     "Show tree with estimated onset dates."),
                       uiOutput("linelist_group"),
                       uiOutput("contact_group"),
-                      numericInput("min_serial_tree",
-                                   "Serial interval minimum (days):",
-                                   value = 4),
                       span("Hover over the plot for more information on each point", 
                            style="color:blue"),
                       

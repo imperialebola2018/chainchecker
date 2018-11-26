@@ -14,7 +14,6 @@ vis_epicontacts_ggplot = function(x,
                                   group = "onset",
                                   contactsgroup = NA,
                                   anon = TRUE,
-                                  serial = 4,
                                   with_epicurve = FALSE){
   if(anon){
     tooltip = c("onset",  group)
@@ -38,35 +37,41 @@ vis_epicontacts_ggplot = function(x,
                       size = 3, 
                       alpha = 0.5)
   
-  #add contact lines
-  g = g + geom_segment(data = rank_contacts,
-                       aes( x= to_onset,
-                            xend = from_onset,
-                            y = to,
-                            yend = to),
-                       colour = ifelse(rank_contacts$from_onset-rank_contacts$to_onset>0, 
-                                       "red", 
-                                       ifelse(rank_contacts$from_onset-rank_contacts$to_onset>-serial,
-                                              "darkorange3",
-                                              "black")))
-  
-  if(contactsgroup %in% names(rank_contacts)){
+
+  if(contactsgroup %in% names(rank_contacts)){ #highlight particular links
     g = g + geom_segment(data = rank_contacts,
                          aes( x= from_onset,
                               xend = from_onset,
                               y = to,
                               yend = from),
-                         colour = ifelse(rank_contacts[,contactsgroup], "blue", "black"),
+                         colour = ifelse(rank_contacts[,contactsgroup], "orange", "black"),
                          size = ifelse(rank_contacts[,contactsgroup], 2, 0.5),
-                         alpha = ifelse(rank_contacts[,contactsgroup], 0.5, 1))
-  } else {
+                         alpha = ifelse(rank_contacts[,contactsgroup], 0.8, 1))
+    
     g = g + geom_segment(data = rank_contacts,
-                         aes( x= from_onset,
+                         aes( x= to_onset,
                               xend = from_onset,
                               y = to,
-                              yend = from))
-    
+                              yend = to),
+                         colour = ifelse(rank_contacts[,contactsgroup], "orange", "black"),
+                         size = ifelse(rank_contacts[,contactsgroup], 2, 0.5),
+                         alpha = ifelse(rank_contacts[,contactsgroup], 0.8, 1))
   }
+  #add contact lines
+  g = g + geom_segment(data = rank_contacts,
+                       aes( x= to_onset,
+                            xend = from_onset,
+                            y = to,
+                            yend = to))
+  
+  
+  g = g + geom_segment(data = rank_contacts,
+                       aes( x= from_onset,
+                            xend = from_onset,
+                            y = to,
+                            yend = from))
+  
+  
   
   #add points
   g = g + geom_point(data = linelist,
@@ -194,7 +199,7 @@ fun_get_trees = function(df){
   
   #find index cases for each tree
   ic = unique( df$from[ !df$from %in% df$to ])
-                         
+  
   for(t in 1:length(ic)){
     
     tree_from = ic[t]
@@ -231,14 +236,14 @@ fun_link_linelist_cluster = function(x, df){
   
   #link to clusters in df
   x$linelist = x$linelist %>% 
-               add_column(cluster = df$cluster[match( x$linelist$id, df$to)])
-
+    add_column(cluster = df$cluster[match( x$linelist$id, df$to)])
+  
   
   #unconnected cases will be NA
   x$linelist = x$linelist %>% 
-               mutate(cluster = replace(cluster, 
-                                        is.na(cluster) & !id %in% x$contacts$from,  
-                                        max(cluster, na.rm=TRUE) + 1))
+    mutate(cluster = replace(cluster, 
+                             is.na(cluster) & !id %in% x$contacts$from,  
+                             max(cluster, na.rm=TRUE) + 1))
   
   #cases that are only index cases will also be NA- these need to be linked to their cluster
   x$linelist = x$linelist %>% 
@@ -250,7 +255,7 @@ fun_link_linelist_cluster = function(x, df){
   
   #Link to trees in df
   x$linelist = x$linelist %>% 
-               add_column(tree = df$tree[match( x$linelist$id, df$to)])
+    add_column(tree = df$tree[match( x$linelist$id, df$to)])
   
   #index cases
   missing_ind = which(is.na(x$linelist$tree) & x$linelist$id %in% x$contacts$from)
@@ -260,13 +265,13 @@ fun_link_linelist_cluster = function(x, df){
   
   #cases outside trees will be NA
   x$linelist = x$linelist %>% 
-               mutate(tree = replace(tree,
-                                     is.na(tree), 
-                                     c( (max(tree, na.rm=TRUE) + 1) : 
-                                        (max(tree, na.rm=TRUE) + length(tree)) ))
-                      ) %>%
-               arrange(cluster, 
-                       tree)
+    mutate(tree = replace(tree,
+                          is.na(tree), 
+                          c( (max(tree, na.rm=TRUE) + 1) : 
+                               (max(tree, na.rm=TRUE) + length(tree)) ))
+    ) %>%
+    arrange(cluster, 
+            tree)
   
   return(x)
 }
