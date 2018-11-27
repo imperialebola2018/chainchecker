@@ -10,7 +10,8 @@ Linelist
 --------
 
 The linelist details the information on each individual. This is matched
-to the contacts sheet by **id**. **Save as a .csv**
+to the contacts sheet by **id**. **When you have filled in the new data,
+save as a .csv ready to upload.**
 
 ### Mandatory fields
 
@@ -53,7 +54,8 @@ Contacts
 This details the links between people. One line corresponds to one
 connection. **from** and **to** should only take **id** that are present
 in the linelist and the **id** should be in exactly the same format.
-**Save as a .csv**.
+**When you have filled in the new data, save as a .csv ready to
+upload.**.
 
 ### Mandatory fields
 
