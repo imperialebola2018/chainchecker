@@ -5,9 +5,9 @@ library(ggplot2)
 library(epicontacts)
 library(tibble)
 library(dplyr)
-source('vis_epicontacts_ggplot.R')
-source('calculator_functions.R')
-source('internals.R')
+source('Functions/vis_epicontacts_ggplot.R')
+source('Functions/calculator_functions.R')
+source('Functions/internals.R')
 
 ### SERVER ###
 function(input, output) {
