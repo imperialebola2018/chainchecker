@@ -77,18 +77,48 @@ occurred at a funeral. All additional columns must have entries
 **TRUE**, **FALSE** or be left empty; empty cells are interpreted as
 **FALSE**. A more specific example is as follows.
 
-    ## 
-    ## ----------------------------------------------
-    ##  from   to    in_funeral   in_health_facility 
-    ## ------ ----- ------------ --------------------
-    ##  EG1    EG2      TRUE            FALSE        
-    ## 
-    ##  EG1    EG4     FALSE            FALSE        
-    ## 
-    ##  EG2    EG5     FALSE             TRUE        
-    ## 
-    ##  EG3    EG6     FALSE            FALSE        
-    ## ----------------------------------------------
+<table style="width:64%;">
+<colgroup>
+<col width="9%" />
+<col width="8%" />
+<col width="18%" />
+<col width="27%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">from</th>
+<th align="center">to</th>
+<th align="center">in_funeral</th>
+<th align="center">in_health_facility</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">EG1</td>
+<td align="center">EG2</td>
+<td align="center">TRUE</td>
+<td align="center">FALSE</td>
+</tr>
+<tr class="even">
+<td align="center">EG1</td>
+<td align="center">EG4</td>
+<td align="center">FALSE</td>
+<td align="center">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="center">EG2</td>
+<td align="center">EG5</td>
+<td align="center">FALSE</td>
+<td align="center">TRUE</td>
+</tr>
+<tr class="even">
+<td align="center">EG3</td>
+<td align="center">EG6</td>
+<td align="center">FALSE</td>
+<td align="center">FALSE</td>
+</tr>
+</tbody>
+</table>
 
 In the above, transmission from **EG1** to **EG2** occurred at a funeral
 and transmission from **EG2** to **EG5** occurred in a health facility.

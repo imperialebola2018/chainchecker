@@ -5,6 +5,6 @@ account: kamg
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 591846
-bundleId: 1723049
+bundleId: 1723799
 url: https://kamg.shinyapps.io/ChainCheckeR/
-when: 1543321345.40448
+when: 1543339735.04538

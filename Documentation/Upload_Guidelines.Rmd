@@ -68,7 +68,7 @@ The individual who is infected by the source. This should take the unique **id**
 
 Any number of extra columns may be added to describe the **type** of link, for example **in_funeral** would indicate the transmission occurred at a funeral. All additional columns must have entries **TRUE**, **FALSE** or be left empty; empty cells are interpreted as **FALSE**. A more specific example is as follows.
 
-```{r  contact_eg, echo = FALSE}
+```{r  contact_eg, echo = FALSE, results='asis'}
 library(pander)
 df = data.frame("from" = c("EG1","EG1", "EG2", "EG3"), 
                            "to" = c("EG2", "EG4", "EG5", "EG6") ,
@@ -78,4 +78,5 @@ df = data.frame("from" = c("EG1","EG1", "EG2", "EG3"),
                                                   "FALSE") )
 pandoc.table(df)
 ```
+
 In the above, transmission from **EG1** to **EG2** occurred at a funeral and transmission from **EG2** to **EG5** occurred in a health facility.
