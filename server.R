@@ -1,6 +1,6 @@
 #
 # dependencies
-library(shiny)
+library(plotly)
 library(ggplot2)
 library(epicontacts)
 library(tibble)
@@ -69,13 +69,13 @@ function(input, output) {
                            "reported_onset_date" = format(c(Sys.Date()-7, Sys.Date()-4, Sys.Date()-3, 
                                                             Sys.Date()-2, Sys.Date()-1, Sys.Date()), 
                                                           format = "%d/%m/%Y"),
-                           "death_date" = format(c(Sys.Date(), NA, Sys.Date()-2, 
-                                                   Sys.Date()-1, Sys.Date(), NA), 
+                           "death_date" = format(c(as.Date(NA), as.Date(NA), Sys.Date()-2, 
+                                                   Sys.Date()-1, Sys.Date(), as.Date(NA)), 
                                                  format = "%d/%m/%Y"),
                            "bleeding_at_reported_onset" = c("TRUE", "FALSE", "FALSE", 
                                                             "FALSE", "TRUE", "FALSE"),
                            "diarrhea_at_reported_onset" = c("FALSE", "FALSE", "TRUE", 
-                                                            "FALSE","TRUE", "FALSE")), file, row.names = FALSE )
+                                                            "FALSE","TRUE", "TRUE")), file, row.names = FALSE )
     }
   )
   

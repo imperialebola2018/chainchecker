@@ -6,7 +6,7 @@ assert_date = function(vec){
   #check formatting
   if(all(is.na(as.Date(vec, format = "%d/%m/%Y")))){
     
-    stop("The dates are not in the correct format. The correct format is dd/mm/yy")
+    stop(safeError("The dates are not in the correct format. The correct format is dd/mm/yy"))
     
   } else {
     
@@ -22,7 +22,7 @@ assert_TF = function(vec){
   
   if(sum(!vec %in% c(TRUE, FALSE, NA))>0){
     
-    stop("A column that should be TRUE or FALSE (or NA) contains other values.")
+    stop(safeError("A column that should be TRUE or FALSE (or NA) contains other values."))
   }
   
   return(vec)
@@ -32,13 +32,13 @@ assert_TF = function(vec){
 check_line_upload = function(file_upload){
   
   if(is.null(file_upload)){
-    stop("No linelist file uploaded yet.")
+    stop(safeError("No linelist file uploaded yet."))
   }
   
   
   #check right file type
   if(sum(grep(".csv", file_upload$datapath))==0){
-    stop("Wrong file type uploaded for linelist, file should be a .csv .")
+    stop(safeError("Wrong file type uploaded for linelist, file should be a .csv ."))
   }
   
   #import
@@ -46,7 +46,7 @@ check_line_upload = function(file_upload){
   
   #id
   if(length(unique(df$id))<nrow(df)){
-    stop("There are duplicate id's in the linelist.")
+    stop(safeError("There are duplicate id's in the linelist."))
   }
   
   #dates
@@ -62,12 +62,12 @@ check_line_upload = function(file_upload){
 check_contacts_upload = function(file_upload){
   
   if(is.null(file_upload)){
-    stop("No contacts file uploaded yet.")
+    stop(safeError("No contacts file uploaded yet."))
   }
   
   #check right file type
   if(sum(grep(".csv", file_upload$datapath))==0){
-    stop("Wrong file type uploaded for contacts, file should be a .csv .")
+    stop(safeError("Wrong file type uploaded for contacts, file should be a .csv ."))
   }
   
   contacts = read.csv(file_upload$datapath, stringsAsFactors = FALSE, na.strings = "")
@@ -116,7 +116,7 @@ check_exposure_timeline = function(linelist, contacts){
          !is.na(linelist$exposure_date_max[linelist_index_to])){
         
         if(as.numeric(linelist$onset_date[linelist_index_from] - 
-                      linelist$exposure_date_max[linelist_index_to]) > 0 ){
+                      linelist$exposure_date_max[linelist_index_to]) >= 0 ){
           
           contacts$INCONSISTENT[i] = TRUE
           
@@ -128,7 +128,7 @@ check_exposure_timeline = function(linelist, contacts){
          !is.na(linelist$exposure_date_min[linelist_index_to])){
         
         if(as.numeric(linelist$death_date[linelist_index_from] -
-                      linelist$exposure_date_min[linelist_index_to]) < 0){
+                      linelist$exposure_date_min[linelist_index_to]) <= 0){
           
           contacts$INCONSISTENT[i] = TRUE
           

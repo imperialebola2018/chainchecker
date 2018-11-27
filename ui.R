@@ -1,6 +1,6 @@
 library(shiny)
-library(plotly)
 library(shinythemes)
+library(plotly)
 
 
 navbarPage("ChainCheckeR", 
@@ -32,7 +32,7 @@ navbarPage("ChainCheckeR",
                       
                       textInput("id",
                                 "Identifier:",
-                                value = "ID1"),
+                                value = "EG1"),
                       
                       #conditions
                       checkboxInput("death_avail", 
@@ -71,11 +71,7 @@ navbarPage("ChainCheckeR",
                         )
                       ),
                       
-                      span("Hover over the plot for more information on each point", style="color:blue"),
-                      br(),br(),
-                      span("Dates of death that are inconsistent with reported onset date
-                           are denoted with a square.", 
-                           style="color:red")
+                      span("Hover over the plot for more information on each point.", style="color:blue")
                       
                     ),
                     mainPanel(plotlyOutput("exposure_plot"),
@@ -111,12 +107,12 @@ navbarPage("ChainCheckeR",
                                    "Mean time from symptom onset to diarrhea (days):",
                                    value = 4),
                       
-                      span("Hover over the plot for more information on each point", 
+                      span("Hover over the plot for more information on each point.", 
                            style="color:blue"),
                       
-                      HTML("<br><br><br>"),
+                      br(),br(),
                       
-                      downloadButton("download_window", "Download results as csv"),
+                      downloadButton("download_window", "Download results as .csv"),
                       
                       br(),br(),
                       span("Dates of death that are inconsistent with reported onset date
@@ -132,13 +128,12 @@ navbarPage("ChainCheckeR",
                                     "Show tree with estimated onset dates."),
                       uiOutput("linelist_group"),
                       uiOutput("contact_group"),
-                      span("Hover over the plot for more information on each point", 
+                      span("Hover over the plot for more information on each point.", 
                            style="color:blue"),
                       
-                      HTML("<br><br><br>"),
+                      br(),br(),
                       downloadButton("tree_download", "Download Tree as HTML"),
                       
-                      HTML("<br><br><br>"),
                       downloadButton("contact_download", 
                                      "Download contact inconsistencies as .csv")
                     ),
