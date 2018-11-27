@@ -19,10 +19,10 @@ assert_date = function(vec){
 
 #### ----------------------------------------------------------------------------------- ####
 assert_TF = function(vec){
-
+  
   if(sum(!vec %in% c(TRUE, FALSE, NA))>0){
     
-    stop("A column that should be TRUE or FALSE contains other values.")
+    stop("A column that should be TRUE or FALSE (or NA) contains other values.")
   }
   
   return(vec)
@@ -88,7 +88,7 @@ check_date_order = function(linelist){
   #check whether onset reported before death
   linelist = linelist %>% 
     add_column(dates_in_correct_order = linelist$reported_onset_date < 
-                                        linelist$death_date)
+                 linelist$death_date)
   
   return(linelist)
 }
@@ -103,33 +103,39 @@ check_exposure_timeline = function(linelist, contacts){
   #check each contact
   for(i in 1:nrow(contacts)){
     
+    #if the linelist id is in the contacts (ie. that the contacts are specified correctly)
     if(sum(linelist$id %in% contacts$from[i])>0
        & sum(linelist$id %in% contacts$to[i])>0){
       
+      #get the indices of each in the linelist
       linelist_index_from = which(linelist$id %in% contacts$from[i])
       linelist_index_to = which(linelist$id %in% contacts$to[i])
       
+      #check if the exposure occurred before onset
       if(!is.na(linelist$onset_date[linelist_index_from]) & 
          !is.na(linelist$exposure_date_max[linelist_index_to])){
         
         if(as.numeric(linelist$onset_date[linelist_index_from] - 
-           linelist$exposure_date_max[linelist_index_to]) > 0 ){
+                      linelist$exposure_date_max[linelist_index_to]) > 0 ){
+          
           contacts$INCONSISTENT[i] = TRUE
+          
         } 
       }
       
+      #check if the exposure happened after death
       if(!is.na(linelist$death_date[linelist_index_from]) &
          !is.na(linelist$exposure_date_min[linelist_index_to])){
-
+        
         if(as.numeric(linelist$death_date[linelist_index_from] -
-           linelist$exposure_date_min[linelist_index_to]) < 0){
+                      linelist$exposure_date_min[linelist_index_to]) < 0){
+          
           contacts$INCONSISTENT[i] = TRUE
+          
         }
-
       }
-      
-    }
+    } 
   }
-
+  
   return(contacts)
 }

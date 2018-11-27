@@ -88,7 +88,7 @@ navbarPage("ChainCheckeR",
                     downloadButton("download_ltemplate", "Download linelist template"),
                     fileInput("file_line", h3("Upload linelist")),
                     fileInput("file_contact", h3("Upload contacts"))),
-                    mainPanel(includeMarkdown("Upload_Guidelines.md"))
+                    mainPanel(includeMarkdown("Documentation/Upload_Guidelines.md"))
            ),
            tabPanel("Exposure windows for uploaded linelist",
                     
@@ -144,7 +144,7 @@ navbarPage("ChainCheckeR",
                     ),
                     mainPanel(plotlyOutput("tree"))),
            tabPanel("Method and definitions",
-                    includeMarkdown("Methods.md")
+                    includeMarkdown("Documentation/Methods.md")
            )
            
 )
