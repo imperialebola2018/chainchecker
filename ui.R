@@ -3,7 +3,7 @@ library(shinythemes)
 library(plotly)
 
 
-navbarPage("ChainCheckeR", 
+navbarPage("chainchecker", 
            selected = "Timeline",
            
            
