@@ -48,6 +48,8 @@ As default, the link colour is defined by whether it is **INCONSISTENT**. If hig
 
 The plot can be turned into a .png and downloaded (hover over the top right corner of the plot). Additionally, the tree may be downloaded as HTML which will retain the options to zoom and hover over for more information.
 
+The tree is visualised using the `epicontacts` package and the chainchecker function `vis_epicontacts_ggplot`.
+
 # Calculator logic
 
 The calculator uses the following steps to estimate onset and exposure dates.

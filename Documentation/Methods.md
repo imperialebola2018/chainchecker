@@ -72,6 +72,9 @@ right corner of the plot). Additionally, the tree may be downloaded as
 HTML which will retain the options to zoom and hover over for more
 information.
 
+The tree is visualised using the `epicontacts` package and the
+chainchecker function `vis_epicontacts_ggplot`.
+
 Calculator logic
 ================
 
