@@ -21,8 +21,7 @@ Authors:
 
 * Mary Choi developed the calculator logic.
 
-* Katy Gaythorpe developed the app.
-
+* Katy Gaythorpe developed the app. Feedback and requests for the app should be sent to k.gaythorpe AT imperial.ac.uk
 
 
 # How to use
