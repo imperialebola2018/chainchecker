@@ -26,7 +26,7 @@ example, the identifier could have the form "EG1".
 This is the reported date of symptom onset. It should always be entered
 in the form **dd/mm/yy**.
 
-#### date\_death
+#### death\_date
 
 This is the reported date of death. It should always be entered in the
 form **dd/mm/yy**.

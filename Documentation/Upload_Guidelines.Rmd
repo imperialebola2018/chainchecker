@@ -32,7 +32,7 @@ This is the **unique** identifier of each individual. It should match exactly wi
 
 This is the reported date of symptom onset. It should always be entered in the form **dd/mm/yy**.
 
-#### date_death
+#### death_date
 
 This is the reported date of death. It should always be entered in the form **dd/mm/yy**.
 
