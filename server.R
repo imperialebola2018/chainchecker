@@ -88,6 +88,10 @@ function(input, output) {
     
     df_out = check_date_order(df_out)
     
+    if(input$ID1_onset_window %in% df_out$id | input$ID2_onset_window %in% df_out$id ){
+      df_out = df_out %>% filter(id %in% c(input$ID1_onset_window, input$ID2_onset_window))
+    }
+    
     p = fun_plot_exposure_windows(df_out, height=800)
     
     p
