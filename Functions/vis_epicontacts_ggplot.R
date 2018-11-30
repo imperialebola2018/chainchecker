@@ -212,7 +212,7 @@ fun_get_trees = function(df){
   ic = unique( df$from[ !df$from %in% df$to ])
   
   
-  
+  #trace from every index case - does not work for multiple sources
   for(t in 1:length(ic)){
     
     tree_from = ic[t]
