@@ -150,6 +150,8 @@ fun_rank_contacts = function(x){
     add_column(to_onset = x$linelist$onset[match(rc$to, x$linelist$id)],
                from_onset = x$linelist$onset[match(rc$from , x$linelist$id)])
   
+  rc = rc %>% filter(!is.na(to_onset) & !is.na(from_onset))
+  
   return(list(rank_contacts = rc, linelist = x$linelist))
 }
 
@@ -221,6 +223,9 @@ fun_get_trees = function(df){
       # primary, secondary etc. infections
       
       df$tree[ df$from %in% tree_from] = t 
+      
+      #just in case there are multiple sources
+      df$tree[ df$to %in% tree_from] = t 
       
       tree_from = df$to[df$from %in% tree_from]
       
