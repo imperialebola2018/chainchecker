@@ -97,15 +97,15 @@ check_contacts_upload = function(file_upload){
 check_line_names = function(linelist){
   # must include `id`, `reported_onset_date` and `death_date`
   if(!"id" %in% names(linelist)){
-    stop("Column `id` is missing from linelist.")
+    stop(safeError("Column `id` is missing from linelist."))
   }
   
   if(!"reported_onset_date" %in% names(linelist)){
-    stop("Column `reported_onset_date` is missing from linelist.")
+    stop(safeError("Column `reported_onset_date` is missing from linelist."))
   }
   
   if(!"death_date" %in% names(linelist)){
-    stop("Column `death_date` is missing from linelist.")
+    stop(safeError("Column `death_date` is missing from linelist."))
   }
 }
 #### ----------------------------------------------------------------------------------- ####
@@ -113,11 +113,11 @@ check_line_names = function(linelist){
 check_contact_names = function(contacts){
   #make sure it contains `from` and `to`
   if(!"from" %in% names(contacts)){
-    stop("Column `from` is missing from contacts.")
+    stop(safeError("Column `from` is missing from contacts."))
   }
   
   if(!"to" %in% names(contacts)){
-    stop("Column `to` is missing from contacts.")
+    stop(safeError("Column `to` is missing from contacts."))
   }
 }
 #### ----------------------------------------------------------------------------------- ####
@@ -128,9 +128,9 @@ check_unique_contact_links = function(df){
   if(nrow(df_out)<nrow(df)){
     ind1 = which(!duplicated(t(apply(df[c("from", "to")], 1, sort))) == "FALSE")
     ind2 = which(!duplicated(t(apply(df[c("from", "to")], 1, sort)), fromLast = TRUE) == "FALSE")
-    stop(paste0("There were contact links defined twice (A->B and B->A). Please check rows ", ind1,
+    stop(safeError(paste0("There were contact links defined twice (A->B and B->A). Please check rows ", ind1,
                 " and ", ind2,
-                " in the contacts."))
+                " in the contacts.")))
   }
   return(df)
 }
