@@ -44,6 +44,9 @@ check_line_upload = function(file_upload){
   #import
   df = read.csv(file_upload$datapath, stringsAsFactors = FALSE, na.strings = "")
   
+  #check names
+  check_line_names(df)
+  
   #id
   if(length(unique(df$id))<nrow(df)){
     stop(safeError("There are duplicate id's in the linelist."))
@@ -72,15 +75,63 @@ check_contacts_upload = function(file_upload){
   
   contacts = read.csv(file_upload$datapath, stringsAsFactors = FALSE, na.strings = "")
   
+  #check names
+  check_contact_names(contacts)
+  
   #check for true/false
-  logic_ind = which(!names(contacts) %in% c("to", "from"))
-  for(i in 1:length(logic_ind)){
-    contacts[ ,logic_ind[i]] = assert_TF(contacts[ ,logic_ind[i]])
+  if(length(names(contacts))>2){
+    logic_ind = which(!names(contacts) %in% c("to", "from"))
+    for(i in 1:length(logic_ind)){
+      contacts[ ,logic_ind[i]] = assert_TF(contacts[ ,logic_ind[i]])
+    }
   }
+  
+  #check for unique contact links
+  contacts = check_unique_contact_links(contacts)
   
   return(contacts)
 }
 
+#### ----------------------------------------------------------------------------------- ####
+### check the names are correct ###
+check_line_names = function(linelist){
+  # must include `id`, `reported_onset_date` and `death_date`
+  if(!"id" %in% names(linelist)){
+    stop("Column `id` is missing from linelist.")
+  }
+  
+  if(!"reported_onset_date" %in% names(linelist)){
+    stop("Column `reported_onset_date` is missing from linelist.")
+  }
+  
+  if(!"death_date" %in% names(linelist)){
+    stop("Column `death_date` is missing from linelist.")
+  }
+}
+#### ----------------------------------------------------------------------------------- ####
+### check the names are correct ###
+check_contact_names = function(contacts){
+  #make sure it contains `from` and `to`
+  if(!"from" %in% names(contacts)){
+    stop("Column `from` is missing from contacts.")
+  }
+  
+  if(!"to" %in% names(contacts)){
+    stop("Column `to` is missing from contacts.")
+  }
+}
+#### ----------------------------------------------------------------------------------- ####
+### check contact links are unique and offer a warning ###
+check_unique_contact_links = function(df){
+  df_out = df[!duplicated(t(apply(df[c("from", "to")], 1, sort))),]
+  
+  if(nrow(df_out)<nrow(df)){
+    ind = which(!duplicated(t(apply(df[c("from", "to")], 1, sort))) == "FALSE")
+    stop(paste0("There were contact links defined twice (A->B and B->A). Please check row ", ind,
+                " in the contacts."))
+  }
+  return(df)
+}
 
 #### ----------------------------------------------------------------------------------- ####
 ### check the dates are in the right order ###
