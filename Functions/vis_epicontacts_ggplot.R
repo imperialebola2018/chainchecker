@@ -195,10 +195,21 @@ fun_get_clusters = function(x){
 
 fun_get_trees = function(df){
   
+  #check we won't have any infinite loops
+  df_out = df[!duplicated(t(apply(df[c("from", "to")], 1, sort))),]
+  if(nrow(df_out)<nrow(df)){
+    ind = which(!duplicated(t(apply(df[c("from", "to")], 1, sort))) == "FALSE")
+    stop(paste0("There were contact links defined twice (A->B and B->A). Please check row ", ind,
+                " in the contacts."))
+  }
+  
+  #add column
   df = df %>% add_column(tree = NA)
   
   #find index cases for each tree
   ic = unique( df$from[ !df$from %in% df$to ])
+  
+  
   
   for(t in 1:length(ic)){
     
