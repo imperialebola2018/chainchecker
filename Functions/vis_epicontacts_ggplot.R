@@ -198,8 +198,10 @@ fun_get_trees = function(df){
   #check we won't have any infinite loops
   df_out = df[!duplicated(t(apply(df[c("from", "to")], 1, sort))),]
   if(nrow(df_out)<nrow(df)){
-    ind = which(!duplicated(t(apply(df[c("from", "to")], 1, sort))) == "FALSE")
-    stop(paste0("There were contact links defined twice (A->B and B->A). Please check row ", ind,
+    ind1 = which(!duplicated(t(apply(df[c("from", "to")], 1, sort))) == "FALSE")
+    ind2 = which(!duplicated(t(apply(df[c("from", "to")], 1, sort)), fromLast = TRUE) == "FALSE")
+    stop(paste0("There were contact links defined twice (A->B and B->A). Please check rows ", ind1,
+                " and ", ind2,
                 " in the contacts."))
   }
   
