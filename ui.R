@@ -140,8 +140,10 @@ navbarPage("chainchecker",
                       downloadButton("tree_download", "Download Tree as HTML"),
                       
                       downloadButton("contact_download", 
-                                     "Download contact inconsistencies as .csv")
-                    ),
+                                     "Download contact inconsistencies as .csv",
+                                     style="white-space: normal;
+                                            text-align:left;")
+           ),
                     mainPanel(plotlyOutput("tree"))),
            tabPanel("Method and definitions",
                     includeMarkdown("Documentation/Methods.md")
