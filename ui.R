@@ -7,13 +7,6 @@ library(shinycssloaders)
 navbarPage("chainchecker", 
            selected = "Timeline",
            
-           
-           #making sure the figue is not huge
-           tags$head(tags$style(
-             type="text/css",
-             "#Diagram img {max-height: 100%; height: 100%; width: auto}"
-           )),
-           
            theme = shinytheme("cerulean"),
            
            # Sidebar with a slider input for number of bins 
