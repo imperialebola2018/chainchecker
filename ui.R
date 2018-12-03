@@ -1,6 +1,7 @@
 library(shiny)
 library(shinythemes)
 library(plotly)
+library(shinycssloaders)
 
 
 navbarPage("chainchecker", 
@@ -125,7 +126,7 @@ navbarPage("chainchecker",
                            style="color:red")
 
                     ),
-                    mainPanel(plotlyOutput("onset_plot"))
+                    mainPanel(plotlyOutput("onset_plot") %>% withSpinner(type = 5, color = "orange"))
            ),
            tabPanel("Transmission tree for uploaded linelist and contacts",
                     sidebarPanel(
@@ -144,7 +145,7 @@ navbarPage("chainchecker",
                                      style="white-space: normal;
                                             text-align:left;")
            ),
-                    mainPanel(plotlyOutput("tree"))),
+                    mainPanel(  plotlyOutput("tree") %>% withSpinner(type = 5, color = "orange") )),
            tabPanel("Method and definitions",
                     includeMarkdown("Documentation/Methods.md")
            )

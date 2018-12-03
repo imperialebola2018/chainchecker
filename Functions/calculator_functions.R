@@ -109,7 +109,7 @@ fun_make_tree = function(input){
                              group = input$group, 
                              contactsgroup = input$groupcontact,
                              anon = FALSE) %>% 
-    layout(height = 800)
+    layout(height = 700)
   
   return(p)
   

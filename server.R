@@ -21,7 +21,7 @@ function(input, output) {
     
     df = check_date_order(df)
     
-    p = fun_plot_exposure_windows(df, height=400)
+    p = fun_plot_exposure_windows(df, height=600)
     
     p
   })
@@ -92,7 +92,7 @@ function(input, output) {
       df_out = df_out %>% filter(id %in% c(input$ID1_onset_window, input$ID2_onset_window))
     }
     
-    p = fun_plot_exposure_windows(df_out, height=800)
+    p = fun_plot_exposure_windows(df_out, height=700)
     
     p
     
