@@ -4,3 +4,6 @@
 .Ruserdata
 *.png
 *.pdf
+logs.csv
+analyse_logs.Rmd
+analyse_logs.html
