@@ -92,7 +92,7 @@ vis_epicontacts_ggplot = function(x,
           axis.text.y = element_blank(),
           panel.background = element_rect(fill = "white", colour = "grey50"),
           axis.text.x = element_text(angle = 45, hjust = 1)) +
-    scale_x_date(date_breaks = "1 week", date_labels = "%b %d")
+    scale_x_date(date_breaks = "1 week", date_labels = "%b %d") 
   
   
   g = ggplotly(g, tooltip = tooltip) 

@@ -136,7 +136,9 @@ navbarPage("chainchecker",
                       downloadButton("contact_download", 
                                      "Download contact inconsistencies as .csv",
                                      style="white-space: normal;
-                                            text-align:left;")
+                                            text-align:left;"),
+                      br(),br(),
+                      plotOutput("link_legend", height = "100px")
            ),
                     mainPanel(  plotlyOutput("tree") %>% withSpinner(type = 5, color = "orange") )),
            tabPanel("Method and definitions",

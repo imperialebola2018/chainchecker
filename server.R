@@ -160,6 +160,22 @@ function(input, output) {
                 names(contacts), selected = "INCONSISTENT" )
   })
   
+  #LEGEND FOR LINKS #
+  output$link_legend = renderPlot({
+    
+    par(mar = c(0,0,1,0))
+    
+    plot(0:1, c(0.5,0.5), col = alpha(rgb(255,165,0, maxColorValue=255), 0.8), 
+         ylim = c(0.4,0.6),
+         lwd = 10, las = 1,
+         type = "l",xaxt='n', yaxt = "n", ylab = "",
+         main = input$groupcontact, 
+         xlab = "", axes = FALSE) 
+    
+    lines(0:1, c(0.5,0.5), lwd = 2)
+    
+  })
+  
   # DOWNLOAD #
   output$tree_download = downloadHandler(
     filename = function(){ 
@@ -174,7 +190,7 @@ function(input, output) {
     }
   )
   
-  
+  # CONTACT DOWNLOAD #
   output$contact_download = downloadHandler(
     filename = function(){
       paste0("contacts_", Sys.Date(), ".csv")
