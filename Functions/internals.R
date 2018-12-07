@@ -4,7 +4,8 @@
 assert_date = function(vec){
   
   #check formatting
-  if(all(is.na(as.Date(vec, format = "%d/%m/%Y")))){
+  vec_sub = vec[!is.na(vec)]
+  if(anyNA(as.Date(vec_sub, format = "%d/%m/%Y"))){ 
     
     stop(safeError("The dates are not in the correct format. The correct format is dd/mm/yy"))
     
