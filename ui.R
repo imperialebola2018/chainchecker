@@ -75,6 +75,7 @@ navbarPage("chainchecker",
            tabPanel("Upload",
                     sidebarPanel(
                     downloadButton("download_ctemplate", "Download contacts template"),
+                    br(),br(),
                     downloadButton("download_ltemplate", "Download linelist template"),
                     fileInput("file_line", h3("Upload linelist")),
                     fileInput("file_contact", h3("Upload contacts"))),
@@ -132,7 +133,7 @@ navbarPage("chainchecker",
                       
                       br(),br(),
                       downloadButton("tree_download", "Download Tree as HTML"),
-                      
+                      br(),br(),
                       downloadButton("contact_download", 
                                      "Download contact inconsistencies as .csv",
                                      style="white-space: normal;
