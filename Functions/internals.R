@@ -11,7 +11,7 @@ assert_date = function(vec){
     
   } else {
     
-    vec_out = as.Date(vec, format = "%d/%m/%Y")
+    vec_out = dmy(vec)
     
   }
   
@@ -131,8 +131,8 @@ check_unique_contact_links = function(df){
     ind1 = which(!duplicated(t(apply(df[c("from", "to")], 1, sort))) == "FALSE")
     ind2 = which(!duplicated(t(apply(df[c("from", "to")], 1, sort)), fromLast = TRUE) == "FALSE")
     
-    stop(safeError(paste0("There were contact links defined twice (A->B and B->A). Please check rows ", ind1,
-                " and ", ind2,
+    stop(safeError(paste0("There were contact links defined twice (A->B and B->A). Please check rows ", ind1 +1,
+                " and ", ind2 +1,
                 " in the contacts.")))
   }
   return(df)

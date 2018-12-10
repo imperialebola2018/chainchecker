@@ -8,3 +8,4 @@ packages:
   - tibble
   - dplyr
   - shinycssloaders
+  - lubridate
