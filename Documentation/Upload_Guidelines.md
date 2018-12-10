@@ -10,8 +10,9 @@ Linelist
 --------
 
 The linelist details the information on each individual. This is matched
-to the contacts sheet by **id**. **When you have filled in the new data,
-save as a .csv ready to upload.**
+to the contacts sheet by **id**. The order of the columns does not
+matter. **When you have filled in the new data, save as a .csv ready to
+upload.**
 
 ### Mandatory fields
 
@@ -24,12 +25,12 @@ example, the identifier could have the form "EG1".
 #### reported\_onset\_date
 
 This is the reported date of symptom onset. It should always be entered
-in the form **dd/mm/yy**.
+in the form **dd/mm/yy**, mm/dd/yy is also accepted.
 
 #### death\_date
 
 This is the reported date of death. It should always be entered in the
-form **dd/mm/yy**.
+form **dd/mm/yy**, mm/dd/yy is also accepted.
 
 ### Optional fields
 
@@ -46,16 +47,16 @@ Whether a person had diarrhea at onset. This should take the value
 #### Other
 
 Any number of extra columns may be added, such as Age or Sex. If dates,
-they should have the form **dd/mm/yy**.
+they should have the form **dd/mm/yy**, mm/dd/yy is also accepted.
 
 Contacts
 --------
 
 This details the links between people. One line corresponds to one
 connection. **from** and **to** should only take **id** that are present
-in the linelist and the **id** should be in exactly the same format.
-**When you have filled in the new data, save as a .csv ready to
-upload.**.
+in the linelist and the **id** should be in exactly the same format. The
+order of the columns does not matter. **When you have filled in the new
+data, save as a .csv ready to upload.**.
 
 ### Mandatory fields
 
@@ -67,7 +68,9 @@ individual.
 #### to
 
 The individual who is infected by the source. This should take the
-unique **id** of the individual.
+unique **id** of the individual. The app will accept multiple sources of
+infection for an individual, just add another row for the new
+transmission link.
 
 ### Optional fields
 

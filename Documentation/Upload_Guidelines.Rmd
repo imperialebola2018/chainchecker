@@ -20,7 +20,7 @@ Data in the form of a linelist and contacts list can be uploaded on this page. T
 
 ## Linelist
 
-The linelist details the information on each individual. This is matched to the contacts sheet by **id**. **When you have filled in the new data, save as a .csv ready to upload.**
+The linelist details the information on each individual. This is matched to the contacts sheet by **id**. The order of the columns does not matter. **When you have filled in the new data, save as a .csv ready to upload.**
 
 ### Mandatory fields
 
@@ -30,11 +30,11 @@ This is the **unique** identifier of each individual. It should match exactly wi
 
 #### reported_onset_date
 
-This is the reported date of symptom onset. It should always be entered in the form **dd/mm/yy**.
+This is the reported date of symptom onset. It should always be entered in the form **dd/mm/yy**, mm/dd/yy is also accepted.
 
 #### death_date
 
-This is the reported date of death. It should always be entered in the form **dd/mm/yy**.
+This is the reported date of death. It should always be entered in the form **dd/mm/yy**, mm/dd/yy is also accepted.
 
 ### Optional fields
 
@@ -48,11 +48,11 @@ Whether a person had diarrhea at onset. This should take the value **TRUE** or *
 
 #### Other
 
-Any number of extra columns may be added, such as Age or Sex. If dates, they should have the form **dd/mm/yy**.
+Any number of extra columns may be added, such as Age or Sex. If dates, they should have the form **dd/mm/yy**, mm/dd/yy is also accepted.
 
 ## Contacts
 
-This details the links between people. One line corresponds to one connection. **from** and **to** should only take **id** that are present in the linelist and the **id** should be in exactly the same format. **When you have filled in the new data, save as a .csv ready to upload.**.
+This details the links between people. One line corresponds to one connection. **from** and **to** should only take **id** that are present in the linelist and the **id** should be in exactly the same format. The order of the columns does not matter. **When you have filled in the new data, save as a .csv ready to upload.**.
 
 ### Mandatory fields
 
@@ -60,7 +60,7 @@ This details the links between people. One line corresponds to one connection. *
 The source of infection. This should take the unique **id** of the individual.
 
 #### to 
-The individual who is infected by the source. This should take the unique **id** of the individual.
+The individual who is infected by the source. This should take the unique **id** of the individual. The app will accept multiple sources of infection for an individual, just add another row for the new transmission link.
 
 ### Optional fields
 
