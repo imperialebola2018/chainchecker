@@ -159,7 +159,7 @@ check_date_order = function(linelist){
 
 #### ----------------------------------------------------------------------------------- ####
 ### check contact links are in exposure windows ###
-check_exposure_timeline = function(linelist, contacts){
+check_exposure_timeline = function(linelist, contacts, input){
   
   #add extra column to contacts to check if the link is feasible wrt exposure windows
   contacts = contacts %>% add_column(INCONSISTENT = NA, .after = "to")

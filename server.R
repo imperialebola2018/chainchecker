@@ -160,7 +160,7 @@ function(input, output) {
     contacts = check_contacts_upload(input$file_contact)
     
     #check links are feasible
-    contacts = check_exposure_timeline(linelist, contacts)
+    contacts = check_exposure_timeline(linelist, contacts, input)
     
     selectInput("groupcontact", 
                 "Enter a transmission type to show on the plot: ", 

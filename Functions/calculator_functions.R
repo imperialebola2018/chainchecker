@@ -93,7 +93,7 @@ fun_make_tree = function(input){
 
   
   #check links are feasible
-  contacts = check_exposure_timeline(linelist, contacts)
+  contacts = check_exposure_timeline(linelist, contacts, input)
   
   contacts[is.na(contacts)] = FALSE
   
