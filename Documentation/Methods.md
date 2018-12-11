@@ -66,11 +66,22 @@ the death date of the infector is before the minimum exposure date of
 the infectee. The exposure dates in this case are calculated in the same
 way as shown in the **Exposure windows** tab. The contact list with the
 **INCONSISTENT** status of each link can be downloaded as a .csv file.
+The onset date is either as reported (default) or estimated (as shown in
+the exposure windows), this will affect which links are considered
+inconsistent. For example, if we think person EG1 may have infected EG2,
+we can plot their exposure windows as shown below:
 
-The plot can be turned into a .png and downloaded (hover over the top
-right corner of the plot). Additionally, the tree may be downloaded as
-HTML which will retain the options to zoom and hover over for more
-information.
+![](Methods_files/figure-markdown_strict/inconsitent_eg-1.png)
+
+In the above example, if we use the onset dates as reported, the link
+will be flagged as inconsistent. However, if we use the estimated onset
+dates, the link will not be flagged as EG1 is infectious in the exposure
+window of EG2.
+
+The transmission tree plot can be turned into a .png and downloaded
+(hover over the top right corner of the plot). Additionally, the tree
+may be downloaded as HTML which will retain the options to zoom and
+hover over for more information.
 
 The tree is visualised using the `epicontacts` package and the
 chainchecker function `vis_epicontacts_ggplot`.
@@ -84,12 +95,15 @@ dates.
 1.  If date of death is available. **Estimated onset = date of death -
     time from onset to death.** Then go to 5.
     -   If date of death is unavailable, go to 2.
+
 2.  If individual was bleeding at reported onset. **Estimated onset =
     reported onset - bleeding correction factor.** Then go to 5.
     -   If they were not bleeding go to 3.
+
 3.  If individual had diarrhea at reported onset. **Estimated onset =
     reported onset - diarrhea correction factor.** Then go to 5.
     -   If they did not have diarrhea go to 4.
+
 4.  **Estimated onset = reported onset**.
 5.  **Earliest exposure date = estimated onset - maximum incubation
     period**.

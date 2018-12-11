@@ -198,6 +198,19 @@ check_exposure_timeline = function(linelist, contacts){
           
         }
       }
+      
+      #check if exposure happened after when death might have occurred (as an upper bound)
+      if(!is.na(linelist$onset_date[linelist_index_from]) &
+         !is.na(linelist$exposure_date_min[linelist_index_to])){
+        
+        if(as.numeric(linelist$onset_date[linelist_index_from] + 
+                      input$days_onset_to_death_all -
+                      linelist$exposure_date_min[linelist_index_to]) <= 0){
+          
+          contacts$INCONSISTENT[i] = TRUE
+          
+        }
+      }
     } 
   }
   
