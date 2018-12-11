@@ -4,8 +4,8 @@
 .Ruserdata
 *.png
 *.pdf
+*.html
 logs.csv
 analyse_logs.Rmd
-analyse_logs.html
 combined_template.csv
 README.Rmd

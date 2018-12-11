@@ -3,7 +3,7 @@ title: "Methods"
 author: "Katy Gaythorpe"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
-  md_document:
+  html_document:
     df_print:
       "kable"
 ---

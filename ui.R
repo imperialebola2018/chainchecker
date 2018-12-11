@@ -143,7 +143,7 @@ navbarPage("chainchecker",
            ),
                     mainPanel(  plotlyOutput("tree") %>% withSpinner(type = 5, color = "orange") )),
            tabPanel("Method and definitions",
-                    includeMarkdown("Documentation/Methods.md")
+                    includeHTML("Documentation/Methods.html")
            )
            
 )
