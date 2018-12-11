@@ -137,9 +137,15 @@ function(input, output) {
     #adjust for epicontacts
     names(linelist)[names(linelist) == 'onset_date'] = 'onset'
     
+    #remove added columns for inputs
+    vec = names(linelist)
+    added_cols = c("days_onset_to_bleeding", "days_onset_to_diarrhea", "max_incubation",
+                   "min_incubation", "days_onset_to_death", "death_avail")
+    vec = vec[!vec %in% added_cols]
+    
     selectInput("group", 
                 "Enter a characteristic to show on the plot: ", 
-                names(linelist))
+                vec)
   })
   
   # DROP DOWN MENU CONTACT #

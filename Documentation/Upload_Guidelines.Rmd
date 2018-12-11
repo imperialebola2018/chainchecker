@@ -1,7 +1,5 @@
 ---
 title: "Upload guidelines"
-author: "Katy Gaythorpe"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   md_document:
     df_print:

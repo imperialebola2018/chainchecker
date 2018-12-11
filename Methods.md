@@ -1,15 +1,12 @@
 ---
 title: "Methods"
 output: 
-  md_document:
+  html_document:
     df_print:
       "kable"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-options(knitr.table.format = 'markdown')
-```
+
 
 
 This app was developed to produce estimates of exposure dates for Ebola cases. It can also produce estimates of the date that symptoms developed if we have information on symptoms or date of death.
@@ -43,64 +40,7 @@ In this page we visualise two transmission trees. The first is from the data as 
 
 As default, the link colour is defined by whether it is **INCONSISTENT**. If highlighted, this means that either the onset date of the infector is after the maximum exposure date of the infectee OR the death date of the infector is before the minimum exposure date of the infectee. The exposure dates in this case are calculated in the same way as shown in the **Exposure windows** tab. The contact list with the **INCONSISTENT** status of each link can be downloaded as a .csv file. The onset date is either as reported (default) or estimated (as shown in the exposure windows), this will affect which links are considered inconsistent. For example, if we think person EG1 may have infected EG2, we can plot their exposure windows as shown below:
 
-
-```{r eg, echo=FALSE,  out.width = '100%'}
-knitr::include_graphics("inconsistency_eg.png")
-```
-
-```{r inconsitent_eg, echo =FALSE, warning = FALSE, eval = FALSE}
-library(ggplot2)
-source('../Functions/calculator_functions.R')
-
-df = data.frame(id = c("EG2", "EG1"),
-                exposure_date_min = c(Sys.Date() - 21, Sys.Date() - 21 - 5),
-                exposure_date_max = c(Sys.Date() - 2, Sys.Date() - 2 - 5),
-                onset_date = c(Sys.Date(), Sys.Date() -5),
-                reported_onset_date = c(Sys.Date()+2, Sys.Date() + 10),
-                death_date = c(Sys.Date()+4, as.Date(NA)),
-                dates_in_correct_order = c(TRUE, TRUE))
-
-g = ggplot(df, aes(text = paste0("ID: ",id))) 
-  
-  
-  g = g + geom_rect(aes(xmin = exposure_date_min,
-                        xmax = exposure_date_max,
-                        ymin = reorder(id, exposure_date_min), 
-                        ymax = reorder(id, exposure_date_min),
-                        color = "Exposure"),
-                    size = 1.1) +
-    geom_point( aes( x = death_date,
-                     y = reorder(id, exposure_date_min),
-                     color = "Death"),
-                shape = ifelse(df$dates_in_correct_order != TRUE,
-                               "square",
-                               "circle"),
-                size = 5) +
-    geom_point( aes( x = exposure_date_min,
-                     y = reorder(id, exposure_date_min),
-                     color = "Exposure"), size = 0.1) +
-    geom_point( aes( x = exposure_date_max,
-                     y = reorder(id, exposure_date_min),
-                     color = "Exposure"), size = 0.1) +
-    geom_point(aes(x = onset_date,
-                   y = reorder(id, exposure_date_min),
-                   color = "Estimated onset"),
-               size = 5) +
-    geom_point(aes(x = reported_onset_date,
-                   y = reorder(id, exposure_date_min),
-                   color = "Reported onset"),
-               size = 5, shape = 4, stroke = 2) +
-    ylab("Identifier") +
-    labs(colour = "Key", shape = NULL)+
-    theme(panel.background = element_rect(fill = "white", colour = "grey50"),
-          text = element_text(size = 14),
-          axis.text.x = element_text(angle = 45, hjust = 1)) +
-    xlab("Date")
-  
-  g
-  
-
-```
+![plot of chunk inconsitent_eg](figure/inconsitent_eg-1.png)
 
 In the above example, if we use the onset dates as reported, the link will be flagged as inconsistent. However, if we use the estimated onset dates, the link will not be flagged as EG1 is infectious in the exposure window of EG2.
 

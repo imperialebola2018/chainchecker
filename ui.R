@@ -4,6 +4,7 @@ library(plotly)
 library(shinycssloaders)
 
 
+
 navbarPage("chainchecker", 
            selected = "Timeline",
            
@@ -74,11 +75,12 @@ navbarPage("chainchecker",
            ),
            tabPanel("Upload",
                     sidebarPanel(
-                    downloadButton("download_ctemplate", "Download contacts template"),
-                    br(),br(),
-                    downloadButton("download_ltemplate", "Download linelist template"),
-                    fileInput("file_line", h3("Upload linelist")),
-                    fileInput("file_contact", h3("Upload contacts"))),
+                      downloadButton("download_ctemplate", "Download contacts template"),
+                      br(),br(),
+                      downloadButton("download_ltemplate", "Download linelist template"),
+                      fileInput("file_line", h3("Upload linelist")),
+                      fileInput("file_contact", h3("Upload contacts"))),
+                    
                     mainPanel(includeMarkdown("Documentation/Upload_Guidelines.md"))
            ),
            tabPanel("Exposure windows for uploaded linelist",
@@ -118,7 +120,7 @@ navbarPage("chainchecker",
                       span("Dates of death that are inconsistent with reported onset date
                            are denoted with a square.", 
                            style="color:red")
-
+                      
                     ),
                     mainPanel(plotlyOutput("onset_plot") %>% withSpinner(type = 5, color = "orange"))
            ),
@@ -140,10 +142,11 @@ navbarPage("chainchecker",
                                             text-align:left;"),
                       br(),br(),
                       plotOutput("link_legend", height = "100px")
+                    ),
+                    mainPanel(  plotlyOutput("tree") %>% withSpinner(type = 5, color = "orange") )
            ),
-                    mainPanel(  plotlyOutput("tree") %>% withSpinner(type = 5, color = "orange") )),
            tabPanel("Method and definitions",
-                    includeHTML("Documentation/Methods.html")
+                    includeMarkdown('Documentation/Methods.md')
            )
            
 )

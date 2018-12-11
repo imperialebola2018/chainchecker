@@ -1,6 +1,3 @@
-Introduction
-============
-
 This app was developed to produce estimates of exposure dates for Ebola
 cases. It can also produce estimates of the date that symptoms developed
 if we have information on symptoms or date of death.
@@ -71,7 +68,7 @@ the exposure windows), this will affect which links are considered
 inconsistent. For example, if we think person EG1 may have infected EG2,
 we can plot their exposure windows as shown below:
 
-![](Methods_files/figure-markdown_strict/inconsitent_eg-1.png)
+<img src="inconsistency_eg.png" width="100%" />
 
 In the above example, if we use the onset dates as reported, the link
 will be flagged as inconsistent. However, if we use the estimated onset
