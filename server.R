@@ -103,7 +103,7 @@ function(input, output) {
   output$download_window = downloadHandler(
     filename = function(){
       paste0("linelist_with_estimated_exposure_", Sys.Date(), ".csv")
-      },
+    },
     content = function(file){
       
       df_out = fun_import_adjust(input)
@@ -129,7 +129,7 @@ function(input, output) {
   output$linelist_group = renderUI({
     
     linelist = fun_import_adjust(input)
-
+    
     if(!input$adjust_tree){ #adjusted tree?
       linelist = linelist %>% mutate(onset_date = reported_onset_date)
     }
@@ -167,6 +167,29 @@ function(input, output) {
                 names(contacts), selected = "INCONSISTENT" )
   })
   
+  output$tooltip_options = renderUI({
+    linelist = fun_import_adjust(input)
+    
+    if(!input$adjust_tree){ #adjusted tree?
+      linelist = linelist %>% mutate(onset_date = reported_onset_date)
+    }
+    
+    #adjust for epicontacts
+    names(linelist)[names(linelist) == 'onset_date'] = 'onset'
+    
+    #remove added columns for inputs
+    vec = names(linelist)
+    added_cols = c("days_onset_to_bleeding", "days_onset_to_diarrhea", "max_incubation",
+                   "min_incubation", "days_onset_to_death", "death_avail")
+    vec = vec[!vec %in% added_cols]
+    
+    selectizeInput("tooltip", 
+                   "Enter (up to 5) characteristics to show on hover: ", 
+                   vec,
+                   multiple = TRUE,
+                   options = list(maxItems = 5))
+  })
+  
   #LEGEND FOR LINKS #
   output$link_legend = renderPlot({
     
@@ -187,7 +210,7 @@ function(input, output) {
   output$tree_download = downloadHandler(
     filename = function(){ 
       paste0("Transmission_Tree_", Sys.Date(), ".html")
-      },
+    },
     content = function(file){
       
       p = fun_make_tree(input)

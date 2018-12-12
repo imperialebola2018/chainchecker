@@ -13,13 +13,9 @@
 vis_epicontacts_ggplot = function(x,
                                   group = "onset",
                                   contactsgroup = NA,
-                                  anon = TRUE,
+                                  tooltip,
                                   with_epicurve = FALSE){
-  if(anon){
-    tooltip = c("onset",  group)
-  } else {
-    tooltip = c("onset", "id", group)
-  }
+
   
   
   # rank contacts
@@ -78,13 +74,15 @@ vis_epicontacts_ggplot = function(x,
                      aes_string(x = "onset",
                                 y = "rank",
                                 fill = group,
-                                id = "id",
-                                fullname = "name",
-                                code = "code"), 
+                                text1 = tooltip[1],
+                                text2 = tooltip[2],
+                                text3 = tooltip[3],
+                                text4 = tooltip[4],
+                                text5 = tooltip[5]), 
                      size = 5, 
                      shape = 21)
   
-  #change the apperance
+  #change the appearance
   g = g + xlab("Symptom onset date") + 
     ylab("") +
     labs(fill = "")+

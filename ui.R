@@ -130,6 +130,7 @@ navbarPage("chainchecker",
                                     "Show tree with estimated onset dates."),
                       uiOutput("linelist_group"),
                       uiOutput("contact_group"),
+                      uiOutput("tooltip_options"),
                       span("Hover over the plot for more information on each point.", 
                            style="color:blue"),
                       

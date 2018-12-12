@@ -108,9 +108,9 @@ fun_make_tree = function(input){
   p = vis_epicontacts_ggplot(x,
                              group = input$group, 
                              contactsgroup = input$groupcontact,
-                             anon = FALSE) %>% 
+                             tooltip = unlist(strsplit(paste(input$tooltip), ","))) %>% 
     layout(height = 700)
-  
+
   return(p)
   
   
