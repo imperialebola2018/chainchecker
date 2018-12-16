@@ -241,7 +241,7 @@ function(input, output) {
       contacts[is.na(contacts)] = FALSE
       
       #check links are feasible
-      contacts = check_exposure_timeline(linelist, contacts)
+      contacts = check_exposure_timeline(linelist, contacts, input)
       
       write.csv(contacts, file, row.names = FALSE)
     }
