@@ -13,8 +13,7 @@
 vis_epicontacts_ggplot = function(x,
                                   group = "onset",
                                   contactsgroup = NA,
-                                  tooltip,
-                                  with_epicurve = FALSE){
+                                  tooltip ="id"){
 
   
   
@@ -96,23 +95,24 @@ vis_epicontacts_ggplot = function(x,
   g = ggplotly(g, tooltip = tooltip) 
   
   #add epicurve
-  m = ggplot(linelist) + 
-    geom_histogram( aes_string(x = "onset", 
-                               y = "..count..",
-                               fill = group) ) +
-    theme(axis.ticks.y = element_blank(), 
-          axis.ticks.x = element_blank(),
-          axis.text.y = element_blank(), 
-          axis.text.x = element_blank()) 
-  
-  
-  m = ggplotly(m, tooltip = c(group))
-  
-  if(with_epicurve){
-    subplot(m ,g, nrows = 2, heights = c(0.2, 0.8), shareX = TRUE)
-  } else {
-    g
-  }
+  # m = ggplot(linelist) + 
+  #   geom_histogram( aes_string(x = "onset", 
+  #                              y = "..count..",
+  #                              fill = group) ) +
+  #   theme(axis.ticks.y = element_blank(), 
+  #         axis.ticks.x = element_blank(),
+  #         axis.text.y = element_blank(), 
+  #         axis.text.x = element_blank()) 
+  # 
+  # 
+  # m = ggplotly(m, tooltip = c(group))
+  # 
+  # if(with_epicurve){
+  #   subplot(m ,g, nrows = 2, heights = c(0.2, 0.8), shareX = TRUE)
+  # } else {
+  #   g
+  # }
+  g
 }
 
 
