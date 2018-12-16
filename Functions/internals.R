@@ -98,7 +98,13 @@ check_contacts_upload = function(file_upload){
   #check for unique contact links
   contacts = check_unique_contact_links(contacts)
   
-  return(contacts)
+  #make sure in the right order
+  contacts_out <- contacts %>% select(from, everything())
+  
+  #remove missing sources
+  contacts_out = contacts_out[!is.na(contacts_out$from),]
+  
+  return(contacts_out)
 }
 
 #### ----------------------------------------------------------------------------------- ####
@@ -136,12 +142,8 @@ check_unique_contact_links = function(df){
   
   if(nrow(df_out)<nrow(df)){
     
-    ind1 = which(!duplicated(t(apply(df[c("from", "to")], 1, sort))) == "FALSE")
-    ind2 = which(!duplicated(t(apply(df[c("from", "to")], 1, sort)), fromLast = TRUE) == "FALSE")
     
-    stop(safeError(paste0("There were contact links defined twice (A->B and B->A). Please check rows ", ind1 +1,
-                          " and ", ind2 +1,
-                          " in the contacts.")))
+    stop(safeError(paste0("There were contact links defined twice (A->B and B->A).")))
   }
   return(df)
 }
@@ -199,18 +201,18 @@ check_exposure_timeline = function(linelist, contacts, input){
         }
       }
       
-      #check if exposure happened after when death might have occurred (as an upper bound)
-      if(!is.na(linelist$onset_date[linelist_index_from]) &
-         !is.na(linelist$exposure_date_min[linelist_index_to])){
-        
-        if(as.numeric(linelist$onset_date[linelist_index_from] + 
-                      input$days_onset_to_death_all -
-                      linelist$exposure_date_min[linelist_index_to]) <= 0){
-          
-          contacts$INCONSISTENT[i] = TRUE
-          
-        }
-      }
+      # #check if exposure happened after when death might have occurred (as an upper bound)
+      # if(!is.na(linelist$onset_date[linelist_index_from]) &
+      #    !is.na(linelist$exposure_date_min[linelist_index_to])){
+      #   
+      #   if(as.numeric(linelist$onset_date[linelist_index_from] + 7 +
+      #                 input$days_onset_to_death_all -
+      #                 linelist$exposure_date_min[linelist_index_to]) <= 0){
+      #     
+      #     contacts$INCONSISTENT[i] = TRUE
+      #     
+      #   }
+      # }
     } 
   }
   

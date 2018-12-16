@@ -90,8 +90,6 @@ fun_make_tree = function(input){
   if(is.null(linelist$name)){ linelist = linelist %>% mutate(name = id)}
   if(is.null(linelist$code)){ linelist = linelist %>% mutate(code = id)}
   
-
-  
   #check links are feasible
   contacts = check_exposure_timeline(linelist, contacts, input)
   
