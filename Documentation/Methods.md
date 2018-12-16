@@ -61,12 +61,15 @@ As default, the link colour is defined by whether it is
 of the infector is after the maximum exposure date of the infectee OR
 the death date of the infector is before the minimum exposure date of
 the infectee. The exposure dates in this case are calculated in the same
-way as shown in the **Exposure windows** tab. The contact list with the
-**INCONSISTENT** status of each link can be downloaded as a .csv file.
-The onset date is either as reported (default) or estimated (as shown in
-the exposure windows), this will affect which links are considered
-inconsistent. For example, if we think person EG1 may have infected EG2,
-we can plot their exposure windows as shown below:
+way as shown in the **Exposure windows** tab. If the "adjust tree" box
+is not ticked, the exposure window is calculated as the reported onset
+date - the minimum and maximum incubation periods. If the "adjust tree"
+box is ticked, the calculator logic, below, is used. The contact list
+with the **INCONSISTENT** status of each link can be downloaded as a
+.csv file. The onset date is either as reported (default) or estimated
+(as shown in the exposure windows), this will affect which links are
+considered inconsistent. For example, if we think person EG1 may have
+infected EG2, we can plot their exposure windows as shown below:
 
 <img src="inconsistency_eg.png" width="100%" />
 
@@ -92,15 +95,12 @@ dates.
 1.  If date of death is available. **Estimated onset = date of death -
     time from onset to death.** Then go to 5.
     -   If date of death is unavailable, go to 2.
-
 2.  If individual was bleeding at reported onset. **Estimated onset =
     reported onset - bleeding correction factor.** Then go to 5.
     -   If they were not bleeding go to 3.
-
 3.  If individual had diarrhea at reported onset. **Estimated onset =
     reported onset - diarrhea correction factor.** Then go to 5.
     -   If they did not have diarrhea go to 4.
-
 4.  **Estimated onset = reported onset**.
 5.  **Earliest exposure date = estimated onset - maximum incubation
     period**.

@@ -18,7 +18,7 @@ function(input, output) {
   # PLOT #
   output$exposure_plot <- renderPlotly({
     
-    df = fun_get_onset(input)
+    df = fun_get_onset(input, default_to_death_date = TRUE)
     
     df = check_date_order(df)
     
@@ -85,7 +85,8 @@ function(input, output) {
   # PLOT #
   output$onset_plot = renderPlotly({
     
-    df_out = fun_import_adjust(input)
+    df_out = fun_import_adjust(input,
+                               default_to_death_date = TRUE)
     
     df_out = check_date_order(df_out)
     
@@ -106,7 +107,8 @@ function(input, output) {
     },
     content = function(file){
       
-      df_out = fun_import_adjust(input)
+      df_out = fun_import_adjust(input,
+                                 default_to_death_date = TRUE)
       
       df_out = check_date_order(df_out)
       
@@ -128,11 +130,8 @@ function(input, output) {
   # DROP DOWN MENU LINELIST #
   output$linelist_group = renderUI({
     
-    linelist = fun_import_adjust(input)
-    
-    if(!input$adjust_tree){ #adjusted tree?
-      linelist = linelist %>% mutate(onset_date = reported_onset_date)
-    }
+    linelist = fun_import_adjust(input,
+                                 default_to_death_date = input$adjust_tree)
     
     #adjust for epicontacts
     names(linelist)[names(linelist) == 'onset_date'] = 'onset'
@@ -151,11 +150,9 @@ function(input, output) {
   # DROP DOWN MENU CONTACT #
   output$contact_group = renderUI({
     
-    linelist = fun_import_adjust(input)
+    linelist = fun_import_adjust(input,
+                                 default_to_death_date = input$adjust_tree)
     
-    if(!input$adjust_tree){ #adjusted tree?
-      linelist = linelist %>% mutate(onset_date = reported_onset_date)
-    }
     
     contacts = check_contacts_upload(input$file_contact)
     
@@ -168,11 +165,10 @@ function(input, output) {
   })
   
   output$tooltip_options = renderUI({
-    linelist = fun_import_adjust(input)
     
-    if(!input$adjust_tree){ #adjusted tree?
-      linelist = linelist %>% mutate(onset_date = reported_onset_date)
-    }
+    linelist = fun_import_adjust(input,
+                                 default_to_death_date = input$adjust_tree)
+
     
     #adjust for epicontacts
     names(linelist)[names(linelist) == 'onset_date'] = 'onset'
@@ -226,11 +222,10 @@ function(input, output) {
       paste0("contacts_", Sys.Date(), ".csv")
     },
     content = function(file){
-      linelist = fun_import_adjust(input)
       
-      if(!input$adjust_tree){ #adjusted tree?
-        linelist = linelist %>% mutate(onset_date = reported_onset_date)
-      }
+      linelist = fun_import_adjust(input,
+                                   default_to_death_date = input$adjust_tree)
+      
       
       contacts = check_contacts_upload(input$file_contact)
       

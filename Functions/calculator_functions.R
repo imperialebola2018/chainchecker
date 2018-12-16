@@ -3,30 +3,39 @@
 ##################################
 
 ### calculator logic steps ###
-fun_get_onset = function(input){
+fun_get_onset = function(input,
+                         default_to_death_date = TRUE){
   
   df = tibble("id" = input$id)
   
-  #then add other dates
-  if(input$death_avail){ #if there is a death date
-    
-    df = df %>% add_column(death_date = input$death_date,
-                           onset_date = as.Date(input$death_date - input$days_onset_to_death),
-                           reported_onset_date = input$reported_onset_date)
-    
-  } else { #no death date
-    df = df %>% add_column(death_date = as.Date(NA),
-                           reported_onset_date = input$reported_onset_date)
-    
-    if(input$bleeding_at_reported_onset){ #with bleeding
-      df = df %>% add_column( onset_date = as.Date(df$reported_onset_date - input$days_onset_to_bleeding))
+  if(default_to_death_date){
+    #then add other dates
+    if(input$death_avail){ #if there is a death date
       
-    } else if(input$diarrhea_at_reported_onset){ #with diarrhea
-      df = df %>% add_column( onset_date = as.Date(df$reported_onset_date - input$days_onset_to_diarrhea))
+      df = df %>% add_column(death_date = input$death_date,
+                             onset_date = as.Date(input$death_date - input$days_onset_to_death),
+                             reported_onset_date = input$reported_onset_date)
       
-    } else { #no wet symptoms
-      df = df %>% add_column( onset_date = df$reported_onset_date)
+    } else { #no death date
+      df = df %>% add_column(death_date = input$death_date,
+                             reported_onset_date = input$reported_onset_date)
+      
+      if(input$bleeding_at_reported_onset){ #with bleeding
+        df = df %>% add_column( onset_date = as.Date(df$reported_onset_date - 
+                                                       input$days_onset_to_bleeding))
+        
+      } else if(input$diarrhea_at_reported_onset){ #with diarrhea
+        df = df %>% add_column( onset_date = as.Date(df$reported_onset_date - 
+                                                       input$days_onset_to_diarrhea))
+        
+      } else { #no wet symptoms
+        df = df %>% add_column( onset_date = df$reported_onset_date)
+      }
     }
+  } else {
+    df = df %>% add_column( onset_date = input$reported_onset_date,
+                            death_date = input$death_date,
+                            reported_onset_date = input$reported_onset_date)
   }
   
   #calculate exposure period
@@ -39,7 +48,8 @@ fun_get_onset = function(input){
 
 #### ----------------------------------------------------------------------------------- ####
 ### import and adjust ###
-fun_import_adjust = function(input){
+fun_import_adjust = function(input,
+                             default_to_death_date = TRUE){
   
   #import and check
   df = check_line_upload(input$file_line)
@@ -62,7 +72,7 @@ fun_import_adjust = function(input){
   #get onset
   df_out = NULL
   for(i in 1:nrow(df)){
-    df_out = rbind(df_out, fun_get_onset(df[i,]))
+    df_out = rbind(df_out, fun_get_onset(df[i,], default_to_death_date))
   }
   
   df = df %>% 
@@ -78,11 +88,10 @@ fun_import_adjust = function(input){
 ### function to make tree if data is uploaded ###
 fun_make_tree = function(input){
   
-  linelist = fun_import_adjust(input)
+  linelist = fun_import_adjust(input,
+                               default_to_death_date = ifelse(input$adjust_tree,
+                                                              FALSE, TRUE))
   
-  if(!input$adjust_tree){ #adjusted tree?
-    linelist = linelist %>% mutate(onset_date = reported_onset_date)
-  }
   
   contacts = check_contacts_upload(input$file_contact)
   
