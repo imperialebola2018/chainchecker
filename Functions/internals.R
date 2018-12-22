@@ -7,7 +7,7 @@ assert_date = function(vec){
   vec_sub = vec[!is.na(vec) & vec!="NA"]
   if(anyNA(as.Date(vec_sub, format = "%d/%m/%Y")) & anyNA(as.Date(vec_sub, format = "%m/%d/%Y")) ){ 
     
-    stop(safeError("The dates are not in the correct format. The correct format is dd/mm/yy"))
+    stop(safeError("The dates are not in the correct format. The correct format is dd/mm/yy or mm/dd/yy"))
     
   } else {
     
@@ -141,8 +141,6 @@ check_unique_contact_links = function(df){
   df_out = df[!duplicated(t(apply(df[c("from", "to")], 1, sort))),]
   
   if(nrow(df_out)<nrow(df)){
-    
-    
     stop(safeError(paste0("There were contact links defined twice (A->B and B->A).")))
   }
   return(df)
