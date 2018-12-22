@@ -14,7 +14,7 @@ vis_epicontacts_ggplot = function(x,
                                   group = "onset",
                                   contactsgroup = NA,
                                   tooltip ="id"){
-
+  
   
   
   # rank contacts
@@ -32,7 +32,7 @@ vis_epicontacts_ggplot = function(x,
                       size = 3, 
                       alpha = 0.5)
   
-
+  
   if(contactsgroup %in% names(rank_contacts)){ #highlight particular links
     g = g + geom_segment(data = rank_contacts,
                          aes( x= from_onset,
@@ -343,16 +343,18 @@ fun_rank_linelist = function(x){
     
     unconnected_onset = x$linelist$onset[unconnected]
     
-    for(u in 2:length(unconnected)){
-      
-      if( x$linelist$onset[unconnected[u]] == x$linelist$onset[unconnected[u-1]] &
-          !anyNA(x$linelist$onset[unconnected[c(u, u-1)]]) ){
+    if(length(unconnected) > 1){
+      for(u in 2:length(unconnected)){
         
-        x$linelist$rank[unconnected[u]] = x$linelist$rank[unconnected[u-1]] - max_space/nrow(x$linelist)
+        if( x$linelist$onset[unconnected[u]] == x$linelist$onset[unconnected[u-1]] &
+            !anyNA(x$linelist$onset[unconnected[c(u, u-1)]]) ){
+          
+          x$linelist$rank[unconnected[u]] = x$linelist$rank[unconnected[u-1]] - max_space/nrow(x$linelist)
+        }
       }
-    }
-    
   }
   
-  return(x)
+}
+
+return(x)
 }
