@@ -51,7 +51,7 @@ check_line_upload = function(file_upload){
   }
   
   #import
-  df = read.csv(file_upload$datapath, stringsAsFactors = FALSE, na.strings = "")
+  df = data.table::fread(file_upload$datapath, stringsAsFactors = FALSE, na.strings = "")
   
   #check names
   check_line_names(df)
@@ -82,7 +82,7 @@ check_contacts_upload = function(file_upload){
     stop(safeError("Wrong file type uploaded for contacts, file should be a .csv ."))
   }
   
-  contacts = read.csv(file_upload$datapath, stringsAsFactors = FALSE, na.strings = "")
+  contacts = data.table::fread(file_upload$datapath, stringsAsFactors = FALSE, na.strings = "")
   
   #check names
   check_contact_names(contacts)
@@ -141,7 +141,7 @@ check_unique_contact_links = function(df){
   df_out = df[!duplicated(t(apply(df[c("from", "to")], 1, sort))),]
   
   if(nrow(df_out)<nrow(df)){
-    stop(safeError(paste0("There were contact links defined twice (A->B and B->A).")))
+    stop(safeError(paste0("There were contact links defined twice.")))
   }
   return(df)
 }
@@ -199,18 +199,6 @@ check_exposure_timeline = function(linelist, contacts, input){
         }
       }
       
-      # #check if exposure happened after when death might have occurred (as an upper bound)
-      # if(!is.na(linelist$onset_date[linelist_index_from]) &
-      #    !is.na(linelist$exposure_date_min[linelist_index_to])){
-      #   
-      #   if(as.numeric(linelist$onset_date[linelist_index_from] + 7 +
-      #                 input$days_onset_to_death_all -
-      #                 linelist$exposure_date_min[linelist_index_to]) <= 0){
-      #     
-      #     contacts$INCONSISTENT[i] = TRUE
-      #     
-      #   }
-      # }
     } 
   }
   

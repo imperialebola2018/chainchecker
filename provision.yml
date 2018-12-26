@@ -9,3 +9,4 @@ packages:
   - dplyr
   - shinycssloaders
   - lubridate
+  - data.table
