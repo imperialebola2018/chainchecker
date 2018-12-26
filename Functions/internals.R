@@ -82,7 +82,9 @@ check_contacts_upload = function(file_upload){
     stop(safeError("Wrong file type uploaded for contacts, file should be a .csv ."))
   }
   
-  contacts = data.table::fread(file_upload$datapath, stringsAsFactors = FALSE, na.strings = "")
+  contacts = data.table::fread(file_upload$datapath, 
+                               stringsAsFactors = FALSE, 
+                               na.strings = "")
   
   #check names
   check_contact_names(contacts)
@@ -163,6 +165,7 @@ check_exposure_timeline = function(linelist, contacts, input){
   
   #add extra column to contacts to check if the link is feasible wrt exposure windows
   contacts = contacts %>% add_column(INCONSISTENT = NA, .after = "to")
+  contacts = contacts %>% add_column(reason_inconsistent = NA, .after = "INCONSISTENT")
   
   #check each contact
   for(i in 1:nrow(contacts)){
@@ -183,6 +186,7 @@ check_exposure_timeline = function(linelist, contacts, input){
                       linelist$exposure_date_max[linelist_index_to]) >= 0 ){
           
           contacts$INCONSISTENT[i] = TRUE
+          contacts$reason_inconsistent[i] = "Exposure occurred before source onset date."
           
         } 
       }
@@ -195,7 +199,7 @@ check_exposure_timeline = function(linelist, contacts, input){
                       linelist$exposure_date_min[linelist_index_to]) <= 0){
           
           contacts$INCONSISTENT[i] = TRUE
-          
+          contacts$reason_inconsistent[i] = "Exposure occurred after source death date."
         }
       }
       
