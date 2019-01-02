@@ -51,7 +51,8 @@ check_line_upload = function(file_upload){
   }
   
   #import
-  df = data.table::fread(file_upload$datapath, stringsAsFactors = FALSE, na.strings = "")
+  df = as.data.frame(fread(file_upload$datapath, stringsAsFactors = FALSE, na.strings = ""))
+
   
   #check names
   check_line_names(df)
@@ -82,9 +83,9 @@ check_contacts_upload = function(file_upload){
     stop(safeError("Wrong file type uploaded for contacts, file should be a .csv ."))
   }
   
-  contacts = data.table::fread(file_upload$datapath, 
+  contacts = as.data.frame(fread(file_upload$datapath, 
                                stringsAsFactors = FALSE, 
-                               na.strings = "")
+                               na.strings = ""))
   
   #check names
   check_contact_names(contacts)
