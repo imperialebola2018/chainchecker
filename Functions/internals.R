@@ -7,7 +7,8 @@ assert_date = function(vec){
   vec_sub = vec[!is.na(vec) & vec!="NA"]
   if(anyNA(as.Date(vec_sub, format = "%d/%m/%Y")) & anyNA(as.Date(vec_sub, format = "%m/%d/%Y")) ){ 
     
-    stop(safeError("The dates are not in the correct format. The correct format is dd/mm/yy or mm/dd/yy"))
+    stop(safeError("The dates are not in the correct format. 
+                   The correct format is either dd/mm/yy or mm/dd/yy and all dates should be consistent."))
     
   } else {
     
@@ -22,7 +23,6 @@ assert_date = function(vec){
     }
   }
   
-  
   return(vec_out)
 }
 
@@ -33,7 +33,6 @@ assert_TF = function(vec){
     
     stop(safeError("A column that should be TRUE or FALSE (or NA) contains other values."))
   }
-  
   return(vec)
 }
 
@@ -44,7 +43,6 @@ check_line_upload = function(file_upload){
     stop(safeError("No linelist file uploaded yet."))
   }
   
-  
   #check right file type
   if(sum(grep(".csv", file_upload$datapath))==0){
     stop(safeError("Wrong file type uploaded for linelist, file should be a .csv ."))
@@ -53,7 +51,6 @@ check_line_upload = function(file_upload){
   #import
   df = as.data.frame(fread(file_upload$datapath, stringsAsFactors = FALSE, na.strings = ""))
 
-  
   #check names
   check_line_names(df)
   
@@ -61,6 +58,9 @@ check_line_upload = function(file_upload){
   if(length(unique(df$id))<nrow(df)){
     stop(safeError("There are duplicate id's in the linelist."))
   }
+  
+  #make sure id is first column
+  df = df %>% select(id, everything())
   
   #dates
   date_ind = grep("date", names(df))
@@ -83,9 +83,7 @@ check_contacts_upload = function(file_upload){
     stop(safeError("Wrong file type uploaded for contacts, file should be a .csv ."))
   }
   
-  contacts = as.data.frame(fread(file_upload$datapath, 
-                               stringsAsFactors = FALSE, 
-                               na.strings = ""))
+  contacts = as.data.frame(fread(file_upload$datapath, stringsAsFactors = FALSE, na.strings = ""))
   
   #check names
   check_contact_names(contacts)
@@ -102,7 +100,7 @@ check_contacts_upload = function(file_upload){
   contacts = check_unique_contact_links(contacts)
   
   #make sure in the right order
-  contacts_out <- contacts %>% select(from, everything())
+  contacts_out = contacts %>% select(from, everything())
   
   #remove missing sources
   contacts_out = contacts_out[!is.na(contacts_out$from),]
@@ -125,6 +123,7 @@ check_line_names = function(linelist){
   if(!"death_date" %in% names(linelist)){
     stop(safeError("Column `death_date` is missing from linelist."))
   }
+  
 }
 #### ----------------------------------------------------------------------------------- ####
 ### check the names are correct ###
@@ -141,6 +140,7 @@ check_contact_names = function(contacts){
 #### ----------------------------------------------------------------------------------- ####
 ### check contact links are unique and offer a warning ###
 check_unique_contact_links = function(df){
+  #remove duplicates
   df_out = df[!duplicated(t(apply(df[c("from", "to")], 1, sort))),]
   
   if(nrow(df_out)<nrow(df)){
@@ -183,8 +183,8 @@ check_exposure_timeline = function(linelist, contacts, input){
       if(!is.na(linelist$onset_date[linelist_index_from]) & 
          !is.na(linelist$exposure_date_max[linelist_index_to])){
         
-        if(as.numeric(linelist$onset_date[linelist_index_from] - 
-                      linelist$exposure_date_max[linelist_index_to]) >= 0 ){
+        if(linelist$onset_date[linelist_index_from] >=
+                      linelist$exposure_date_max[linelist_index_to] ){
           
           contacts$INCONSISTENT[i] = TRUE
           contacts$reason_inconsistent[i] = "Exposure occurred before source onset date."
@@ -196,8 +196,8 @@ check_exposure_timeline = function(linelist, contacts, input){
       if(!is.na(linelist$death_date[linelist_index_from]) &
          !is.na(linelist$exposure_date_min[linelist_index_to])){
         
-        if(as.numeric(linelist$death_date[linelist_index_from] -
-                      linelist$exposure_date_min[linelist_index_to]) <= 0){
+        if(linelist$death_date[linelist_index_from] <=
+                      linelist$exposure_date_min[linelist_index_to]){
           
           contacts$INCONSISTENT[i] = TRUE
           contacts$reason_inconsistent[i] = "Exposure occurred after source death date."
