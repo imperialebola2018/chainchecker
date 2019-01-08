@@ -23,7 +23,7 @@ function(input, output) {
     
     df = check_date_order(df)
     
-    p = fun_plot_exposure_windows(df, height=600)
+    p = fun_plot_exposure_windows(df, height=400)
     
     p
   })
