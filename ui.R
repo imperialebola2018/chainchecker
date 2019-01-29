@@ -3,9 +3,8 @@ library(shinythemes)
 library(plotly)
 library(shinycssloaders)
 
-
-
-navbarPage("chainchecker", 
+  
+navbarPage(title = "chainchecker",
            selected = "Timeline",
            
            theme = shinytheme("cerulean"),
@@ -75,9 +74,9 @@ navbarPage("chainchecker",
            ),
            tabPanel("Upload",
                     sidebarPanel(
-                      downloadButton("download_ctemplate", "Download contacts template"),
-                      br(),br(),
                       downloadButton("download_ltemplate", "Download linelist template"),
+                      br(),br(),
+                      downloadButton("download_ctemplate", "Download contacts template"),
                       fileInput("file_line", h3("Upload linelist")),
                       fileInput("file_contact", h3("Upload contacts"))),
                     
