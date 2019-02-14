@@ -64,9 +64,13 @@ fun_import_adjust = function(input,
   
   if(is.null(df$bleeding_at_reported_onset)){
     df = df %>% add_column(bleeding_at_reported_onset = FALSE)
+  } else if(is.na(all(df$bleeding_at_reported_onset))){
+    df$bleeding_at_reported_onset = FALSE
   }
   if(is.null(df$diarrhea_at_reported_onset)){
     df = df %>% add_column(diarrhea_at_reported_onset = FALSE)
+  } else if(is.na(all(df$diarrhea_at_reported_onset))){
+    df$diarrhea_at_reported_onset = FALSE
   }
   
   #get onset
