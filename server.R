@@ -46,7 +46,7 @@ function(input, output) {
   
   ### UPLOAD ###-----------------------------------------------------------------------------------
   
-  # DOWNLOAD LINELIST #
+  # DOWNLOAD CONTACT TEMPLATE #
   output$download_ctemplate = downloadHandler(
     filename = function(){
       "contact_template.csv"
@@ -61,7 +61,7 @@ function(input, output) {
     }
   )
   
-  # DOWNLOAD CONTACT #
+  # DOWNLOAD LINELIST TEMPLATE #
   output$download_ltemplate = downloadHandler(
     filename = function(){
       "linelist_template.csv"
@@ -139,8 +139,12 @@ function(input, output) {
     
     #remove added columns for inputs
     vec = names(linelist)
-    added_cols = c("days_onset_to_bleeding", "days_onset_to_diarrhea", "max_incubation",
-                   "min_incubation", "days_onset_to_death", "death_avail")
+    added_cols = c("days_onset_to_bleeding", 
+                   "days_onset_to_diarrhea", 
+                   "max_incubation",
+                   "min_incubation", 
+                   "days_onset_to_death", 
+                   "death_avail")
     vec = vec[!vec %in% added_cols]
     
     selectInput("group", 
@@ -176,8 +180,12 @@ function(input, output) {
     
     #remove added columns for inputs
     vec = names(linelist)
-    added_cols = c("days_onset_to_bleeding", "days_onset_to_diarrhea", "max_incubation",
-                   "min_incubation", "days_onset_to_death", "death_avail")
+    added_cols = c("days_onset_to_bleeding", 
+                   "days_onset_to_diarrhea", 
+                   "max_incubation",
+                   "min_incubation", 
+                   "days_onset_to_death", 
+                   "death_avail")
     vec = vec[!vec %in% added_cols]
     
     selectizeInput("tooltip", 

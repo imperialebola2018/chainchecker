@@ -3,9 +3,10 @@
 #### ----------------------------------------------------------------------------------- ####
 assert_date = function(vec){
   
-  #check formatting
+  #check formatting is in either dd/mm/YY or mm/dd/YY
   vec_sub = vec[!is.na(vec) & vec!="NA"]
-  if(anyNA(as.Date(vec_sub, format = "%d/%m/%Y")) & anyNA(as.Date(vec_sub, format = "%m/%d/%Y")) ){ 
+  if(anyNA(as.Date(vec_sub, format = "%d/%m/%Y")) & 
+     anyNA(as.Date(vec_sub, format = "%m/%d/%Y")) ){ 
     
     stop(safeError("The dates are not in the correct format. 
                    The correct format is either dd/mm/yy or mm/dd/yy and all dates should be consistent."))
@@ -29,6 +30,7 @@ assert_date = function(vec){
 #### ----------------------------------------------------------------------------------- ####
 assert_TF = function(vec){
   
+  #checking columns that should be true/ false are true/ false
   if(sum(!vec %in% c(TRUE, FALSE, NA))>0){
     
     stop(safeError("A column that should be TRUE or FALSE (or NA) contains other values."))
@@ -39,11 +41,12 @@ assert_TF = function(vec){
 #### ----------------------------------------------------------------------------------- ####
 check_line_upload = function(file_upload){
   
+  #if empty upload
   if(is.null(file_upload)){
     stop(safeError("No linelist file uploaded yet."))
   }
   
-  #check right file type
+  #check correct file type. This works for both comma separated and semicolon separated Csv
   if(sum(grep(".csv", file_upload$datapath))==0){
     stop(safeError("Wrong file type uploaded for linelist, file should be a .csv ."))
   }
@@ -54,7 +57,7 @@ check_line_upload = function(file_upload){
   #check names
   check_line_names(df)
   
-  #id
+  #check id's are unique
   if(length(unique(df$id))<nrow(df)){
     stop(safeError("There are duplicate id's in the linelist."))
   }
@@ -74,15 +77,17 @@ check_line_upload = function(file_upload){
 #### ----------------------------------------------------------------------------------- ####
 check_contacts_upload = function(file_upload){
   
+  #if empty upload
   if(is.null(file_upload)){
     stop(safeError("No contacts file uploaded yet."))
   }
   
-  #check right file type
+  #check correct file type. This works for both comma separated and semicolon separated Csv
   if(sum(grep(".csv", file_upload$datapath))==0){
     stop(safeError("Wrong file type uploaded for contacts, file should be a .csv ."))
   }
   
+  #import
   contacts = as.data.frame(fread(file_upload$datapath, stringsAsFactors = FALSE, na.strings = ""))
   
   #check names

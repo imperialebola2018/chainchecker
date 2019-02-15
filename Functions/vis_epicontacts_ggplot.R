@@ -3,9 +3,7 @@
 #' @param x epicontacts object
 #' @param group group to adjust colour of nodes by, defaults to NA
 #' @param contactsgroup group to adjust colour of links by, defaults to NA
-#' @param anon whether to show id on hover, defaults to TRUE
-#' @param serial minimum serial interval for link highlighting
-#' @param with_epicurve whether to plot epicurve as part of output, defaults to FALSE
+#' @param tooltip what to show on hover, defaults to "id"
 #' 
 #' @return plot of transmissin tree
 #' @export
@@ -94,24 +92,7 @@ vis_epicontacts_ggplot = function(x,
   
   g = ggplotly(g, tooltip = tooltip) 
   
-  #add epicurve
-  # m = ggplot(linelist) + 
-  #   geom_histogram( aes_string(x = "onset", 
-  #                              y = "..count..",
-  #                              fill = group) ) +
-  #   theme(axis.ticks.y = element_blank(), 
-  #         axis.ticks.x = element_blank(),
-  #         axis.text.y = element_blank(), 
-  #         axis.text.x = element_blank()) 
-  # 
-  # 
-  # m = ggplotly(m, tooltip = c(group))
-  # 
-  # if(with_epicurve){
-  #   subplot(m ,g, nrows = 2, heights = c(0.2, 0.8), shareX = TRUE)
-  # } else {
-  #   g
-  # }
+  
   g
 }
 
@@ -348,9 +329,9 @@ fun_rank_linelist = function(x){
           x$linelist$rank[unconnected[u]] = x$linelist$rank[unconnected[u-1]] - max_space/nrow(x$linelist)
         }
       }
+    }
+    
   }
   
-}
-
-return(x)
+  return(x)
 }

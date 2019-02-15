@@ -99,7 +99,7 @@ fun_make_tree = function(input){
   
   contacts = check_contacts_upload(input$file_contact)
   
-  #covering extras
+  #covering extras for vis_epicontacts_ggplot
   if(is.null(linelist$name)){ linelist = linelist %>% mutate(name = id)}
   if(is.null(linelist$code)){ linelist = linelist %>% mutate(code = id)}
   
@@ -109,7 +109,7 @@ fun_make_tree = function(input){
   contacts[is.na(contacts)] = FALSE
   
   #adjust for epicontacts
-  names(linelist)[names(linelist) == 'onset_date'] = 'onset'
+  names(linelist)[names(linelist) == "onset_date"] = "onset"
   
   
   #make epicontacts
