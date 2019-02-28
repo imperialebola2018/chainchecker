@@ -54,6 +54,9 @@ check_line_upload = function(file_upload){
   #import
   df = as.data.frame(fread(file_upload$datapath, stringsAsFactors = FALSE, na.strings = ""))
 
+  #get rid of empty rows
+  df = df[!is.na(df$id),]
+  
   #check names
   check_line_names(df)
   
