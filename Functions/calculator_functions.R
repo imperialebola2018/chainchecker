@@ -93,8 +93,7 @@ fun_import_adjust = function(input,
 fun_make_tree = function(input){
   
   linelist = fun_import_adjust(input,
-                               default_to_death_date = ifelse(input$adjust_tree,
-                                                              FALSE, TRUE))
+                               default_to_death_date = input$adjust_tree)
   
   
   contacts = check_contacts_upload(input$file_contact)
