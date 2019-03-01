@@ -247,6 +247,10 @@ function(input, output) {
       #check links are feasible
       contacts = check_exposure_timeline(linelist, contacts, input)
       
+      #add source and sink onset dates
+      contacts = contacts %>% add_column(source_onset = linelist$onset[match(contacts$from, linelist$id)], .after = "reason_inconsistent")
+      contacts = contacts %>% add_column(infectee_onset = linelist$onset[match(contacts$to, linelist$id)], .after = "source_onset")
+      
       write.csv(contacts, file, row.names = FALSE)
     }
   )
