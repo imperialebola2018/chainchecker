@@ -85,6 +85,9 @@ navbarPage(title = "chainchecker",
            tabPanel("Exposure windows for uploaded linelist",
                     
                     sidebarPanel(
+                      checkboxInput("dates_as_reported", 
+                                               "Calculate exposure window from onset dates as reported.",
+                                    value = TRUE),
                       
                       #standard inputs
                       numericInput("min_incubation_all",

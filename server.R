@@ -52,11 +52,11 @@ function(input, output) {
       "contact_template.csv"
     },
     content = function(file){
-      write.csv(data.frame("from" = c("EG1","EG1", "EG2", "EG3"), 
-                           "to" = c("EG2", "EG4", "EG5", "EG6") ,
-                           "contact_of_type1" = c("TRUE", "FALSE", "FALSE", 
+      write.csv(data.frame("from" = c("EG0", "EG1","EG1", "EG2", "EG3"), 
+                           "to" = c("EG1", "EG2", "EG4", "EG5", "EG6") ,
+                           "contact_of_type1" = c("FALSE", "TRUE", "FALSE", "FALSE", 
                                                   "FALSE"),
-                           "contact_of_type2" = c("FALSE", "FALSE", "TRUE", 
+                           "contact_of_type2" = c("FALSE", "FALSE", "FALSE", "TRUE", 
                                                   "FALSE") ), file, row.names = FALSE )
     }
   )
@@ -67,17 +67,25 @@ function(input, output) {
       "linelist_template.csv"
     },
     content = function(file){
-      write.csv(data.frame("id" = c("EG1", "EG2", "EG3", "EG4", "EG5", "EG6"), 
-                           "reported_onset_date" = format(c(Sys.Date()-7, Sys.Date()-4, Sys.Date()-3, 
-                                                            Sys.Date()-2, Sys.Date()-1, Sys.Date()), 
+      write.csv(data.frame("id" = c("EG0", "EG1", "EG2", "EG3", "EG4", "EG5", "EG6", "EG7", "EG8", "EG9"), 
+                           "reported_onset_date" = format(c(Sys.Date() - 30,
+                                                            Sys.Date()-7, Sys.Date()-4, Sys.Date()-3, 
+                                                            Sys.Date()-2, Sys.Date()+1, Sys.Date(), 
+                                                            Sys.Date() +1, Sys.Date() +1, Sys.Date()+2),
                                                           format = "%d/%m/%Y"),
-                           "death_date" = format(c(as.Date(NA), as.Date(NA), Sys.Date()-2, 
-                                                   Sys.Date()-1, Sys.Date(), as.Date(NA)), 
+                           "death_date" = format(c(Sys.Date() - 30,
+                                                   as.Date(NA), as.Date(NA), Sys.Date()-2, 
+                                                   Sys.Date()-1, Sys.Date()+4, as.Date(NA),
+                                                   as.Date(NA), as.Date(NA), as.Date(NA)),
                                                  format = "%d/%m/%Y"),
-                           "bleeding_at_reported_onset" = c("TRUE", "FALSE", "FALSE", 
-                                                            "FALSE", "TRUE", "FALSE"),
-                           "diarrhea_at_reported_onset" = c("FALSE", "FALSE", "TRUE", 
-                                                            "FALSE","TRUE", "TRUE")), file, row.names = FALSE )
+                           "bleeding_at_reported_onset" = c("FALSE",
+                                                            "TRUE", "FALSE", "FALSE", 
+                                                            "FALSE", "TRUE", "FALSE", 
+                                                            "FALSE", "TRUE", "TRUE"),
+                           "diarrhea_at_reported_onset" = c("FALSE",
+                                                            "FALSE", "FALSE", "TRUE", 
+                                                            "FALSE","TRUE", "TRUE", 
+                                                            "FALSE", "FALSE", "FALSE")), file, row.names = FALSE )
     }
   )
   
@@ -87,7 +95,9 @@ function(input, output) {
   output$onset_plot = renderPlotly({
     
     df_out = fun_import_adjust(input,
-                               default_to_death_date = TRUE)
+                               default_to_death_date = ifelse(input$dates_as_reported,
+                                                              FALSE,
+                                                              TRUE))
     
     df_out = check_date_order(df_out)
     
@@ -109,7 +119,9 @@ function(input, output) {
     content = function(file){
       
       df_out = fun_import_adjust(input,
-                                 default_to_death_date = TRUE)
+                                 default_to_death_date = ifelse(input$dates_as_reported,
+                                                                FALSE,
+                                                                TRUE))
       
       df_out = check_date_order(df_out)
       
@@ -173,7 +185,7 @@ function(input, output) {
     
     linelist = fun_import_adjust(input,
                                  default_to_death_date = input$adjust_tree)
-
+    
     
     #adjust for epicontacts
     names(linelist)[names(linelist) == 'onset_date'] = 'onset'
