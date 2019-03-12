@@ -3,7 +3,7 @@
 #' @param x epicontacts object
 #' @param group group to adjust colour of nodes by, defaults to NA
 #' @param contactsgroup group to adjust colour of links by, defaults to NA
-#' @param tooltip what to show on hover, defaults to "id"
+#' @param tooltip what to show on hover, defaults to "ID"
 #' 
 #' @return plot of transmissin tree
 #' @export
@@ -11,7 +11,7 @@
 vis_epicontacts_ggplot = function(x,
                                   group = "onset",
                                   contactsgroup = NA,
-                                  tooltip ="id"){
+                                  tooltip ="ID"){
   
   
   
@@ -29,12 +29,13 @@ vis_epicontacts_ggplot = function(x,
                       color = "grey", 
                       size = 3, 
                       alpha = 0.5)
-  
-  
+
   if(contactsgroup %in% names(rank_contacts)){ #highlight particular links
+    print(ifelse(rank_contacts[,contactsgroup], "orange", "black"))
+    
     g = g + geom_segment(data = rank_contacts,
-                         aes( x= from_onset,
-                              xend = from_onset,
+                         aes( x= as.Date(from_onset, "%d/%m/%Y"),
+                              xend = as.Date(from_onset, "%d/%m/%Y"),
                               y = to,
                               yend = from),
                          colour = ifelse(rank_contacts[,contactsgroup], "orange", "black"),
@@ -42,8 +43,8 @@ vis_epicontacts_ggplot = function(x,
                          alpha = ifelse(rank_contacts[,contactsgroup], 0.8, 1))
     
     g = g + geom_segment(data = rank_contacts,
-                         aes( x= to_onset,
-                              xend = from_onset,
+                         aes( x= as.Date(to_onset, "%d/%m/%Y"),
+                              xend = as.Date(from_onset, "%d/%m/%Y"),
                               y = to,
                               yend = to),
                          colour = ifelse(rank_contacts[,contactsgroup], "orange", "black"),
@@ -52,21 +53,22 @@ vis_epicontacts_ggplot = function(x,
   }
   #add contact lines
   g = g + geom_segment(data = rank_contacts,
-                       aes( x= to_onset,
-                            xend = from_onset,
+                       aes( x= as.Date(to_onset, "%d/%m/%Y"),
+                            xend = as.Date(from_onset, "%d/%m/%Y"),
                             y = to,
                             yend = to))
   
   
   g = g + geom_segment(data = rank_contacts,
-                       aes( x= from_onset,
-                            xend = from_onset,
+                       aes( x= as.Date(from_onset, "%d/%m/%Y"),
+                            xend = as.Date(from_onset, "%d/%m/%Y"),
                             y = to,
                             yend = from))
   
   
   
   #add points
+  linelist$onset = as.Date(linelist$onset, "%d/%m/%Y")
   g = g + geom_point(data = linelist,
                      aes_string(x = "onset",
                                 y = "rank",
@@ -87,7 +89,7 @@ vis_epicontacts_ggplot = function(x,
           axis.text.y = element_blank(),
           panel.background = element_rect(fill = "white", colour = "grey50"),
           axis.text.x = element_text(angle = 45, hjust = 1)) +
-    scale_x_date(date_breaks = "1 week", date_labels = "%b %d") 
+    scale_x_date(date_breaks = "1 week", date_labels = "%d/%m/%Y") 
   
   
   g = ggplotly(g, tooltip = tooltip) 
@@ -119,15 +121,14 @@ fun_rank_contacts = function(x){
   #add a rank based on the ordering, distributed by tree
   x = fun_rank_linelist(x)
   
-  #use this rank instead of id
+  #use this rank instead of ID
   rc = x$contacts
-  
   rc = rc %>% 
     mutate(to = x$linelist$rank[match(rc$to, x$linelist$id)],
            from = x$linelist$rank[match(rc$from , x$linelist$id)]) %>%
     #add rank onsets
-    add_column(to_onset = x$linelist$onset[match(rc$to, x$linelist$id)],
-               from_onset = x$linelist$onset[match(rc$from , x$linelist$id)])
+    add_column(to_onset = as.Date(x$linelist$onset[match(rc$to, x$linelist$id)], "%d/%m/%Y"),
+               from_onset = as.Date(x$linelist$onset[match(rc$from , x$linelist$id)], "%d/%m/%Y"))
   
   rc = rc %>% filter(!is.na(to_onset) & !is.na(from_onset))
   
@@ -144,7 +145,6 @@ fun_rank_contacts = function(x){
 #' @export
 
 fun_get_clusters = function(x){
-  
   #create df and order
   df = x$contacts %>% 
     add_column(onset = x$linelist$onset[match(x$contacts$from, 
@@ -196,7 +196,6 @@ fun_get_trees = function(df){
     
     while(length(tree_from)>0){
       # primary, secondary etc. infections
-      
       df$tree[ df$from %in% tree_from] = t 
       
       #just in case there are multiple sources
@@ -286,6 +285,7 @@ fun_rank_linelist = function(x){
   
   #declare
   x$linelist = x$linelist %>% add_column(rank = NA)
+  x$linelist = x$linelist %>% add_column(ID = x$linelist$id)
   
   for(t in 1:n_trees){
     

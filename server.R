@@ -4,23 +4,184 @@ library(plotly)
 library(ggplot2)
 library(epicontacts)
 library(tibble)
+library(plyr)
 library(dplyr)
+library(readr)
 library(lubridate)
 library(data.table)
+library(gtools)
+source('Functions/globals.R')
 source('Functions/vis_epicontacts_ggplot.R')
 source('Functions/calculator_functions.R')
 source('Functions/internals.R')
+source('Functions/form.R')
+
+
 
 ### SERVER ###
-function(input, output) {
+function(input, output, session) {
+
+  vhfColumnData <- reactive({
+    fields.name <- c()
+
+    for (row in 1:nrow(csv_field_info)){
+        column_name = toString(csv_field_info[row, "column_name"])
+        fields.name <- c(fields.name, column_name)
+    }
+
+    fields.name
+  })
+
+  vhf_data_reactive <<- reactive({
+    infile <- input$file_vhf
+    if (is.null(infile)) {
+      # User has not uploaded a file yet
+      return(NULL)
+    }
+    #csv_field_info <- read.csv("vhf-columns.csv", header=TRUE, sep=",", quote="\"")
+
+    fields.name <- c()
+
+    for (row in 1:nrow(csv_field_info)){
+        column_name = toString(csv_field_info[row, "column_name"])
+        
+        fields.name <- c(fields.name, column_name)
+    }
+
+
+    new_df = data.frame(matrix(ncol = nrow(csv_field_info), nrow = 0), stringsAsFactors=FALSE)
+    colnames(new_df) <- fields.name
+
+
+
+    vhf_data = read.csv(infile$datapath)
+    matching_fields = fields.name[fields.name %in% names(vhf_data)]
+    cc_fields = setdiff(names(new_df), names(vhf_data))
+
+    df <- rbind(new_df, vhf_data[,matching_fields])
+    df[,cc_fields] <- NA
+    vhf_data <<- df
+    
+    df
+  })
+
+
+
+  output$sidebar <- renderUI({
+    formFields = tagList()
+    formFields <- tagAppendChild(formFields, textInput("row", "Row"))
+    for (row in 1:nrow(csv_field_info)){
+      column_name <- toString(csv_field_info[row, "column_name"])
+      display_name <- toString(csv_field_info[row, "display_name"])
+      input_type <- toString(csv_field_info[row, "input_type"])
+      required <- toString(csv_field_info[row, "required"])
+      values <- strsplit(toString(csv_field_info[row, "values"]), ',')[[1]]
+
+      field <- switch(input_type,
+        "text" = textInput(column_name, display_name),
+        "numeric" = numericInput(column_name, display_name, 0),
+        "checkbox" = checkboxInput(column_name, display_name),
+        "date" = dateInput(column_name, display_name, format="dd/mm/yyyy"),
+        "select" = selectInput(column_name, display_name, values, selectize=TRUE, multiple=FALSE),
+        "multiSelect" = selectInput(column_name, display_name, values, selectize=TRUE, multiple=TRUE),
+        "source" = selectInput(column_name, display_name, c("", select(vhf_data, "ID")), selected = NA, selectize=TRUE, multiple=FALSE)
+
+      )
+      formFields <- tagAppendChild(formFields, field)
+
+    }
+    
+    formFields
+  })
+
+  vhfFormData <- reactive({
+    sapply(names(get_vhf_table_metadata()$fields), function(x) input[[x]])
+  })
   
+  # Click "Submit" button -> save data
+  observeEvent(input$vhf_submit, {
+    if (exists("vhf_data")) {
+      update_vhf_data(vhfFormData())
+    } else {
+      create_vhf_data(vhfFormData())
+    }
+
+    output$vhfTable <- renderDT({
+      #update after submit is clicked
+      input$submit
+      #update after delete is clicked
+      input$delete
+      vhf_data
+  }, server = FALSE, selection = "single", rownames = FALSE, 
+  colnames = unname(get_vhf_table_metadata()$fields)[-1],
+
+  )    
+
+  }, priority = 1)
+  
+  # Press "New" button -> display empty record
+  observeEvent(vhf_data_reactive(), {
+      vhf_data <<- vhf_data_reactive()
+  })
+  
+  # Press "Delete" button -> delete from data
+  output$vhf_export <- downloadHandler(
+    filename = function(){
+      paste0("vhf_", Sys.Date(), ".csv")
+    },
+    content = function(file){
+      
+      write.csv(vhf_data, file, row.names = FALSE)
+    }
+  )
+
+  # Press "Delete" button -> delete from data
+  observeEvent(input$vhfDelete, {
+    delete_vhf_data(vhfFormData())
+    #update_vhf_inputs(CreateDefaultVHFRecord(), session)
+  }, priority = 1)
+  
+  # Select row in table -> show details in inputs
+  observeEvent(input$vhfTable_rows_selected, {
+    if (length(input$vhfTable_rows_selected) > 0) {
+      data <- vhf_data[input$vhfTable_rows_selected, ]
+      update_vhf_inputs(data, session, input$vhfTable_rows_selected)
+      
+    }
+    
+  })
+
+  output$vhfTable <- renderDT({
+    #update after submit is clicked
+    input$submit
+    #update after delete is clicked
+    input$delete
+    vhf_data_reactive()
+  }, server = FALSE, selection = "single", rownames = FALSE, 
+  colnames = unname(get_vhf_table_metadata()$fields)[-1],
+
+  )    
+
+  # display table
+  #output$vhfTable <- DT::renderDataTable({
+    #update after submit is clicked
+  #  input$vhfSubmit
+    #update after delete is clicked
+  #  input$vhfDelete
+  #  vhf_data
+  #}, server = FALSE, selection = "single",
+  #colnames = unname(get_vhf_table_metadata()$fields)[-1]
+  #)   
+
+
+
   ### TIMELINE ###-----------------------------------------------------------------------------------
   
   # PLOT #
   output$exposure_plot <- renderPlotly({
     
     df = fun_get_onset(input, default_to_death_date = TRUE)
-    
+  
     df = check_date_order(df)
     
     p = fun_plot_exposure_windows(df, height=400)
@@ -41,8 +202,7 @@ function(input, output) {
            format(fun_get_onset(input)$exposure_date_max, format = "%d %B"),
            ".")
   })
-  
-  
+
   
   ### UPLOAD ###-----------------------------------------------------------------------------------
   
@@ -52,11 +212,11 @@ function(input, output) {
       "contact_template.csv"
     },
     content = function(file){
-      write.csv(data.frame("from" = c("EG0", "EG1","EG1", "EG2", "EG3"), 
-                           "to" = c("EG1", "EG2", "EG4", "EG5", "EG6") ,
-                           "contact_of_type1" = c("FALSE", "TRUE", "FALSE", "FALSE", 
+      write.csv(data.frame("from" = c("EG1","EG1", "EG2", "EG3"), 
+                           "to" = c("EG2", "EG4", "EG5", "EG6") ,
+                           "contact_of_type1" = c("TRUE", "FALSE", "FALSE", 
                                                   "FALSE"),
-                           "contact_of_type2" = c("FALSE", "FALSE", "FALSE", "TRUE", 
+                           "contact_of_type2" = c("FALSE", "FALSE", "TRUE", 
                                                   "FALSE") ), file, row.names = FALSE )
     }
   )
@@ -67,25 +227,17 @@ function(input, output) {
       "linelist_template.csv"
     },
     content = function(file){
-      write.csv(data.frame("id" = c("EG0", "EG1", "EG2", "EG3", "EG4", "EG5", "EG6", "EG7", "EG8", "EG9"), 
-                           "reported_onset_date" = format(c(Sys.Date() - 30,
-                                                            Sys.Date()-7, Sys.Date()-4, Sys.Date()-3, 
-                                                            Sys.Date()-2, Sys.Date()+1, Sys.Date(), 
-                                                            Sys.Date() +1, Sys.Date() +1, Sys.Date()+2),
+      write.csv(data.frame("id" = c("EG1", "EG2", "EG3", "EG4", "EG5", "EG6"), 
+                           "reported_onset_date" = format(c(Sys.Date()-7, Sys.Date()-4, Sys.Date()-3, 
+                                                            Sys.Date()-2, Sys.Date()-1, Sys.Date()), 
                                                           format = "%d/%m/%Y"),
-                           "death_date" = format(c(Sys.Date() - 30,
-                                                   as.Date(NA), as.Date(NA), Sys.Date()-2, 
-                                                   Sys.Date()-1, Sys.Date()+4, as.Date(NA),
-                                                   as.Date(NA), as.Date(NA), as.Date(NA)),
+                           "death_date" = format(c(as.Date(NA), as.Date(NA), Sys.Date()-2, 
+                                                   Sys.Date()-1, Sys.Date(), as.Date(NA)), 
                                                  format = "%d/%m/%Y"),
-                           "bleeding_at_reported_onset" = c("FALSE",
-                                                            "TRUE", "FALSE", "FALSE", 
-                                                            "FALSE", "TRUE", "FALSE", 
-                                                            "FALSE", "TRUE", "TRUE"),
-                           "diarrhea_at_reported_onset" = c("FALSE",
-                                                            "FALSE", "FALSE", "TRUE", 
-                                                            "FALSE","TRUE", "TRUE", 
-                                                            "FALSE", "FALSE", "FALSE")), file, row.names = FALSE )
+                           "bleeding_at_reported_onset" = c("TRUE", "FALSE", "FALSE", 
+                                                            "FALSE", "TRUE", "FALSE"),
+                           "diarrhea_at_reported_onset" = c("FALSE", "FALSE", "TRUE", 
+                                                            "FALSE","TRUE", "TRUE")), file, row.names = FALSE )
     }
   )
   
@@ -93,16 +245,15 @@ function(input, output) {
   
   # PLOT #
   output$onset_plot = renderPlotly({
-    
     df_out = fun_import_adjust(input,
-                               default_to_death_date = ifelse(input$dates_as_reported,
-                                                              FALSE,
-                                                              TRUE))
+                               default_to_death_date = TRUE)
     
+    df_out = add_date_fields(df_out)
+
     df_out = check_date_order(df_out)
     
-    if(input$ID1_onset_window %in% df_out$id | input$ID2_onset_window %in% df_out$id ){
-      df_out = df_out %>% filter(id %in% c(input$ID1_onset_window, input$ID2_onset_window))
+    if(input$ID1_onset_window %in% df_out$ID | input$ID2_onset_window %in% df_out$ID ){
+      df_out = df_out %>% filter(ID %in% c(input$ID1_onset_window, input$ID2_onset_window))
     }
     
     p = fun_plot_exposure_windows(df_out, height=700)
@@ -119,9 +270,7 @@ function(input, output) {
     content = function(file){
       
       df_out = fun_import_adjust(input,
-                                 default_to_death_date = ifelse(input$dates_as_reported,
-                                                                FALSE,
-                                                                TRUE))
+                                 default_to_death_date = TRUE)
       
       df_out = check_date_order(df_out)
       
@@ -132,15 +281,17 @@ function(input, output) {
   )
   
   ### ANALYSIS - TREE ###-----------------------------------------------------------------------------------
-  
+
   # PLOT #
   output$tree = renderPlotly({
     
-    fun_make_tree(input)
+    tree <- fun_make_tree(input)
+    
+    tree
     
   })
   
-  # DROP DOWN MENU LINELIST #
+    # DROP DOWN MENU LINELIST #
   output$linelist_group = renderUI({
     
     linelist = fun_import_adjust(input,
@@ -162,16 +313,15 @@ function(input, output) {
     selectInput("group", 
                 "Enter a characteristic to show on the plot: ", 
                 vec)
-  })
+})
   
   # DROP DOWN MENU CONTACT #
   output$contact_group = renderUI({
-    
     linelist = fun_import_adjust(input,
                                  default_to_death_date = input$adjust_tree)
     
     
-    contacts = check_contacts_upload(input$file_contact)
+    contacts = check_contacts_upload(input$file_vhf)
     
     #check links are feasible
     contacts = check_exposure_timeline(linelist, contacts, input)
@@ -185,7 +335,7 @@ function(input, output) {
     
     linelist = fun_import_adjust(input,
                                  default_to_death_date = input$adjust_tree)
-    
+
     
     #adjust for epicontacts
     names(linelist)[names(linelist) == 'onset_date'] = 'onset'
@@ -248,7 +398,7 @@ function(input, output) {
                                    default_to_death_date = input$adjust_tree)
       
       
-      contacts = check_contacts_upload(input$file_contact)
+      contacts = check_contacts_upload(input$file_vhf)
       
       #covering extras
       if(is.null(linelist$name)){ linelist = linelist %>% mutate(name = id)}
@@ -258,10 +408,6 @@ function(input, output) {
       
       #check links are feasible
       contacts = check_exposure_timeline(linelist, contacts, input)
-      
-      #add source and sink onset dates
-      contacts = contacts %>% add_column(source_onset = linelist$onset[match(contacts$from, linelist$id)], .after = "reason_inconsistent")
-      contacts = contacts %>% add_column(infectee_onset = linelist$onset[match(contacts$to, linelist$id)], .after = "source_onset")
       
       write.csv(contacts, file, row.names = FALSE)
     }

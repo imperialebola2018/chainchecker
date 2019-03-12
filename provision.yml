@@ -6,7 +6,11 @@ packages:
   - ggplot2
   - epicontacts
   - tibble
+  - plyr
   - dplyr
   - shinycssloaders
   - lubridate
   - data.table
+  - readr
+  - gtools
+  - DT

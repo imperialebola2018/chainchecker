@@ -2,46 +2,76 @@
 ### ONSET CALCULATOR FUNCTIONS ###
 ##################################
 
+add_date_fields = function(input){
+  df = tibble("ID" = input$ID)
+
+if(input$death_avail){
+    df = df %>% add_column(death_date = as.Date(input$DateDeath, "%d/%m/%Y"),
+                            onset_date = as.Date(input$DateDeath, "%d/%m/%Y") - input$days_onset_to_death,
+                            reported_onset_date = as.Date(input$DateOnset, "%d/%m/%Y"))
+    
+  } else { #no death date
+    df = df %>% add_column(death_date = as.Date(input$DateDeath, "%d/%m/%Y"),
+                            reported_onset_date = as.Date(input$DateOnset, "%d/%m/%Y"))
+    
+    if(input$bleeding_at_reported_onset){ #with bleeding
+      df = df %>% add_column( onset_date = as.Date(df$reported_onset_date, "%d/%m/%Y") - 
+                                                      input$days_onset_to_bleeding)
+      
+    } else if(input$diarrhea_at_reported_onset){ #with diarrhea
+      df = df %>% add_column( onset_date = as.Date(df$reported_onset_date, "%d/%m/%Y") - 
+                                                      input$days_onset_to_diarrhea)
+      
+    } else { #no wet symptoms
+      df = df %>% add_column( onset_date = as.Date(df$reported_onset_date, "%d/%m/%Y"))
+    }
+  }
+
+  df = df %>% add_column( exposure_date_min = as.Date(df$onset_date, "%d/%m/%Y") - input$max_incubation,
+                          exposure_date_max = as.Date(df$onset_date, "%d/%m/%Y") - input$min_incubation)
+
+  return(df)
+}
+
 ### calculator logic steps ###
 fun_get_onset = function(input,
                          default_to_death_date = TRUE){
-  
-  df = tibble("id" = input$id)
-  
+  df = tibble("ID" = input$ID)
+
   if(default_to_death_date){
     #then add other dates
-    if(input$death_avail){ #if there is a death date
-      
-      df = df %>% add_column(death_date = input$death_date,
-                             onset_date = as.Date(input$death_date - input$days_onset_to_death),
-                             reported_onset_date = input$reported_onset_date)
+    #if(input$death_avail){ #if there is a death date
+
+    if(input$death_avail){
+      df = df %>% add_column(death_date = as.Date(input$DateDeath, "%d/%m/%Y"),
+                             onset_date = as.Date(input$DateDeath, "%d/%m/%Y") - input$days_onset_to_death,
+                             reported_onset_date = as.Date(input$DateOnset, "%d/%m/%Y"))
       
     } else { #no death date
-      df = df %>% add_column(death_date = input$death_date,
-                             reported_onset_date = input$reported_onset_date)
+      df = df %>% add_column(death_date = as.Date(input$DateDeath, "%d/%m/%Y"),
+                             reported_onset_date = as.Date(input$DateOnset, "%d/%m/%Y"))
       
       if(input$bleeding_at_reported_onset){ #with bleeding
-        df = df %>% add_column( onset_date = as.Date(df$reported_onset_date - 
-                                                       input$days_onset_to_bleeding))
+        df = df %>% add_column( onset_date = as.Date(df$reported_onset_date, "%d/%m/%Y") - 
+                                                       input$days_onset_to_bleeding)
         
       } else if(input$diarrhea_at_reported_onset){ #with diarrhea
-        df = df %>% add_column( onset_date = as.Date(df$reported_onset_date - 
-                                                       input$days_onset_to_diarrhea))
+        df = df %>% add_column( onset_date = as.Date(df$reported_onset_date, "%d/%m/%Y") - 
+                                                       input$days_onset_to_diarrhea)
         
       } else { #no wet symptoms
-        df = df %>% add_column( onset_date = df$reported_onset_date)
+        df = df %>% add_column( onset_date = as.Date(df$reported_onset_date, "%d/%m/%Y"))
       }
     }
   } else {
-    df = df %>% add_column( onset_date = input$reported_onset_date,
-                            death_date = input$death_date,
-                            reported_onset_date = input$reported_onset_date)
+    df = df %>% add_column( onset_date = as.Date(input$DateOnset, "%d/%m/%Y"),
+                            death_date = as.Date(input$DateDeath, "%d/%m/%Y"),
+                            reported_onset_date = as.Date(input$DateOnset, "%d/%m/%Y"))
   }
   
   #calculate exposure period
-  df = df %>% add_column( exposure_date_min = as.Date(df$onset_date - input$max_incubation),
-                          exposure_date_max = as.Date(df$onset_date - input$min_incubation))
-  
+  df = df %>% add_column( exposure_date_min = as.Date(df$onset_date, "%d/%m/%Y") - input$max_incubation,
+                          exposure_date_max = as.Date(df$onset_date, "%d/%m/%Y") - input$min_incubation)
   
   return(df)
 }
@@ -52,15 +82,17 @@ fun_import_adjust = function(input,
                              default_to_death_date = TRUE){
   
   #import and check
-  df = check_line_upload(input$file_line)
+  df = check_line_upload(input$file_vhf)
   
   #format
+  df$DateDeath[df$DateDeath == ""] <- NA
+  
   df = df %>% add_column( days_onset_to_bleeding = input$days_onset_to_bleeding_all,
                           days_onset_to_diarrhea = input$days_onset_to_diarrhea_all,
                           max_incubation = input$max_incubation_all,
                           min_incubation = input$min_incubation_all,
                           days_onset_to_death = input$days_onset_to_death_all,
-                          death_avail = !is.na(df$death_date))
+                          death_avail = !is.na(df$DateDeath))
   
   if(is.null(df$bleeding_at_reported_onset)){
     df = df %>% add_column(bleeding_at_reported_onset = FALSE)
@@ -80,10 +112,10 @@ fun_import_adjust = function(input,
   }
   
   df = df %>% 
-    add_column( onset_date = df_out$onset_date, 
-                exposure_date_min = df_out$exposure_date_min, 
-                exposure_date_max = df_out$exposure_date_max,
-                .after = "reported_onset_date") 
+    add_column( onset_date = as.Date(df_out$onset_date, "%d/%m/%Y"), 
+                exposure_date_min = as.Date(df_out$exposure_date_min, "%d/%m/%Y"), 
+                exposure_date_max = as.Date(df_out$exposure_date_max, "%d/%m/%Y"),
+                .after = "DateOnset") 
   
   return(df)
 }
@@ -91,26 +123,26 @@ fun_import_adjust = function(input,
 #### ----------------------------------------------------------------------------------- ####
 ### function to make tree if data is uploaded ###
 fun_make_tree = function(input){
-  
   linelist = fun_import_adjust(input,
-                               default_to_death_date = input$adjust_tree)
-  
-  
-  contacts = check_contacts_upload(input$file_contact)
+                               default_to_death_date = ifelse(input$adjust_tree,
+                                                              FALSE, TRUE))
+  contacts = check_contacts_upload(vhf_data)
   
   #covering extras for vis_epicontacts_ggplot
-  if(is.null(linelist$name)){ linelist = linelist %>% mutate(name = id)}
-  if(is.null(linelist$code)){ linelist = linelist %>% mutate(code = id)}
+  if(is.null(linelist$name)){ linelist = linelist %>% mutate(name = ID)}
+  if(is.null(linelist$code)){ linelist = linelist %>% mutate(code = ID)}
   
   #check links are feasible
   contacts = check_exposure_timeline(linelist, contacts, input)
-  
+
   contacts[is.na(contacts)] = FALSE
   
   #adjust for epicontacts
-  names(linelist)[names(linelist) == "onset_date"] = "onset"
+  names(linelist)[names(linelist) == "DateOnset"] = "onset"
   
   
+  contacts = contacts %>% add_column(to = contacts$ID, .after="caseId_source")
+
   #make epicontacts
   x = epicontacts::make_epicontacts(linelist, contacts)
   
@@ -122,42 +154,38 @@ fun_make_tree = function(input){
     layout(height = 700)
 
   return(p)
-  
-  
 }
 
 #### ----------------------------------------------------------------------------------- ####
 ### function to plot exposure windows ###
 fun_plot_exposure_windows = function(df, height){
-  
-  g = ggplot(df, aes(text = paste0("ID: ",id))) 
-  
-  
-  g = g + geom_rect(aes(xmin = exposure_date_min,
-                        xmax = exposure_date_max,
-                        ymin = reorder(id, exposure_date_min), 
-                        ymax = reorder(id, exposure_date_min),
+  g = ggplot(df, aes(text = paste0("ID: ",ID))) 
+
+  g = g + geom_rect(aes(xmin = as.Date(exposure_date_min,  "%d/%m/%Y"),
+                        xmax = as.Date(exposure_date_max,  "%d/%m/%Y"),
+                        ymin = reorder(ID, exposure_date_min), 
+                        ymax = reorder(ID, exposure_date_min),
                         color = "Exposure"),
                     size = 1.1) +
-    geom_point( aes( x = death_date,
-                     y = reorder(id, exposure_date_min),
+    geom_point( aes( x = as.Date(death_date,  "%d/%m/%Y"),
+                     y = reorder(ID, exposure_date_min),
                      color = "Death"),
                 shape = ifelse(df$dates_in_correct_order != TRUE,
                                "square",
                                "circle"),
                 size = 5) +
-    geom_point( aes( x = exposure_date_min,
-                     y = reorder(id, exposure_date_min),
+    geom_point( aes( x = as.Date(exposure_date_min,  "%d/%m/%Y"),
+                     y = reorder(ID, exposure_date_min),
                      color = "Exposure"), size = 0.1) +
-    geom_point( aes( x = exposure_date_max,
-                     y = reorder(id, exposure_date_min),
+    geom_point( aes( x = as.Date(exposure_date_max,  "%d/%m/%Y"),
+                     y = reorder(ID, exposure_date_min),
                      color = "Exposure"), size = 0.1) +
-    geom_point(aes(x = onset_date,
-                   y = reorder(id, exposure_date_min),
+    geom_point(aes(x = as.Date(onset_date,  "%d/%m/%Y"),
+                   y = reorder(ID, exposure_date_min),
                    color = "Estimated onset"),
                size = 5) +
-    geom_point(aes(x = reported_onset_date,
-                   y = reorder(id, exposure_date_min),
+    geom_point(aes(x = as.Date(onset_date,  "%d/%m/%Y"),
+                   y = reorder(ID, exposure_date_min),
                    color = "Reported onset"),
                size = 5, shape = 4, stroke = 2) +
     ylab("Identifier") +
@@ -165,8 +193,9 @@ fun_plot_exposure_windows = function(df, height){
     theme(panel.background = element_rect(fill = "white", colour = "grey50"),
           text = element_text(size = 14),
           axis.text.x = element_text(angle = 45, hjust = 1)) +
-    xlab("Date")
-  
+    xlab("Date") +
+    scale_x_date(date_breaks = "1 week", date_labels = "%d/%m/%Y")
+
   p = plotly::ggplotly(g, height = height, tooltip = c("x", "text" )) 
   
   return(p)

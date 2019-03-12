@@ -2,8 +2,8 @@ library(shiny)
 library(shinythemes)
 library(plotly)
 library(shinycssloaders)
+library(DT)
 
-  
 navbarPage(title = "chainchecker",
            selected = "Timeline",
            
@@ -24,7 +24,7 @@ navbarPage(title = "chainchecker",
                                    "Mean period from onset to death (days):",
                                    value = 9, min = 0, max = 365),
                       
-                      textInput("id",
+                      textInput("ID ",
                                 "Identifier:",
                                 value = "EG1"),
                       
@@ -34,15 +34,17 @@ navbarPage(title = "chainchecker",
                                     value = TRUE), 
                       conditionalPanel(
                         condition = "input.death_avail == true",
-                        dateInput("death_date",
+                        dateInput("DateDeath",
                                   "Date of death:",
-                                  value = Sys.Date())
+                                  value = Sys.Date(),
+                                  format="dd/mm/yyyy")
                       ), 
                       conditionalPanel(
                         condition = "input.death_avail == false",
-                        dateInput("reported_onset_date",
+                        dateInput("DateOnset",
                                   "Reported date of symptom onset:",
-                                  value = Sys.Date()-7),
+                                  value = Sys.Date()-7,
+                                  format="dd/mm/yyyy"),
                         checkboxInput("bleeding_at_reported_onset", 
                                       "Check box if the individual was bleeding when onset was reported*.", 
                                       value = TRUE),
@@ -74,20 +76,24 @@ navbarPage(title = "chainchecker",
            ),
            tabPanel("Upload",
                     sidebarPanel(
-                      downloadButton("download_ltemplate", "Download linelist template"),
-                      br(),br(),
-                      downloadButton("download_ctemplate", "Download contacts template"),
-                      fileInput("file_line", h3("Upload linelist")),
-                      fileInput("file_contact", h3("Upload contacts"))),
+                      fileInput("file_vhf", h3("Upload VHF")))
+           ),
+
+           tabPanel("Data Entry",
+                    sidebarPanel(
+                      actionButton("vhf_submit","Submit"),
+                      downloadButton("vhf_export", "Export VHF Data as .csv"),
+                      uiOutput("sidebar")
+                      
+                    ),
                     
-                    mainPanel(includeMarkdown("Documentation/Upload_Guidelines.md"))
+                    mainPanel(
+                      dataTableOutput("vhfTable", width=500)
+                    )
            ),
            tabPanel("Exposure windows for uploaded linelist",
                     
                     sidebarPanel(
-                      checkboxInput("dates_as_reported", 
-                                               "Calculate exposure window from onset dates as reported.",
-                                    value = TRUE),
                       
                       #standard inputs
                       numericInput("min_incubation_all",
