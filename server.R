@@ -21,24 +21,12 @@ source('Functions/form.R')
 ### SERVER ###
 function(input, output, session) {
 
-  vhfColumnData <- reactive({
-    fields.name <- c()
-
-    for (row in 1:nrow(csv_field_info)){
-        column_name = toString(csv_field_info[row, "column_name"])
-        fields.name <- c(fields.name, column_name)
-    }
-
-    fields.name
-  })
-
   vhf_data_reactive <<- reactive({
     infile <- input$file_vhf
     if (is.null(infile)) {
       # User has not uploaded a file yet
       return(NULL)
     }
-    #csv_field_info <- read.csv("vhf-columns.csv", header=TRUE, sep=",", quote="\"")
 
     fields.name <- c()
 
@@ -52,46 +40,35 @@ function(input, output, session) {
     new_df = data.frame(matrix(ncol = nrow(csv_field_info), nrow = 0), stringsAsFactors=FALSE)
     colnames(new_df) <- fields.name
 
-
-
-    vhf_data = read.csv(infile$datapath)
+    vhf_data = read.csv(infile$datapath, header=TRUE)
+    
+    vhf_data <- vhf_data %>% add_column(id = vhf_data$ID, .after = "ID")
+    
     matching_fields = fields.name[fields.name %in% names(vhf_data)]
+
     cc_fields = setdiff(names(new_df), names(vhf_data))
 
     df <- rbind(new_df, vhf_data[,matching_fields])
     df[,cc_fields] <- NA
+
+    df <- df[fields.name]
+
     vhf_data <<- df
-    
+
+    output$sidebar <- renderUI({generate_sidebar()})
     df
   })
 
 
 
   output$sidebar <- renderUI({
-    formFields = tagList()
-    formFields <- tagAppendChild(formFields, textInput("row", "Row"))
-    for (row in 1:nrow(csv_field_info)){
-      column_name <- toString(csv_field_info[row, "column_name"])
-      display_name <- toString(csv_field_info[row, "display_name"])
-      input_type <- toString(csv_field_info[row, "input_type"])
-      required <- toString(csv_field_info[row, "required"])
-      values <- strsplit(toString(csv_field_info[row, "values"]), ',')[[1]]
-
-      field <- switch(input_type,
-        "text" = textInput(column_name, display_name),
-        "numeric" = numericInput(column_name, display_name, 0),
-        "checkbox" = checkboxInput(column_name, display_name),
-        "date" = dateInput(column_name, display_name, format="dd/mm/yyyy"),
-        "select" = selectInput(column_name, display_name, values, selectize=TRUE, multiple=FALSE),
-        "multiSelect" = selectInput(column_name, display_name, values, selectize=TRUE, multiple=TRUE),
-        "source" = selectInput(column_name, display_name, c("", select(vhf_data, "ID")), selected = NA, selectize=TRUE, multiple=FALSE)
-
-      )
-      formFields <- tagAppendChild(formFields, field)
-
+    infile <- input$file_vhf
+    if (is.null(infile)) {
+      # User has not uploaded a file yet
+      stop(safeError("No VHF file uploaded yet."))
+      return(NULL)
     }
-    
-    formFields
+    generate_sidebar()
   })
 
   vhfFormData <- reactive({
@@ -100,7 +77,7 @@ function(input, output, session) {
   
   # Click "Submit" button -> save data
   observeEvent(input$vhf_submit, {
-    if (exists("vhf_data")) {
+    if (input$id != 0) {
       update_vhf_data(vhfFormData())
     } else {
       create_vhf_data(vhfFormData())
@@ -112,12 +89,16 @@ function(input, output, session) {
       #update after delete is clicked
       input$delete
       vhf_data
-  }, server = FALSE, selection = "single", rownames = FALSE, 
-  colnames = unname(get_vhf_table_metadata()$fields)[-1],
+      }, server = FALSE, selection = "single", rownames = FALSE, 
+      colnames = unname(get_vhf_table_metadata()$fields)[-1],
 
-  )    
+      )    
 
   }, priority = 1)
+
+  observeEvent(input$vhf_create, {
+    update_vhf_inputs(create_default_vhf_record(), session)
+  })
   
   # Press "New" button -> display empty record
   observeEvent(vhf_data_reactive(), {
@@ -136,9 +117,18 @@ function(input, output, session) {
   )
 
   # Press "Delete" button -> delete from data
-  observeEvent(input$vhfDelete, {
-    delete_vhf_data(vhfFormData())
-    #update_vhf_inputs(CreateDefaultVHFRecord(), session)
+  observeEvent(input$vhf_delete, {
+    delete_vhf_data(vhf_data[input$vhfTable_rows_selected, ])
+    update_vhf_inputs(create_default_vhf_record(), session)
+
+    output$vhfTable <- renderDT({
+      input$submit
+      input$delete
+      vhf_data
+      }, server = FALSE, selection = "single", rownames = FALSE, 
+      colnames = unname(get_vhf_table_metadata()$fields)[-1],
+
+      )    
   }, priority = 1)
   
   # Select row in table -> show details in inputs
@@ -162,46 +152,49 @@ function(input, output, session) {
 
   )    
 
-  # display table
-  #output$vhfTable <- DT::renderDataTable({
-    #update after submit is clicked
-  #  input$vhfSubmit
-    #update after delete is clicked
-  #  input$vhfDelete
-  #  vhf_data
-  #}, server = FALSE, selection = "single",
-  #colnames = unname(get_vhf_table_metadata()$fields)[-1]
-  #)   
-
-
-
   ### TIMELINE ###-----------------------------------------------------------------------------------
   
   # PLOT #
   output$exposure_plot <- renderPlotly({
-    
-    df = fun_get_onset(input, default_to_death_date = TRUE)
+    df <- tibble(
+      id = input$timeline_id, 
+      reported_onset_date = input$timeline_onset_date, 
+      death_date = input$timeline_death_date,
+      bleeding_at_reported_onset = input$bleeding_at_reported_onset,
+      days_onset_to_bleeding = input$days_onset_to_bleeding,
+      diarrhea_at_reported_onset = input$diarrhea_at_reported_onset,
+      days_onset_to_diarrhea = input$days_onset_to_diarrhea,
+      days_onset_to_death = input$days_onset_to_death,
+      death_avail = input$death_avail,
+      min_incubation = input$min_incubation,
+      max_incubation = input$max_incubation
+      )
+  
+    df = fun_get_onset(df[1,], default_to_death_date = TRUE)
   
     df = check_date_order(df)
     
+
+    output$estimated_onset = renderText({
+      paste0("Estimated onset of symptoms for these parameters is ", 
+            format(df$onset_date, format = "%d %B"), 
+            ".")
+    })
+    
+    output$exposure_window = renderText({
+      paste0("The exposure window for these parameters is ", 
+            format(df$exposure_date_min, format = "%d %B"), 
+            " to ",
+            format(df$exposure_date_max, format = "%d %B"),
+            ".")
+    })
+
     p = fun_plot_exposure_windows(df, height=400)
     
     p
   })
   
-  output$estimated_onset = renderText({
-    paste0("Estimated onset of symptoms for these parameters is ", 
-           format(fun_get_onset(input)$onset_date, format = "%d %B"), 
-           ".")
-  })
-  
-  output$exposure_window = renderText({
-    paste0("The exposure window for these parameters is ", 
-           format(fun_get_onset(input)$exposure_date_min, format = "%d %B"), 
-           " to ",
-           format(fun_get_onset(input)$exposure_date_max, format = "%d %B"),
-           ".")
-  })
+
 
   
   ### UPLOAD ###-----------------------------------------------------------------------------------
@@ -245,15 +238,17 @@ function(input, output, session) {
   
   # PLOT #
   output$onset_plot = renderPlotly({
-    df_out = fun_import_adjust(input,
+    df = fun_import_adjust(input,
                                default_to_death_date = TRUE)
-    
-    df_out = add_date_fields(df_out)
+    df_out = NULL
+    for(i in 1:nrow(df)){
+      df_out = rbind(df_out, fun_get_onset(df[i,]))
+    }
 
     df_out = check_date_order(df_out)
     
-    if(input$ID1_onset_window %in% df_out$ID | input$ID2_onset_window %in% df_out$ID ){
-      df_out = df_out %>% filter(ID %in% c(input$ID1_onset_window, input$ID2_onset_window))
+    if(input$ID1_onset_window %in% df_out$id | input$ID2_onset_window %in% df_out$id ){
+      df_out = df_out %>% filter(id %in% c(input$ID1_onset_window, input$ID2_onset_window))
     }
     
     p = fun_plot_exposure_windows(df_out, height=700)

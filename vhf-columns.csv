@@ -1,52 +1,52 @@
 column_name,display_name,input_type,required,values,formats,fromEpiInfo,fromCol,toCol,idCol
-ID,Case ID,text,,,,true,false,true,true
-Surname,Surname,text,,,,true
-OtherNames,Other Names,text,,,,true
-Age,Age,text,,,,true
-AgeUnit,Age Unit,text,,,,true
-Gender,Gender,text,,,,true
-DateOnset,Date Of Illness Onset,date,,,"%d/%m/%Y",true
-DateDeath,Date Of Death,date,,,"%d/%m/%Y",true
-SCRes,Zone de Sante of Residence,text,,,,true
-ParishRes,Air De Sante of Residence,text,,,,true
-VillageRes,Village of Residence,text,,,,true
-SCOnset,Zone De Sante of Onset,text,,,,true
-VillageOnset,Village of Onset,text,,,,true
-HCW,Healthcare Worker,checkbox,,,,true
-TraditionalHealer,Traditional Healer,checkbox,,,,true
-HospitalCurrent,Currently Admitted Hospital,text,,,,true
-DateHospitalCurrentAdmit,Date of Admission to Current Hospital,date,,,"%d/%m/%y",true
-HospitalBeforeIllName,Name of Hospital Admitted At Before Onset of Ebola,text,,,,true
-HospitalBeforeIllDateStart,Hospital Before Ill Date Start,date,,,"%d/%m/%Y",true
-HospitalBeforeIllDateEnd,Hospital Before Ill Date End,date,,,"%d/%m/%Y",true
-HospitalPast1,Name of Prior Admitted Hospital,text,,,,true
-DateHospitalPastStart1,Admission Date to Hospital,date,,,"%d/%m/%Y",true
-DateHospitalPastEnd1,Discharge Date from Hospital,date,,,"%d/%m/%Y",true
-HospitalPast2,Name of Prior Admitted Hospital 2,text,,,,true
-DateHospitalPastStart2,Admission Date to Hospital 2,date,,,"%d/%m/%Y",true
-DateHospitalPastEnd2,Discharge Date from Hospital 2,date,,,"%d/%m/%Y",true
-TradHealerName,Name of Traditional Healer,text,,,,true
-TradHealerDate,Date of Visit to Traditional Healer,text,,,,true
-Pregnant,Pregnant,checkbox,,,,false
-Lactating,Lactating,checkbox,,,,false
-vaccAgainstEbola,Vaccinated Against Ebola,checkbox,,,,false
-lien_cas_source,LIEN CAS Source,multiSelect,,"Family,Friend,Co-worker,Neighbor,Healthcare Worker,Religious Figure,Transportation Personnel,Traditional Healer",,false
-ebolaDateVacc,Date of Ebola Vaccination,date,,,"%d/%m/%Y",false
-caseId_source,Case ID of Source,source,,,,false,true,false
-surname_source,Source Surname,text,,,,false
-OtherNames_source,Source Other Names,text,,,,false
-DateOnsetvhf_source,Date of Onset of Source,date,,,"%d/%m/%Y",false
-death_date_source,Date of Death of Source,date,,,"%d/%m/%Y",false
-SCRes_source,Zone de Sante of Residence of Source,text,,,,false
-Parish_source,Aire De Sante of Residence of Source,text,,,,false
-VillageRes_source,Village of Residence of Source,text,,,,false
-SCOnset_source,Zone de Sante of Onset of Source,text,,,,false
-VillageOnset_source,Village of Onset of Source,text,,,,false
-probability_of_source_of_infection,Probablility that this person was source of infection,select,,"None,Low,Medium,High",,false
-participated_nonsecure_burial,Participated in Non-Secure burial,checkbox,,,,false
-date_of_nonsecure_burial,Date of Non-Secure Burial,date,,,"%d/%m/%Y",false
-probability_virus_transmission_due_to_burial,Probability that virus was transmitted due to participation in non-secure burial,select,,"None,Low,Medium,High",,false
-infectionNosocomial,Infection was due to nosocomial transmission,checkbox,,,,false
-probability_virus_transmission_due_to_nosocomial,Probability that virus was transmitted due to nosocomial transmission,select,,"None,Low,Medium,High",,false
-infection_community,Infection was due to community transmission,checkbox,,,,false
-probability_virus_transmission_due_to_community,Probability that virus was transmitted due to community transmission,select,,"None,Low,Medium,High",,false
+id,Case ID,text,,,,TRUE,FALSE,TRUE,TRUE
+Surname,Surname,text,,,,TRUE,,,
+OtherNames,Other Names,text,,,,TRUE,,,
+Age,Age,text,,,,TRUE,,,
+AgeUnit,Age Unit,text,,,,TRUE,,,
+Gender,Gender,text,,,,TRUE,,,
+DateOnset,Date Of Illness Onset,date,,,%d/%m/%Y,TRUE,,,
+DateDeath,Date Of Death,date,,,%d/%m/%Y,TRUE,,,
+SCRes,Zone de Sante of Residence,text,,,,TRUE,,,
+ParishRes,Air De Sante of Residence,text,,,,TRUE,,,
+VillageRes,Village of Residence,text,,,,TRUE,,,
+SCOnset,Zone De Sante of Onset,text,,,,TRUE,,,
+VillageOnset,Village of Onset,text,,,,TRUE,,,
+HCW,Healthcare Worker,checkbox,,,,TRUE,,,
+TraditionalHealer,Traditional Healer,checkbox,,,,TRUE,,,
+HospitalCurrent,Currently Admitted Hospital,text,,,,TRUE,,,
+DateHospitalCurrentAdmit,Date of Admission to Current Hospital,date,,,%d/%m/%y,TRUE,,,
+HospitalBeforeIllName,Name of Hospital Admitted At Before Onset of Ebola,text,,,,TRUE,,,
+HospitalBeforeIllDateStart,Hospital Before Ill Date Start,date,,,%d/%m/%Y,TRUE,,,
+HospitalBeforeIllDateEnd,Hospital Before Ill Date End,date,,,%d/%m/%Y,TRUE,,,
+HospitalPast1,Name of Prior Admitted Hospital,text,,,,TRUE,,,
+DateHospitalPastStart1,Admission Date to Hospital,date,,,%d/%m/%Y,TRUE,,,
+DateHospitalPastEnd1,Discharge Date from Hospital,date,,,%d/%m/%Y,TRUE,,,
+HospitalPast2,Name of Prior Admitted Hospital 2,text,,,,TRUE,,,
+DateHospitalPastStart2,Admission Date to Hospital 2,date,,,%d/%m/%Y,TRUE,,,
+DateHospitalPastEnd2,Discharge Date from Hospital 2,date,,,%d/%m/%Y,TRUE,,,
+TradHealerName,Name of Traditional Healer,text,,,,TRUE,,,
+TradHealerDate,Date of Visit to Traditional Healer,text,,,,TRUE,,,
+Pregnant,Pregnant,checkbox,,,,FALSE,,,
+Lactating,Lactating,checkbox,,,,FALSE,,,
+vaccAgainstEbola,Vaccinated Against Ebola,checkbox,,,,FALSE,,,
+lien_cas_source,LIEN CAS Source,multiSelect,,"Family,Friend,Co-worker,Neighbor,Healthcare Worker,Religious Figure,Transportation Personnel,Traditional Healer",,FALSE,,,
+ebolaDateVacc,Date of Ebola Vaccination,date,,,%d/%m/%Y,FALSE,,,
+caseId_source,Case id of Source,source,,,,FALSE,TRUE,FALSE,
+surname_source,Source Surname,text,,,,FALSE,,,
+OtherNames_source,Source Other Names,text,,,,FALSE,,,
+DateOnsetvhf_source,Date of Onset of Source,date,,,%d/%m/%Y,FALSE,,,
+death_date_source,Date of Death of Source,date,,,%d/%m/%Y,FALSE,,,
+SCRes_source,Zone de Sante of Residence of Source,text,,,,FALSE,,,
+Parish_source,Aire De Sante of Residence of Source,text,,,,FALSE,,,
+VillageRes_source,Village of Residence of Source,text,,,,FALSE,,,
+SCOnset_source,Zone de Sante of Onset of Source,text,,,,FALSE,,,
+VillageOnset_source,Village of Onset of Source,text,,,,FALSE,,,
+probability_of_source_of_infection,Probablility that this person was source of infection,select,,"None,Low,Medium,High",,FALSE,,,
+participated_nonsecure_burial,Participated in Non-Secure burial,checkbox,,,,FALSE,,,
+date_of_nonsecure_burial,Date of Non-Secure Burial,date,,,%d/%m/%Y,FALSE,,,
+probability_virus_transmission_due_to_burial,Probability that virus was transmitted due to participation in non-secure burial,select,,"None,Low,Medium,High",,FALSE,,,
+infectionNosocomial,Infection was due to nosocomial transmission,checkbox,,,,FALSE,,,
+probability_virus_transmission_due_to_nosocomial,Probability that virus was transmitted due to nosocomial transmission,select,,"None,Low,Medium,High",,FALSE,,,
+infection_community,Infection was due to community transmission,checkbox,,,,FALSE,,,
+probability_virus_transmission_due_to_community,Probability that virus was transmitted due to community transmission,select,,"None,Low,Medium,High",,FALSE,,,

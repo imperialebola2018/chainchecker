@@ -60,7 +60,7 @@ df = data.frame(id = c("EG2", "EG1"),
                 death_date = c(Sys.Date()+4, as.Date(NA)),
                 dates_in_correct_order = c(TRUE, TRUE))
 
-g = ggplot(df, aes(text = paste0("ID: ",id))) 
+g = ggplot(df, aes(text = paste0("id: ",id))) 
   
   
   g = g + geom_rect(aes(xmin = exposure_date_min,

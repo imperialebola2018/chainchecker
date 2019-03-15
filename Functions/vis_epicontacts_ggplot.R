@@ -3,7 +3,7 @@
 #' @param x epicontacts object
 #' @param group group to adjust colour of nodes by, defaults to NA
 #' @param contactsgroup group to adjust colour of links by, defaults to NA
-#' @param tooltip what to show on hover, defaults to "ID"
+#' @param tooltip what to show on hover, defaults to "id"
 #' 
 #' @return plot of transmissin tree
 #' @export
@@ -11,7 +11,7 @@
 vis_epicontacts_ggplot = function(x,
                                   group = "onset",
                                   contactsgroup = NA,
-                                  tooltip ="ID"){
+                                  tooltip ="id"){
   
   
   
@@ -31,7 +31,6 @@ vis_epicontacts_ggplot = function(x,
                       alpha = 0.5)
 
   if(contactsgroup %in% names(rank_contacts)){ #highlight particular links
-    print(ifelse(rank_contacts[,contactsgroup], "orange", "black"))
     
     g = g + geom_segment(data = rank_contacts,
                          aes( x= as.Date(from_onset, "%d/%m/%Y"),
@@ -121,7 +120,7 @@ fun_rank_contacts = function(x){
   #add a rank based on the ordering, distributed by tree
   x = fun_rank_linelist(x)
   
-  #use this rank instead of ID
+  #use this rank instead of id
   rc = x$contacts
   rc = rc %>% 
     mutate(to = x$linelist$rank[match(rc$to, x$linelist$id)],
@@ -285,7 +284,7 @@ fun_rank_linelist = function(x){
   
   #declare
   x$linelist = x$linelist %>% add_column(rank = NA)
-  x$linelist = x$linelist %>% add_column(ID = x$linelist$id)
+  #x$linelist = x$linelist %>% add_column(id = x$linelist$id)
   
   for(t in 1:n_trees){
     

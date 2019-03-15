@@ -24,7 +24,7 @@ navbarPage(title = "chainchecker",
                                    "Mean period from onset to death (days):",
                                    value = 9, min = 0, max = 365),
                       
-                      textInput("ID ",
+                      textInput("timeline_id",
                                 "Identifier:",
                                 value = "EG1"),
                       
@@ -34,14 +34,14 @@ navbarPage(title = "chainchecker",
                                     value = TRUE), 
                       conditionalPanel(
                         condition = "input.death_avail == true",
-                        dateInput("DateDeath",
+                        dateInput("timeline_onset_date",
                                   "Date of death:",
                                   value = Sys.Date(),
                                   format="dd/mm/yyyy")
                       ), 
                       conditionalPanel(
                         condition = "input.death_avail == false",
-                        dateInput("DateOnset",
+                        dateInput("timeline_death_date",
                                   "Reported date of symptom onset:",
                                   value = Sys.Date()-7,
                                   format="dd/mm/yyyy"),
@@ -81,7 +81,9 @@ navbarPage(title = "chainchecker",
 
            tabPanel("Data Entry",
                     sidebarPanel(
-                      actionButton("vhf_submit","Submit"),
+                      actionButton("vhf_submit","Submit (or Create)"),
+                      actionButton("vhf_create","New Record"),
+                      actionButton("vhf_delete","Delete"),
                       downloadButton("vhf_export", "Export VHF Data as .csv"),
                       uiOutput("sidebar")
                       

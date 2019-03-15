@@ -59,13 +59,13 @@ check_line_upload = function(file_upload,id_col){
   check_line_names(df)
   
   #check id's are unique
-  if(length(unique(df$ID))<nrow(df)){
+  if(length(unique(df$id))<nrow(df)){
     stop(safeError("There are duplicate id's in the linelist."))
   }
   
   #make sure id is first column
 
-  df = df %>% select(ID, everything())
+  df = df %>% select(id, everything())
   
   #dates
 
@@ -108,15 +108,6 @@ check_contacts_upload = function(file_upload){
   #check names
   check_contact_names(contacts, to_col, from_col)
   
-  #check for true/false
-  #if(length(names(contacts))>2){
-  #  logic_ind = which(!names(contacts) %in% c(to_col, from_col))
-  #  print(logic_ind)
-  #  for(i in 1:length(logic_ind)){
-  #    contacts[ ,logic_ind[i]] = assert_TF(contacts[ ,logic_ind[i]])
-  #  }
-  #}
-  
   #check for unique contact links
   contacts = check_unique_contact_links(contacts, from_col, to_col)
   
@@ -134,7 +125,7 @@ check_contacts_upload = function(file_upload){
 check_line_names = function(linelist){
 
   # must include `id`, `reported_onset_date` and `death_date`
-  if(!"ID" %in% names(linelist)){
+  if(!"id" %in% names(linelist)){
     stop(safeError("Column `id` is missing from linelist."))
   }
   
@@ -196,11 +187,11 @@ check_exposure_timeline = function(linelist, contacts, input){
   for(i in 1:nrow(contacts)){
     
     #if the linelist id is in the contacts (ie. that the contacts are specified correctly)
-    if(sum(linelist$ID %in% contacts$caseId_source[i])>0
-       & sum(linelist$ID %in% contacts$ID[i])>0){
+    if(sum(linelist$id %in% contacts$caseId_source[i])>0
+       & sum(linelist$id %in% contacts$id[i])>0){
       #get the indices of each in the linelist
-      linelist_index_from = which(linelist$ID %in% contacts$caseId_source[i])
-      linelist_index_to = which(linelist$ID %in% contacts$ID[i])
+      linelist_index_from = which(linelist$id %in% contacts$caseId_source[i])
+      linelist_index_to = which(linelist$id %in% contacts$id[i])
       
       #check if the exposure occurred before onset
       if(!is.na(linelist$DateOnset[linelist_index_from]) & 
