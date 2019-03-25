@@ -15,6 +15,7 @@ source('Functions/vis_epicontacts_ggplot.R')
 source('Functions/calculator_functions.R')
 source('Functions/internals.R')
 source('Functions/form.R')
+source('Functions/RR_nosocomial_transmission_plots.R')
 
 
 
@@ -65,8 +66,7 @@ function(input, output, session) {
     infile <- input$file_vhf
     if (is.null(infile)) {
       # User has not uploaded a file yet
-      stop(safeError("No VHF file uploaded yet."))
-      return(NULL)
+      vhf_data <<- create_vhf_data(create_default_vhf_record())
     }
     generate_sidebar()
   })
@@ -194,9 +194,25 @@ function(input, output, session) {
     p
   })
   
+output$noso_case_id_plot <- renderPlotly({
+    df = fun_import_adjust(input,
+                               default_to_death_date = TRUE)
+
+    p = get_nosocomial_plots_by_case_id(input, df)
+    
+    p
+  })
+
+  output$noso_hospital_plot <- renderPlotly({
+    df = fun_import_adjust(input,
+                               default_to_death_date = TRUE)
+
+    p = get_nosocomial_plots_by_hospital_patients(input, df)
+    
+    p
+  })
 
 
-  
   ### UPLOAD ###-----------------------------------------------------------------------------------
   
   # DOWNLOAD CONTACT TEMPLATE #

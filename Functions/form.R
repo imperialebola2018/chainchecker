@@ -45,11 +45,10 @@ create_default_vhf_record <- function(){
   fields.display <- c()
   fields.value <- c()
   default_record = tibble()
+  
   for (row in 1:nrow(csv_field_info)){
     column_name <- toString(csv_field_info[row, "column_name"])
     column_type <- toString(csv_field_info[row, "input_type"])
-    fields.display <- c(fields.display, column_name)
-    fields.value <- c(fields.value, NA)
 
     default_value <- switch(column_type,
         "text" = "",
@@ -66,8 +65,8 @@ create_default_vhf_record <- function(){
     fields.value <- c(fields.value, default_value)
 
   }
-  
-  names(fields.value) <- fields.display
+  print(fields.value)
+  #names(fields.value) <- fields.display
   default_record <- data.frame(matrix(unlist(fields.value), nrow=1, byrow=T), stringsAsFactors=FALSE)    
   names(default_record) <- fields.display
   rownames(default_record) <- 0
@@ -129,7 +128,12 @@ cast_vhf_data <- function(data) {
           val
         },
         "checkbox" = {
-            val = unname(data[column_name])
+            val = unname(data[column_name][[1]])
+            print("checkbox")
+            print(column_name)
+            print(data[column_name])
+            print(class(unname(data[column_name])))
+            print(val[[1]])
             if(is.null(val) || val == ""){
               val <- FALSE
             }
