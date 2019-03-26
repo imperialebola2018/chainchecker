@@ -21,7 +21,7 @@ get_nosocomial_plots_by_case_id <- function(input, nscm_data){
   # B. F., Song, X. A., Gu, M. L., Jiang, T., Koroma, S. M., Bangalie, J., . Duan, H. J. (2016). 
   # Clinical presentations and outcomes of patients with Ebola virus disease in Freetown, Sierra Leone. Infectious diseases of poverty, 5(1), 101. doi:10.1186/s40249-016-0195-9
 
-  nscm_data$DateDisch <- as.Date(nscm_data$DateOnset, format="%d/%m/%Y") #Date of Discharge for patients that did not die
+  nscm_data$DateDisch <- as.Date(Sys.Date(), format="%d/%m/%Y") #Date of Discharge for patients that did not die
 
   #based on calculator_functions.R in ChainChecker
   nscm_data$DateExposure <-  as.Date(nscm_data$DateDeath, format="%d/%m/%Y") - nscm_data$incubation_period
@@ -76,7 +76,7 @@ get_nosocomial_plots_by_case_id <- function(input, nscm_data){
     }
   }
   
-  if(is.na(input$noso_case_id) || input$noso_case_id == ""){
+  if(is.na(input$noso_case_id) || input$noso_case_id == "" || nrow(pat_melt_sub) == 0){
     stop(safeError("Please select a Case ID"))
     
   }else{
@@ -102,7 +102,7 @@ get_nosocomial_plots_by_hospital_patients <- function(input, nscm_data){
   # B. F., Song, X. A., Gu, M. L., Jiang, T., Koroma, S. M., Bangalie, J., . Duan, H. J. (2016). 
   # Clinical presentations and outcomes of patients with Ebola virus disease in Freetown, Sierra Leone. Infectious diseases of poverty, 5(1), 101. doi:10.1186/s40249-016-0195-9
 
-  nscm_data$DateDisch <- as.Date(nscm_data$DateOnset, format="%d/%m/%Y") #Date of Discharge for patients that did not die
+  nscm_data$DateDisch <- as.Date(Sys.Date(), format="%d/%m/%Y") #Date of Discharge for patients that did not die
 
   #based on calculator_functions.R in ChainChecker
   nscm_data$DateExposure <-  as.Date(nscm_data$DateDeath, format="%d/%m/%Y") - nscm_data$incubation_period
@@ -148,6 +148,10 @@ get_nosocomial_plots_by_hospital_patients <- function(input, nscm_data){
 
   pat_melt_sub <- pat_melted[pat_melted$Hospital == input$noso_hospital_id,]
 
+  if(nrow(pat_melt_sub) == 0){
+    stop(safeError("Please select a Hospital with data"))
+  }
+
     ptime <- ggplot(pat_melt_sub, aes(x=Hospitalization_Dates,xend=End_Date,y=paste0(CaseID,sep=""),yend=paste0(CaseID,sep=""),color=earlyOnset, label=time_nosocomial)) +
     labs(title=paste0("Admissions for ",input$noso_hospital_id)) +
     scale_color_manual(values=c("TRUE" = "green", "FALSE" = "red")) +
@@ -180,7 +184,7 @@ get_nosocomial_plots_by_hospital <- function(input, nscm_data){
   # B. F., Song, X. A., Gu, M. L., Jiang, T., Koroma, S. M., Bangalie, J., . Duan, H. J. (2016). 
   # Clinical presentations and outcomes of patients with Ebola virus disease in Freetown, Sierra Leone. Infectious diseases of poverty, 5(1), 101. doi:10.1186/s40249-016-0195-9
 
-  nscm_data$DateDisch <- as.Date(nscm_data$DateOnset, format="%d/%m/%Y") #Date of Discharge for patients that did not die
+  nscm_data$DateDisch <- as.Date(Sys.Date(), format="%d/%m/%Y") #Date of Discharge for patients that did not die
 
   #based on calculator_functions.R in ChainChecker
   nscm_data$DateExposure <-  as.Date(nscm_data$DateDeath, format="%d/%m/%Y") - nscm_data$incubation_period
@@ -199,7 +203,6 @@ get_nosocomial_plots_by_hospital <- function(input, nscm_data){
   hosp_gantt$Start_date <- as.Date(hosp_gantt$Start_date, format="%d/%m/%Y")
   hosp_gantt$End_date <- as.Date(hosp_gantt$End_date, format="%d/%m/%Y")
   hosp_gantt$earlyOnset <-  (as.Date(hosp_gantt$Start_date) < as.Date(hosp_gantt$true_DateOnset, format="%d/%m/%Y")) #(as.Date(hosp_gantt$DateOnset, format="%d/%m/%Y") >= as.Date(hosp_gantt$Admission_date)-hosp_gantt$incubation_period)    
-  print(hosp_gantt)
   hosp_gantt$infectionNosocomial[hosp_gantt$earlyOnset == TRUE] <- "Nosocomial"
   hosp_gantt$infectionNosocomial[hosp_gantt$earlyOnset != TRUE] <- "Not Nosocomial"
 

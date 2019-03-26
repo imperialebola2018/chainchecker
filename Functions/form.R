@@ -65,7 +65,6 @@ create_default_vhf_record <- function(){
     fields.value <- c(fields.value, default_value)
 
   }
-  print(fields.value)
   #names(fields.value) <- fields.display
   default_record <- data.frame(matrix(unlist(fields.value), nrow=1, byrow=T), stringsAsFactors=FALSE)    
   names(default_record) <- fields.display
@@ -129,11 +128,7 @@ cast_vhf_data <- function(data) {
         },
         "checkbox" = {
             val = unname(data[column_name][[1]])
-            print("checkbox")
-            print(column_name)
-            print(data[column_name])
-            print(class(unname(data[column_name])))
-            print(val[[1]])
+
             if(is.null(val) || val == ""){
               val <- FALSE
             }

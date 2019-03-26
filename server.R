@@ -56,6 +56,19 @@ function(input, output, session) {
 
     vhf_data <<- df
 
+    case_ids = c()
+    case_ids = c(case_ids, levels(vhf_data$id))
+    case_ids = sort(unique(case_ids))
+    
+    updateSelectInput(session, "noso_case_id", choices = case_ids, selected = NULL)
+    
+    hospitals = c()
+    hospitals = c(hospitals, levels(vhf_data$HospitalCurrent))
+    hospitals = c(hospitals, levels(vhf_data$HospitalPast1))
+    hospitals = c(hospitals, levels(vhf_data$HospitalPast2))
+    hospitals = sort(unique(hospitals))
+    updateSelectInput(session, "noso_hospital_id", choices = hospitals, selected = NULL)
+
     output$sidebar <- renderUI({generate_sidebar()})
     df
   })
@@ -292,7 +305,27 @@ output$noso_case_id_plot <- renderPlotly({
   )
   
   ### ANALYSIS - TREE ###-----------------------------------------------------------------------------------
+  observe({
+    if("HospitalCurrent" %in% names(vhf_data)){
+      hospitals = c()
+      hospitals = c(hospitals, levels(vhf_data$HospitalCurrent))
+      hospitals = c(hospitals, levels(vhf_data$HospitalPast1))
+      hospitals = c(hospitals, levels(vhf_data$HospitalPast2))
+      hospitals = sort(unique(hospitals))
 
+      updateSelectInput(session, "noso_hospital_id", choices = hospitals, selected = NULL)
+    }
+  })
+
+    observe({
+    if("id" %in% names(vhf_data)){
+      case_ids = c()
+      case_ids = c(case_ids, levels(vhf_data$id))
+      case_ids = sort(unique(case_ids))
+      
+      updateSelectInput(session, "noso_case_id", choices = case_ids, selected = NULL)
+    }
+  })
   # PLOT #
   output$tree = renderPlotly({
     

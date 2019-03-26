@@ -176,9 +176,9 @@ navbarPage(title = "chainchecker",
                       numericInput("noso_days_onset_to_diarrhea_all",
                                    "Mean time from symptom onset to diarrhea (days):",
                                    value = 4, min = 0, max = 365),
-                      textInput("noso_case_id",
+                      selectInput("noso_case_id",
                                 "Enter Case ID to Examine",
-                                placeholder = "EG1", value = "EG1")
+                                choices = c("None"))
                     ),
                     mainPanel(  plotlyOutput("noso_case_id_plot") )
            ),
@@ -202,9 +202,8 @@ navbarPage(title = "chainchecker",
                       numericInput("noso_days_onset_to_diarrhea_all",
                                    "Mean time from symptom onset to diarrhea (days):",
                                    value = 4, min = 0, max = 365),
-                      textInput("noso_hospital_id",
-                                "Enter Hospital to Examine",
-                                placeholder = "Parkview General Hospital", value = "Parkview General Hospital")
+                      selectInput("noso_hospital_id",
+                                "Enter Hospital to Examine", choices=c("None"))
                     ),
                     mainPanel(  plotlyOutput("noso_hospital_plot") )
            ),
