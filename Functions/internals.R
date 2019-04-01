@@ -40,21 +40,21 @@ assert_TF = function(vec){
 }
 
 #### ----------------------------------------------------------------------------------- ####
-check_line_upload = function(file_upload,id_col){
+check_line_upload = function(data,id_col){
   
   #if empty upload
-  if(is.null(file_upload)){
-    stop(safeError("No linelist file uploaded yet."))
-  }
+  #if(is.null(data)){
+  #  stop(safeError("No linelist file uploaded yet."))
+  #}
   
   #check correct file type. This works for both comma separated and semicolon separated Csv
-  if(sum(grep(".csv", file_upload$datapath))==0){
-    stop(safeError("Wrong file type uploaded for linelist, file should be a .csv ."))
-  }
+  #if(sum(grep(".csv", file_upload$datapath))==0){
+  #  stop(safeError("Wrong file type uploaded for linelist, file should be a .csv ."))
+  #}
   
   #import
   #df = as.data.frame(fread(file_upload$datapath, stringsAsFactors = FALSE, na.strings = ""))
-  df <- vhf_data
+  df <- data
   #check names
   check_line_names(df)
   
@@ -75,11 +75,11 @@ check_line_upload = function(file_upload,id_col){
 }
 
 #### ----------------------------------------------------------------------------------- ####
-check_contacts_upload = function(file_upload){
+check_contacts_upload = function(data){
   
   #if empty upload
-  if(is.null(file_upload)){
-    stop(safeError("No contacts file uploaded yet."))
+  if(is.null(data)){
+    stop(safeError("No data uploaded or entered yet."))
   }
   
   #check correct file type. This works for both comma separated and semicolon separated Csv
@@ -103,7 +103,7 @@ check_contacts_upload = function(file_upload){
   }
 
   #import
-  contacts <- vhf_data
+  contacts <- data
   
   #check names
   check_contact_names(contacts, to_col, from_col)
@@ -124,30 +124,33 @@ check_contacts_upload = function(file_upload){
 ### check the names are correct ###
 check_line_names = function(linelist){
 
+  if(is.null(linelist)){
+    stop(safeError("Please enter or upload data first"))
+  }
+
   # must include `id`, `reported_onset_date` and `death_date`
-  if(!"id" %in% names(linelist)){
-    stop(safeError("Column `id` is missing from linelist."))
-  }
+  #if(!("id" %in% names(linelist))){
+  #  stop(safeError("Column `id` is missing from linelist."))
+  #}
   
-  if(!"DateOnset" %in% names(linelist)){
-    stop(safeError("Column `reported_onset_date` is missing from linelist."))
-  }
+  #if(!("DateOnset" %in% names(linelist))){
+  #  stop(safeError("Column `reported_onset_date` is missing from linelist."))
+  #}
   
-  if(!"DateDeath" %in% names(linelist)){
-    stop(safeError("Column `death_date` is missing from linelist."))
-  }
+  #if(!("DateDeath" %in% names(linelist))){
+  #  stop(safeError("Column `death_date` is missing from linelist."))
+  #}
   
 }
 #### ----------------------------------------------------------------------------------- ####
 ### check the names are correct ###
 check_contact_names = function(contacts, to_col, from_col){
-
   #make sure it contains `from` and `to`
-  if(!from_col %in% names(contacts)){
+  if(!("caseId_source" %in% names(contacts))){
     stop(safeError("Column `from` is missing from contacts."))
   }
 
-  if(!to_col %in% names(contacts)){
+  if(!("id" %in% names(contacts))){
     stop(safeError("Column ", to_col, " is missing from contacts."))
   }
 }

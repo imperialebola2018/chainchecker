@@ -47,11 +47,11 @@ fun_get_onset = function(input,
 
 #### ----------------------------------------------------------------------------------- ####
 ### import and adjust ###
-fun_import_adjust = function(input,
+fun_import_adjust = function(input, data, 
                              default_to_death_date = TRUE){
   
   #import and check
-  df = check_line_upload(input$file_vhf)
+  df = check_line_upload(data, "id")
   
   #format
   df$DateDeath[df$DateDeath == ""] <- NA
@@ -94,11 +94,11 @@ fun_import_adjust = function(input,
 
 #### ----------------------------------------------------------------------------------- ####
 ### function to make tree if data is uploaded ###
-fun_make_tree = function(input){
-  linelist = fun_import_adjust(input,
+fun_make_tree = function(input, data){
+  linelist = fun_import_adjust(input, data,
                                default_to_death_date = ifelse(input$adjust_tree,
                                                               FALSE, TRUE))
-  contacts = check_contacts_upload(vhf_data)
+  contacts = check_contacts_upload(data)
   
   #covering extras for vis_epicontacts_ggplot
   if(is.null(linelist$name)){ linelist = linelist %>% mutate(name = id)}

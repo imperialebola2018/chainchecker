@@ -123,8 +123,7 @@ for(i in 1:dim(nscm_data)[1])
     theme(axis.title.y=element_blank(),legend.position="none")
   patient_timelines[[i]] <- ggplotly(ptime, tooltip=c("time_nosocomial"))
   htmlwidgets::saveWidget(as_widget(patient_timelines[[i]]), paste0("GANTT_patient",i,".html",sep=""))
-  
-  #print(patient_timelines[[i]]) 
+
 }
 #dev.off()
 #Order of hospitals in pat_melted: Current hospital, Hospital Before Ill, Hospital Past 1, Hospital Past 2

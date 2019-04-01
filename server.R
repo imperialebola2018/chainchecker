@@ -21,6 +21,25 @@ source('Functions/RR_nosocomial_transmission_plots.R')
 
 ### SERVER ###
 function(input, output, session) {
+  vhf_data <- NULL
+
+  update_selections <- function(data) {
+    case_ids = c("None")
+    case_ids = c(case_ids, data$id)
+    case_ids = sort(unique(case_ids))
+
+    updateSelectInput(session, "noso_case_id", choices = case_ids, selected = NULL)
+    
+    hospitals = c()
+    hospitals = c(hospitals, levels(data$HospitalCurrent))
+    hospitals = c(hospitals, levels(data$HospitalPast1))
+    hospitals = c(hospitals, levels(data$HospitalPast2))
+    hospitals = sort(unique(hospitals))
+
+    updateSelectInput(session, "noso_hospital_id", choices = hospitals, selected = NULL)
+
+    updateSelectInput(session, "caseId_source", choices = case_ids, selected = NULL)
+  }
 
   vhf_data_reactive <<- reactive({
     infile <- input$file_vhf
@@ -41,9 +60,9 @@ function(input, output, session) {
     new_df = data.frame(matrix(ncol = nrow(csv_field_info), nrow = 0), stringsAsFactors=FALSE)
     colnames(new_df) <- fields.name
 
-    vhf_data = read.csv(infile$datapath, header=TRUE)
+    vhf_data <<- read.csv(infile$datapath, header=TRUE)
     
-    vhf_data <- vhf_data %>% add_column(id = vhf_data$ID, .after = "ID")
+    vhf_data <<- vhf_data %>% add_column(id = vhf_data$ID, .after = "ID")
     
     matching_fields = fields.name[fields.name %in% names(vhf_data)]
 
@@ -56,32 +75,20 @@ function(input, output, session) {
 
     vhf_data <<- df
 
-    case_ids = c()
-    case_ids = c(case_ids, levels(vhf_data$id))
-    case_ids = sort(unique(case_ids))
-    
-    updateSelectInput(session, "noso_case_id", choices = case_ids, selected = NULL)
-    
-    hospitals = c()
-    hospitals = c(hospitals, levels(vhf_data$HospitalCurrent))
-    hospitals = c(hospitals, levels(vhf_data$HospitalPast1))
-    hospitals = c(hospitals, levels(vhf_data$HospitalPast2))
-    hospitals = sort(unique(hospitals))
-    updateSelectInput(session, "noso_hospital_id", choices = hospitals, selected = NULL)
+    update_selections(vhf_data)
 
-    output$sidebar <- renderUI({generate_sidebar()})
-    df
+    output$sidebar <- renderUI({generate_sidebar(vhf_data)})
+    vhf_data
   })
-
 
 
   output$sidebar <- renderUI({
     infile <- input$file_vhf
     if (is.null(infile)) {
       # User has not uploaded a file yet
-      vhf_data <<- create_vhf_data(create_default_vhf_record())
+      vhf_data <<- create_vhf_data(create_default_vhf_record(), vhf_data)
     }
-    generate_sidebar()
+    generate_sidebar(vhf_data)
   })
 
   vhfFormData <- reactive({
@@ -90,17 +97,22 @@ function(input, output, session) {
   
   # Click "Submit" button -> save data
   observeEvent(input$vhf_submit, {
-    if (input$id != 0) {
-      update_vhf_data(vhfFormData())
-    } else {
-      create_vhf_data(vhfFormData())
+    new_df <- NULL
+    if (input$row != 0) {
+      new_df <- update_vhf_data(vhfFormData(), vhf_data)
+    } else { 
+      new_df <- create_vhf_data(vhfFormData(), vhf_data)
     }
 
+
+
+    vhf_data <<- new_df
+    update_selections(vhf_data)
     output$vhfTable <- renderDT({
       #update after submit is clicked
-      input$submit
-      #update after delete is clicked
-      input$delete
+      input$vhf_submit
+      input$vhf_create
+      input$vhf_delete
       vhf_data
       }, server = FALSE, selection = "single", rownames = FALSE, 
       colnames = unname(get_vhf_table_metadata()$fields)[-1],
@@ -131,7 +143,7 @@ function(input, output, session) {
 
   # Press "Delete" button -> delete from data
   observeEvent(input$vhf_delete, {
-    delete_vhf_data(vhf_data[input$vhfTable_rows_selected, ])
+    vhf_data <<- delete_vhf_data(vhf_data[input$vhfTable_rows_selected, ], vhf_data)
     update_vhf_inputs(create_default_vhf_record(), session)
 
     output$vhfTable <- renderDT({
@@ -147,8 +159,10 @@ function(input, output, session) {
   # Select row in table -> show details in inputs
   observeEvent(input$vhfTable_rows_selected, {
     if (length(input$vhfTable_rows_selected) > 0) {
+      
       data <- vhf_data[input$vhfTable_rows_selected, ]
-      update_vhf_inputs(data, session, input$vhfTable_rows_selected)
+      
+      update_vhf_inputs(data, session)
       
     }
     
@@ -208,7 +222,7 @@ function(input, output, session) {
   })
   
 output$noso_case_id_plot <- renderPlotly({
-    df = fun_import_adjust(input,
+    df = fun_import_adjust(input, vhf_data,
                                default_to_death_date = TRUE)
 
     p = get_nosocomial_plots_by_case_id(input, df)
@@ -217,7 +231,7 @@ output$noso_case_id_plot <- renderPlotly({
   })
 
   output$noso_hospital_plot <- renderPlotly({
-    df = fun_import_adjust(input,
+    df = fun_import_adjust(input, vhf_data,
                                default_to_death_date = TRUE)
 
     p = get_nosocomial_plots_by_hospital_patients(input, df)
@@ -267,7 +281,7 @@ output$noso_case_id_plot <- renderPlotly({
   
   # PLOT #
   output$onset_plot = renderPlotly({
-    df = fun_import_adjust(input,
+    df = fun_import_adjust(input, vhf_data,
                                default_to_death_date = TRUE)
     df_out = NULL
     for(i in 1:nrow(df)){
@@ -293,7 +307,7 @@ output$noso_case_id_plot <- renderPlotly({
     },
     content = function(file){
       
-      df_out = fun_import_adjust(input,
+      df_out = fun_import_adjust(input, vhf_data,
                                  default_to_death_date = TRUE)
       
       df_out = check_date_order(df_out)
@@ -329,7 +343,7 @@ output$noso_case_id_plot <- renderPlotly({
   # PLOT #
   output$tree = renderPlotly({
     
-    tree <- fun_make_tree(input)
+    tree <- fun_make_tree(input, vhf_data)
     
     tree
     
@@ -338,7 +352,7 @@ output$noso_case_id_plot <- renderPlotly({
     # DROP DOWN MENU LINELIST #
   output$linelist_group = renderUI({
     
-    linelist = fun_import_adjust(input,
+    linelist = fun_import_adjust(input, vhf_data,
                                  default_to_death_date = input$adjust_tree)
     
     #adjust for epicontacts
@@ -361,11 +375,11 @@ output$noso_case_id_plot <- renderPlotly({
   
   # DROP DOWN MENU CONTACT #
   output$contact_group = renderUI({
-    linelist = fun_import_adjust(input,
+    linelist = fun_import_adjust(input, vhf_data,
                                  default_to_death_date = input$adjust_tree)
     
     
-    contacts = check_contacts_upload(input$file_vhf)
+    contacts = check_contacts_upload(vhf_data)
     
     #check links are feasible
     contacts = check_exposure_timeline(linelist, contacts, input)
@@ -377,7 +391,7 @@ output$noso_case_id_plot <- renderPlotly({
   
   output$tooltip_options = renderUI({
     
-    linelist = fun_import_adjust(input,
+    linelist = fun_import_adjust(input, vhf_data,
                                  default_to_death_date = input$adjust_tree)
 
     
@@ -424,7 +438,7 @@ output$noso_case_id_plot <- renderPlotly({
     },
     content = function(file){
       
-      p = fun_make_tree(input)
+      p = fun_make_tree(input, vhf_data)
       
       htmlwidgets::saveWidget(as.widget(p), file)
       
@@ -438,11 +452,11 @@ output$noso_case_id_plot <- renderPlotly({
     },
     content = function(file){
       
-      linelist = fun_import_adjust(input,
+      linelist = fun_import_adjust(input, vhf_data,
                                    default_to_death_date = input$adjust_tree)
       
       
-      contacts = check_contacts_upload(input$file_vhf)
+      contacts = check_contacts_upload(vhf_data)
       
       #covering extras
       if(is.null(linelist$name)){ linelist = linelist %>% mutate(name = id)}
