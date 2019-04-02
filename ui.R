@@ -76,6 +76,7 @@ navbarPage(title = "chainchecker",
            ),
            tabPanel("Upload",
                     sidebarPanel(
+                      downloadButton("download_vhf_template", "Download VHF template"),
                       fileInput("file_vhf", h3("Upload VHF")))
            ),
 

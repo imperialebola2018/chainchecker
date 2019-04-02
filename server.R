@@ -262,6 +262,16 @@ output$noso_case_id_plot <- renderPlotly({
                                                             "FALSE","TRUE", "TRUE")), file, row.names = FALSE )
     }
   )
+
+  output$download_vhf_template = downloadHandler(
+    filename <- function(){
+      paste("Dummy Data VHF export", "csv", sep=".")
+    },
+    content <- function(file){
+      file.copy("Dummy Data VHF export.csv", file)
+    },
+    contentType = "application/zip"
+  )
   
   ### ANALYSIS - WINDOWS ###-----------------------------------------------------------------------------------
   
