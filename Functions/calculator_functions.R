@@ -99,6 +99,15 @@ fun_make_tree = function(input, data){
                                default_to_death_date = ifelse(input$adjust_tree,
                                                               FALSE, TRUE))
   contacts = check_contacts_upload(data)
+
+  caseIds = select(data, "id")$id
+  caseIds_source = select(data, "caseId_source")$caseId_source
+
+  overlap = Reduce(intersect, list(caseIds, caseIds_source))
+
+  if(length(overlap) == 0){
+    stop(safeError("Please ensure data has Case ID of Source entered for at least one record"))
+  }
   
   #covering extras for vis_epicontacts_ggplot
   if(is.null(linelist$name)){ linelist = linelist %>% mutate(name = id)}

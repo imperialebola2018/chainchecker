@@ -23,6 +23,17 @@ source('Functions/RR_nosocomial_transmission_plots.R')
 function(input, output, session) {
   vhf_data <- NULL
 
+  update_vhf_table <- function(data){
+      output$vhfTable <- renderDT({
+      input$submit
+      input$delete
+      data
+      }, server = FALSE, selection = "single", rownames = FALSE, 
+      colnames = unname(get_vhf_table_metadata()$fields)[-1],
+
+      ) 
+  }
+
   update_selections <- function(data) {
     case_ids = c("None")
     case_ids = c(case_ids, data$id)
@@ -108,16 +119,7 @@ function(input, output, session) {
 
     vhf_data <<- new_df
     update_selections(vhf_data)
-    output$vhfTable <- renderDT({
-      #update after submit is clicked
-      input$vhf_submit
-      input$vhf_create
-      input$vhf_delete
-      vhf_data
-      }, server = FALSE, selection = "single", rownames = FALSE, 
-      colnames = unname(get_vhf_table_metadata()$fields)[-1],
-
-      )    
+    update_vhf_table(vhf_data)   
 
   }, priority = 1)
 
@@ -146,14 +148,7 @@ function(input, output, session) {
     vhf_data <<- delete_vhf_data(vhf_data[input$vhfTable_rows_selected, ], vhf_data)
     update_vhf_inputs(create_default_vhf_record(), session)
 
-    output$vhfTable <- renderDT({
-      input$submit
-      input$delete
-      vhf_data
-      }, server = FALSE, selection = "single", rownames = FALSE, 
-      colnames = unname(get_vhf_table_metadata()$fields)[-1],
-
-      )    
+    update_vhf_table(vhf_data)      
   }, priority = 1)
   
   # Select row in table -> show details in inputs
@@ -168,16 +163,7 @@ function(input, output, session) {
     
   })
 
-  output$vhfTable <- renderDT({
-    #update after submit is clicked
-    input$submit
-    #update after delete is clicked
-    input$delete
-    vhf_data_reactive()
-  }, server = FALSE, selection = "single", rownames = FALSE, 
-  colnames = unname(get_vhf_table_metadata()$fields)[-1],
-
-  )    
+  update_vhf_table(vhf_data)      
 
   ### TIMELINE ###-----------------------------------------------------------------------------------
   
