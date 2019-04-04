@@ -36,7 +36,11 @@ function(input, output, session) {
 
   update_selections <- function(data) {
     case_ids = c("None")
-    case_ids = c(case_ids, data$id)
+    if(nlevels(data$id) > 0){
+      case_ids = c(case_ids, levels(data$id))
+    }else{
+      case_ids = c(case_ids, data$id)
+    }
     case_ids = sort(unique(case_ids))
 
     updateSelectInput(session, "noso_case_id", choices = case_ids, selected = NULL)
@@ -49,6 +53,7 @@ function(input, output, session) {
 
     updateSelectInput(session, "noso_hospital_id", choices = hospitals, selected = NULL)
 
+    updateSelectInput(session, "caseId", choices = case_ids, selected = NULL)
     updateSelectInput(session, "caseId_source", choices = case_ids, selected = NULL)
   }
 
@@ -73,7 +78,9 @@ function(input, output, session) {
 
     vhf_data <<- read.csv(infile$datapath, header=TRUE)
     
-    vhf_data <<- vhf_data %>% add_column(id = vhf_data$ID, .after = "ID")
+    if(!("id" %in% colnames(vhf_data))){
+      vhf_data <<- vhf_data %>% add_column(id = vhf_data$ID, .after = "ID")
+    }
     
     matching_fields = fields.name[fields.name %in% names(vhf_data)]
 
@@ -208,7 +215,10 @@ function(input, output, session) {
   })
   
 output$noso_case_id_plot <- renderPlotly({
-    df = fun_import_adjust(input, vhf_data,
+  data = vhf_data[vhf_data$id == input$noso_case_id,]
+
+  case_id <- input$noso_case_id
+    df = fun_import_adjust(input, data,
                                default_to_death_date = TRUE)
 
     p = get_nosocomial_plots_by_case_id(input, df)
@@ -217,6 +227,7 @@ output$noso_case_id_plot <- renderPlotly({
   })
 
   output$noso_hospital_plot <- renderPlotly({
+
     df = fun_import_adjust(input, vhf_data,
                                default_to_death_date = TRUE)
 
@@ -277,18 +288,16 @@ output$noso_case_id_plot <- renderPlotly({
   
   # PLOT #
   output$onset_plot = renderPlotly({
-    df = fun_import_adjust(input, vhf_data,
-                               default_to_death_date = TRUE)
-    df_out = NULL
-    for(i in 1:nrow(df)){
-      df_out = rbind(df_out, fun_get_onset(df[i,]))
+    
+    if(is.null(input$caseId)){
+      stop(safeError("Please select one or more Case IDs"))
     }
+    data <- vhf_data[vhf_data$id %in% input$caseId,]
+
+    df_out = fun_import_adjust(input, data,
+                               default_to_death_date = TRUE)
 
     df_out = check_date_order(df_out)
-    
-    if(input$ID1_onset_window %in% df_out$id | input$ID2_onset_window %in% df_out$id ){
-      df_out = df_out %>% filter(id %in% c(input$ID1_onset_window, input$ID2_onset_window))
-    }
     
     p = fun_plot_exposure_windows(df_out, height=700)
     

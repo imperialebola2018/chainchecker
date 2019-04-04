@@ -49,15 +49,14 @@ fun_get_onset = function(input,
 ### import and adjust ###
 fun_import_adjust = function(input, data, 
                              default_to_death_date = TRUE){
-  
   #import and check
   df = check_line_upload(data, "id")
   
   #format
   df$DateDeath[df$DateDeath == ""] <- NA
 
-  df = df %>% add_column(death_date = df$DateDeath,
-                        reported_onset_date = df$DateOnset)
+  df = df %>% add_column(death_date = as.Date(df$DateDeath, "%d/%m/%Y"),
+                        reported_onset_date = as.Date(df$DateOnset, "%d/%m/%Y"))
   
   df = df %>% add_column( days_onset_to_bleeding = input$days_onset_to_bleeding_all,
                           days_onset_to_diarrhea = input$days_onset_to_diarrhea_all,
@@ -79,9 +78,11 @@ fun_import_adjust = function(input, data,
   
   #get onset
   df_out = NULL
-  for(i in 1:nrow(df)){
-    df_out = rbind(df_out, fun_get_onset(df[i,], default_to_death_date))
-  }
+  #for(i in 1:nrow(df)){
+  #  df_out = rbind(df_out, fun_get_onset(df[i,], default_to_death_date))
+  #}
+
+  df_out = fun_get_onset(df, default_to_death_date)
   
   df = df %>% 
     add_column( onset_date = as.Date(df_out$onset_date, "%d/%m/%Y"), 
@@ -98,16 +99,26 @@ fun_make_tree = function(input, data){
   linelist = fun_import_adjust(input, data,
                                default_to_death_date = ifelse(input$adjust_tree,
                                                               FALSE, TRUE))
-  contacts = check_contacts_upload(data)
 
   caseIds = select(data, "id")$id
   caseIds_source = select(data, "caseId_source")$caseId_source
 
   overlap = Reduce(intersect, list(caseIds, caseIds_source))
-
+  
   if(length(overlap) == 0){
     stop(safeError("Please ensure data has Case ID of Source entered for at least one record"))
   }
+
+  links = select(filter(linelist, caseId_source != ""), "id")$id
+  links = levels(droplevels(links))
+
+  case_ids = c(overlap, links)
+  case_ids = sort(unique(case_ids))
+
+  contacts = check_contacts_upload(data)
+
+  linelist <- linelist[linelist$id %in% case_ids,]
+  contacts <- contacts[contacts$id %in% case_ids,]
   
   #covering extras for vis_epicontacts_ggplot
   if(is.null(linelist$name)){ linelist = linelist %>% mutate(name = id)}
@@ -140,6 +151,7 @@ fun_make_tree = function(input, data){
 #### ----------------------------------------------------------------------------------- ####
 ### function to plot exposure windows ###
 fun_plot_exposure_windows = function(df, height){
+
   g = ggplot(df, aes(text = paste0("id: ",id))) 
 
   g = g + geom_rect(aes(xmin = as.Date(exposure_date_min,  "%d/%m/%Y"),
@@ -148,24 +160,25 @@ fun_plot_exposure_windows = function(df, height){
                         ymax = reorder(id, exposure_date_min),
                         color = "Exposure"),
                     size = 1.1) +
-    geom_point( aes( x = death_date,
+    geom_point( aes( x = as.Date(death_date,  "%d/%m/%Y"),
                      y = reorder(id, exposure_date_min),
                      color = "Death"),
                 shape = ifelse(df$dates_in_correct_order != TRUE,
                                "square",
                                "circle"),
                 size = 5) +
-    geom_point( aes( x = exposure_date_min,
+    geom_point( aes( x = as.Date(exposure_date_min,  "%d/%m/%Y"),
                      y = reorder(id, exposure_date_min),
                      color = "Exposure"), size = 0.1) +
-    geom_point( aes( x = exposure_date_max,
+    geom_point( aes( x = as.Date(exposure_date_max,  "%d/%m/%Y"),
                      y = reorder(id, exposure_date_min),
                      color = "Exposure"), size = 0.1) +
-    geom_point(aes(x = onset_date,
+    geom_point(aes(text = sprintf("Onset Date: %s", as.Date(onset_date,  "%d/%m/%Y")),
+                    x = as.Date(onset_date,  "%d/%m/%Y"),
                    y = reorder(id, exposure_date_min),
                    color = "Estimated onset"),
                size = 5) +
-    geom_point(aes(x = reported_onset_date,
+    geom_point(aes(x = as.Date(reported_onset_date,  "%d/%m/%Y"),
                    y = reorder(id, exposure_date_min),
                    color = "Reported onset"),
                size = 5, shape = 4, stroke = 2) +

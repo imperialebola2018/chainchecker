@@ -97,7 +97,7 @@ navbarPage(title = "chainchecker",
            tabPanel("Exposure windows for uploaded linelist",
                     
                     sidebarPanel(
-                      
+                      selectInput("caseId", "Case IDs", choices = c("None"), selected = NA, selectize=TRUE, multiple=TRUE),
                       #standard inputs
                       numericInput("min_incubation_all",
                                    "Minimum incubation period (days):",
@@ -114,11 +114,6 @@ navbarPage(title = "chainchecker",
                       numericInput("days_onset_to_diarrhea_all",
                                    "Mean time from symptom onset to diarrhea (days):",
                                    value = 4, min = 0, max = 365),
-                      textInput("ID1_onset_window",
-                                "Enter a pair of identifiers to compare",
-                                placeholder = "EG1"),
-                      textInput("ID2_onset_window",
-                                "", placeholder = "EG2"),
                       
                       span("Hover over the plot for more information on each point.", 
                            style="color:blue"),
