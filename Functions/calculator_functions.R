@@ -160,25 +160,25 @@ fun_plot_exposure_windows = function(df, height){
                         ymax = reorder(id, exposure_date_min),
                         color = "Exposure"),
                     size = 1.1) +
-    geom_point( aes( x = as.Date(death_date,  "%d/%m/%Y"),
+    geom_point( aes( x = death_date,
                      y = reorder(id, exposure_date_min),
                      color = "Death"),
                 shape = ifelse(df$dates_in_correct_order != TRUE,
                                "square",
                                "circle"),
                 size = 5) +
-    geom_point( aes( x = as.Date(exposure_date_min,  "%d/%m/%Y"),
+    geom_point( aes( x = exposure_date_min,
                      y = reorder(id, exposure_date_min),
                      color = "Exposure"), size = 0.1) +
-    geom_point( aes( x = as.Date(exposure_date_max,  "%d/%m/%Y"),
+    geom_point( aes( x = exposure_date_max,
                      y = reorder(id, exposure_date_min),
                      color = "Exposure"), size = 0.1) +
-    geom_point(aes(text = sprintf("Onset Date: %s", as.Date(onset_date,  "%d/%m/%Y")),
-                    x = as.Date(onset_date,  "%d/%m/%Y"),
+    geom_point(aes(
+                    x = onset_date,
                    y = reorder(id, exposure_date_min),
                    color = "Estimated onset"),
                size = 5) +
-    geom_point(aes(x = as.Date(reported_onset_date,  "%d/%m/%Y"),
+    geom_point(aes(x = reported_onset_date,
                    y = reorder(id, exposure_date_min),
                    color = "Reported onset"),
                size = 5, shape = 4, stroke = 2) +
