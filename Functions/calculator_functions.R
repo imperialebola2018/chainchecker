@@ -49,6 +49,7 @@ fun_get_onset = function(input,
 ### import and adjust ###
 fun_import_adjust = function(input, data, 
                              default_to_death_date = TRUE){
+
   #import and check
   df = check_line_upload(data, "id")
   
@@ -90,12 +91,91 @@ fun_import_adjust = function(input, data,
                 exposure_date_max = as.Date(df_out$exposure_date_max, "%d/%m/%Y"),
                 .after = "DateOnset") 
   
+  df=cluster_add_func(df,input)
+  
+
   return(df)
 }
 
+
+#### ----------------------------------------------------------------------------------- ####
+##function to create clusters and calculate size, then add to linelist###
+cluster_add_func <- function(df,input) {
+  linelist = df
+  caseIds = select(linelist, "id")$id
+  caseIds_source = select(linelist, "caseId_source")$caseId_source
+  
+  overlap = Reduce(intersect, list(caseIds, caseIds_source))
+  
+  if(length(overlap) == 0){
+    stop(safeError("Please ensure data has Case ID of Source entered for at least one record"))
+  }
+  
+  links = select(filter(linelist, caseId_source != ""), "id")$id
+  links = levels(droplevels(links))
+  
+  case_ids = c(overlap, links)
+  case_ids = sort(unique(case_ids))
+  
+  contacts = check_contacts_upload(linelist)
+  
+  linelist <- linelist[linelist$id %in% case_ids,]
+  contacts <- contacts[contacts$id %in% case_ids,]
+  print(contacts)
+
+  x <- epicontacts::make_epicontacts(linelist, contacts)
+  xClust <- subset(x, cs_min = 0, cs_max = 300)
+  xClust <- thin(xClust, what = "contacts")
+  xClust$directed <- F
+  cGraph <- cluster_fast_greedy(as.igraph(xClust))
+  cGraph <- as.data.frame(cbind(cGraph$names, cGraph$membership))
+  x$linelist <- merge(x$linelist,
+                      cGraph,
+                      by.x = "id",
+                      by.y = "V1",
+                      all = T)
+  
+
+  x$linelist$V2 <- paste0("cl_", as.character(x$linelist$V2))
+  x$linelist$V2[x$linelist$V2 == "cl_NA"] <- "cl_0"
+  names(x$linelist)[names(x$linelist) == 'V2'] <- 'clMembership'
+  clustSize <- as.data.frame(table(x$linelist$clMembership))
+  colnames(clustSize) <- c("member", "clSize")
+  x$linelist <-
+    merge(x$linelist, clustSize, by.x = "clMembership", by.y = "member")
+  x$linelist <- x$linelist[, c(2:ncol(x$linelist), 1)]
+  degs <- as.data.frame(get_degree(x))
+  degs$id <- rownames(degs)
+  x$linelist <- merge(x$linelist,
+                      degs,
+                      by.x = "id",
+                      by.y = "id",
+                      all = T)
+  names(x$linelist)[names(x$linelist) == 'get_degree(x)'] <-
+    'degrees'
+  x$linelist$degrees <-
+    ifelse(is.na(x$linelist$degrees), 0, x$linelist$degrees)
+  x$linelist$clMembership <-
+    ifelse(x$linelist$degrees == 0, "cl_NA", x$linelist$clMembership)
+  x <- x[!is.na(x$linelist$clMembership)]
+  lookup <- as.data.frame(unique(x$linelist$clMembership))
+  lookup$cluster_number <-
+    c("cl_NA", paste0("cl_", c(1:(nrow(
+      lookup
+    ) - 1))))
+  names(lookup)[names(lookup) == 'unique(x$linelist$clMembership)'] <-
+    'clMembership'
+  x$linelist <-
+    merge(x$linelist, lookup, by.x = "clMembership", by.y = "clMembership")
+  x$linelist <- x$linelist[, -1]
+
+  return(x$linelist)
+}
+
+
 #### ----------------------------------------------------------------------------------- ####
 ### function to make tree if data is uploaded ###
-fun_make_tree = function(input, data){
+fun_make_tree = function(input, data,type){
   linelist = fun_import_adjust(input, data,
                                default_to_death_date = ifelse(input$adjust_tree,
                                                               FALSE, TRUE))
@@ -110,7 +190,7 @@ fun_make_tree = function(input, data){
   }
 
   links = select(filter(linelist, caseId_source != ""), "id")$id
-  links = levels(droplevels(links))
+  links = levels(droplevels(as.factor(links)))
 
   case_ids = c(overlap, links)
   case_ids = sort(unique(case_ids))
@@ -139,6 +219,49 @@ fun_make_tree = function(input, data){
   x = epicontacts::make_epicontacts(linelist, contacts)
   
   #visualise
+  if (type =="network") {
+    #make epicontacts
+    x1<- as.igraph(x)
+
+    p =  ggnet2(x1,node.color = "white",size="degree",alpha = 0.75, edge.alpha = 0.5,legend.position  ="none")
+    p$data<-merge(p$data,x$linelist,by.x="label",by.y="id")#ggnet is a pain, so need to add cluster degree size details manually to get a filled circle...
+    p$data$size<-3+(p$data$size / max(p$data$size)) * 10##scale sizes so they are relative
+    
+    cols<-grDevices::rainbow(length(unique(p$data$cluster_number)))#get cluster names for colours
+    colPal<-setNames(cols, unique(p$data$cluster_number))#set colour pallet
+    colPal[]<-ifelse(names(colPal)=="cl_NA","lightgrey",colPal)#change cl_na to grey
+    
+    group_name=as.vector(p$data$cluster_number)
+    id=as.vector(p$data$label)
+    onset=as.vector(p$data$onset_date)
+    HCW=as.vector(p$data$HCW)
+    sex=as.vector(p$data$Gender)
+    age=as.vector(p$data$Age)
+    caseId_source=as.vector(p$data$caseId_source)
+    group=input$group
+    
+    p=p+geom_point(aes(x = p$data$x,y=p$data$y,fill=group_name,id=id,HCW=HCW,onset=onset,sex=sex,age=age,caseId_source=caseId_source), size = p$data$size, alpha = 0.7,color="black",shape=21)+
+      scale_fill_manual(values = colPal)+
+      theme(axis.title.x=element_blank(),
+            axis.text.x=element_blank(),
+            axis.ticks.x=element_blank(),
+            axis.title.y=element_blank(),
+            axis.text.y=element_blank(),
+            axis.ticks.y=element_blank())
+    return(ggplotly(p,tooltip=c("id","onset","sex","age","caseId_source","fill","HCW",group)))
+  }
+  
+  if (type =="table") {
+    return(datatable(linelist[,c(names(linelist))],rownames = FALSE, extensions = c('Buttons'),filter = 'top', options = list(
+      dom = 'Bfrtip',
+      scrollX = TRUE,
+      buttons = I("colvis")
+    )
+    ) )
+  }
+  
+  if(type=="timeline"){
+  
   p = vis_epicontacts_ggplot(x,
                              group = input$group, 
                              contactsgroup = input$groupcontact,
@@ -146,6 +269,7 @@ fun_make_tree = function(input, data){
     layout(height = 700)
 
   return(p)
+  }
 }
 
 #### ----------------------------------------------------------------------------------- ####

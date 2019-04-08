@@ -10,6 +10,10 @@ library(readr)
 library(lubridate)
 library(data.table)
 library(gtools)
+library(DT)
+library(ggnet)
+library(igraph)
+library(network)
 source('Functions/globals.R')
 source('Functions/vis_epicontacts_ggplot.R')
 source('Functions/calculator_functions.R')
@@ -30,7 +34,6 @@ function(input, output, session) {
       data
       }, server = FALSE, selection = "single", rownames = FALSE, 
       colnames = unname(get_vhf_table_metadata()$fields)[-1],
-
       ) 
   }
 
@@ -348,11 +351,20 @@ output$noso_case_id_plot <- renderPlotly({
   # PLOT #
   output$tree = renderPlotly({
     
-    tree <- fun_make_tree(input, vhf_data)
+    tree <- fun_make_tree(input, vhf_data,"timeline")
     
     tree
     
   })
+  
+  output$network = renderPlotly({
+    
+    fun_make_tree(input,vhf_data,"network")
+    
+  })
+  
+  output$networkTable = DT::renderDataTable({fun_make_tree(input,vhf_data,"table")})
+  
   
     # DROP DOWN MENU LINELIST #
   output$linelist_group = renderUI({
