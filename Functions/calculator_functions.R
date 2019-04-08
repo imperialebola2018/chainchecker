@@ -121,7 +121,6 @@ cluster_add_func <- function(df,input) {
   
   linelist <- linelist[linelist$id %in% case_ids,]
   contacts <- contacts[contacts$id %in% case_ids,]
-  print(contacts)
 
   x <- epicontacts::make_epicontacts(linelist, contacts)
   xClust <- subset(x, cs_min = 0, cs_max = 300)
