@@ -11,3 +11,9 @@ packages:
   - lubridate
   - data.table
   - magrittr
+  - igraph
+  - DT
+  - network
+  - GGally
+  - sna
+  - intergraph

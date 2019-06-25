@@ -148,6 +148,19 @@ navbarPage(title = "chainchecker",
                     ),
                     mainPanel(  plotlyOutput("tree") %>% withSpinner(type = 5, color = "orange") )
            ),
+           tabPanel("Cluster plots",
+                    
+                    sidebarPanel(
+                      span("Hover over the plot for more information on each point.", 
+                           style="color:blue")
+                      
+                    ),
+                    mainPanel(plotlyOutput("network",width="1200px",height="800px") %>% 
+                                withSpinner(type = 5, color = "orange"))),
+           
+           tabPanel("Cluster Information",
+                    DT::dataTableOutput("networkTable")
+           ),
            tabPanel("Method and definitions",
                     includeMarkdown('Documentation/Methods.md')
            )

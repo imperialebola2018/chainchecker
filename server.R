@@ -8,6 +8,10 @@ library(dplyr)
 library(lubridate)
 library(data.table)
 library(magrittr)
+library(igraph)
+library(DT)
+library(GGally)
+library(network)
 source('Functions/vis_epicontacts_ggplot.R')
 source('Functions/calculator_functions.R')
 source('Functions/internals.R')
@@ -147,6 +151,11 @@ function(input, output) {
     linelist = fun_import_adjust(input,
                                  default_to_death_date = input$adjust_tree)
     
+    contacts = check_contacts_upload(input$file_contact)
+    
+    #add the clusters
+    linelist = cluster_add_func(linelist, contacts, input)
+    
     #adjust for epicontacts
     names(linelist)[names(linelist) == 'onset_date'] = 'onset'
     
@@ -173,6 +182,9 @@ function(input, output) {
     
     
     contacts = check_contacts_upload(input$file_contact)
+    
+    #add the clusters
+    linelist = cluster_add_func(linelist, contacts, input)
     
     #check links are feasible
     contacts = check_exposure_timeline(linelist, contacts, input)
@@ -268,6 +280,15 @@ function(input, output) {
     }
   )
   
+  #------------------------------------------------------#
+  # CLUSTER ANALYSIS #
+  output$network = renderPlotly({
+    
+    fun_make_tree(input,type = "network")
+    
+  })
+  
+  output$networkTable = DT::renderDataTable({fun_make_tree(input,type = "table")})
 }
 
 
