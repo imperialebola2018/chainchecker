@@ -18,6 +18,12 @@ Authors:
 Feedback and requests for the app should be sent to k.gaythorpe AT
 imperial.ac.uk
 
+Desktop/ portable chainchecker for use with VHF database
+--------------------------------------------------------
+
+Is available form the GitHub repository at
+<https://github.com/imperialebola2018/chainchecker/releases>
+
 Calculator logic
 ================
 

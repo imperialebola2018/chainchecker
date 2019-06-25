@@ -5,9 +5,13 @@ library(shinycssloaders)
 
   
 navbarPage(title = "chainchecker",
-           selected = "Timeline",
+           selected = "Home",
            
            theme = shinytheme("cerulean"),
+           
+           tabPanel("Home",
+                    includeMarkdown('Documentation/About.md')
+           ),
            
            # Sidebar with a slider input for number of bins 
            tabPanel("Timeline",
