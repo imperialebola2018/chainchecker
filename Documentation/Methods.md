@@ -11,10 +11,12 @@ Authors:
 
 -   Katy Gaythorpe developed the app.
 
+-   Aaron Morris developed the cluster analysis.
+
 -   Miles Stewart developed the VHF app version.
 
 Feedback and requests for the app should be sent to k.gaythorpe AT
-imperial.ac.uk or Miles.Stewart AT jhuapl.edu
+imperial.ac.uk
 
 Calculator logic
 ================
@@ -48,7 +50,7 @@ are taken from the literature and we detail the ranges below.
 We take the default maximum incubation period to be 21 days and the
 minimum to be 4 days. This has been estimated in numerous studies;
 selected reading includes, **Eichner, Dowell & Firese, 2011**, **Bull.
-WHO, 1978**, **Bwaka et al. 1999** and **Ebola virus disease, WHO,
+WHO, 1978**, **Bwaka et al. 1999** and **Ebola virus disease, WHO,
 2018**.
 
 ### Developing symptoms
@@ -57,14 +59,14 @@ There are two correction factors, one for bleeding^& and one for
 diarrhea with defaults 6 and 4 days respectively. These denote the
 average time to develop each symptom after disease onset. There are
 multiple studies detailing the development of Ebola symptoms;
-**Valasquez et al. 2015** produced a systematic review on the time from
+**Valasquez et al. 2015** produced a systematic review on the time from
 infection to disease.
 
 ### Time from onset to death
 
 If an individual does not recover, we set the default time from symptom
 onset to death at 9 days. This value usually falls within the range of 8
-to 10 days with further discussion found in **Valasquez et al. 2015**.
+to 10 days with further discussion found in **Valasquez et al. 2015**.
 
 Definitions
 ===========

@@ -21,9 +21,11 @@ Authors:
 
 * Katy Gaythorpe developed the app. 
 
+* Aaron Morris developed the cluster analysis.
+
 * Miles Stewart developed the VHF app version. 
 
-Feedback and requests for the app should be sent to k.gaythorpe AT imperial.ac.uk or Miles.Stewart AT jhuapl.edu
+Feedback and requests for the app should be sent to k.gaythorpe AT imperial.ac.uk 
 
 
 # Calculator logic
