@@ -10,3 +10,4 @@ packages:
   - shinycssloaders
   - lubridate
   - data.table
+  - magrittr

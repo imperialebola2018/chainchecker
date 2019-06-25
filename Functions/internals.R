@@ -66,7 +66,7 @@ check_line_upload = function(file_upload){
   }
   
   #make sure id is first column
-  df = df %>% select(id, everything())
+  df %<>% select(id, everything())
   
   #dates
   date_ind = grep("date", names(df))
@@ -161,7 +161,7 @@ check_unique_contact_links = function(df){
 ### check the dates are in the right order ###
 check_date_order = function(linelist){
   #check whether onset reported before death
-  linelist = linelist %>% 
+  linelist %<>%
     add_column(dates_in_correct_order = linelist$reported_onset_date < 
                  linelist$death_date)
   
@@ -173,8 +173,8 @@ check_date_order = function(linelist){
 check_exposure_timeline = function(linelist, contacts, input){
   
   #add extra column to contacts to check if the link is feasible wrt exposure windows
-  contacts = contacts %>% add_column(INCONSISTENT = NA, .after = "to")
-  contacts = contacts %>% add_column(reason_inconsistent = NA, .after = "INCONSISTENT")
+  contacts %<>% add_column(INCONSISTENT = NA, .after = "to")
+  contacts %<>% add_column(reason_inconsistent = NA, .after = "INCONSISTENT")
   
   #check each contact
   for(i in 1:nrow(contacts)){

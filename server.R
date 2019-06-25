@@ -7,6 +7,7 @@ library(tibble)
 library(dplyr)
 library(lubridate)
 library(data.table)
+library(magrittr)
 source('Functions/vis_epicontacts_ggplot.R')
 source('Functions/calculator_functions.R')
 source('Functions/internals.R')
@@ -102,7 +103,7 @@ function(input, output) {
     df_out = check_date_order(df_out)
     
     if(input$ID1_onset_window %in% df_out$id | input$ID2_onset_window %in% df_out$id ){
-      df_out = df_out %>% filter(id %in% c(input$ID1_onset_window, input$ID2_onset_window))
+      df_out %<>% filter(id %in% c(input$ID1_onset_window, input$ID2_onset_window))
     }
     
     p = fun_plot_exposure_windows(df_out, height=700)
@@ -260,8 +261,8 @@ function(input, output) {
       contacts = check_exposure_timeline(linelist, contacts, input)
       
       #add source and sink onset dates
-      contacts = contacts %>% add_column(source_onset = linelist$onset[match(contacts$from, linelist$id)], .after = "reason_inconsistent")
-      contacts = contacts %>% add_column(infectee_onset = linelist$onset[match(contacts$to, linelist$id)], .after = "source_onset")
+      contacts %<>% add_column(source_onset = linelist$onset[match(contacts$from, linelist$id)], .after = "reason_inconsistent")
+      contacts %<>% add_column(infectee_onset = linelist$onset[match(contacts$to, linelist$id)], .after = "source_onset")
       
       write.csv(contacts, file, row.names = FALSE)
     }

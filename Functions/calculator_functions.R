@@ -12,34 +12,34 @@ fun_get_onset = function(input,
     #then add other dates
     if(input$death_avail){ #if there is a death date
       
-      df = df %>% add_column(death_date = input$death_date,
+      df %<>% add_column(death_date = input$death_date,
                              onset_date = as.Date(input$death_date - input$days_onset_to_death),
                              reported_onset_date = input$reported_onset_date)
       
     } else { #no death date
-      df = df %>% add_column(death_date = input$death_date,
+      df %<>% add_column(death_date = input$death_date,
                              reported_onset_date = input$reported_onset_date)
       
       if(input$bleeding_at_reported_onset){ #with bleeding
-        df = df %>% add_column( onset_date = as.Date(df$reported_onset_date - 
+        df %<>% add_column( onset_date = as.Date(df$reported_onset_date - 
                                                        input$days_onset_to_bleeding))
         
       } else if(input$diarrhea_at_reported_onset){ #with diarrhea
-        df = df %>% add_column( onset_date = as.Date(df$reported_onset_date - 
+        df %<>% add_column( onset_date = as.Date(df$reported_onset_date - 
                                                        input$days_onset_to_diarrhea))
         
       } else { #no wet symptoms
-        df = df %>% add_column( onset_date = df$reported_onset_date)
+        df %<>% add_column( onset_date = df$reported_onset_date)
       }
     }
   } else {
-    df = df %>% add_column( onset_date = input$reported_onset_date,
+    df %<>% add_column( onset_date = input$reported_onset_date,
                             death_date = input$death_date,
                             reported_onset_date = input$reported_onset_date)
   }
   
   #calculate exposure period
-  df = df %>% add_column( exposure_date_min = as.Date(df$onset_date - input$max_incubation),
+  df %<>% add_column( exposure_date_min = as.Date(df$onset_date - input$max_incubation),
                           exposure_date_max = as.Date(df$onset_date - input$min_incubation))
   
   
@@ -55,7 +55,7 @@ fun_import_adjust = function(input,
   df = check_line_upload(input$file_line)
   
   #format
-  df = df %>% add_column( days_onset_to_bleeding = input$days_onset_to_bleeding_all,
+  df %<>% add_column( days_onset_to_bleeding = input$days_onset_to_bleeding_all,
                           days_onset_to_diarrhea = input$days_onset_to_diarrhea_all,
                           max_incubation = input$max_incubation_all,
                           min_incubation = input$min_incubation_all,
@@ -63,12 +63,12 @@ fun_import_adjust = function(input,
                           death_avail = !is.na(df$death_date))
   
   if(is.null(df$bleeding_at_reported_onset)){
-    df = df %>% add_column(bleeding_at_reported_onset = FALSE)
+    df %<>% add_column(bleeding_at_reported_onset = FALSE)
   } else if(is.na(all(df$bleeding_at_reported_onset))){
     df$bleeding_at_reported_onset = FALSE
   }
   if(is.null(df$diarrhea_at_reported_onset)){
-    df = df %>% add_column(diarrhea_at_reported_onset = FALSE)
+    df %<>% add_column(diarrhea_at_reported_onset = FALSE)
   } else if(is.na(all(df$diarrhea_at_reported_onset))){
     df$diarrhea_at_reported_onset = FALSE
   }
@@ -79,7 +79,7 @@ fun_import_adjust = function(input,
     df_out = rbind(df_out, fun_get_onset(df[i,], default_to_death_date))
   }
   
-  df = df %>% 
+  df %<>% 
     add_column( onset_date = df_out$onset_date, 
                 exposure_date_min = df_out$exposure_date_min, 
                 exposure_date_max = df_out$exposure_date_max,
@@ -99,8 +99,8 @@ fun_make_tree = function(input){
   contacts = check_contacts_upload(input$file_contact)
   
   #covering extras for vis_epicontacts_ggplot
-  if(is.null(linelist$name)){ linelist = linelist %>% mutate(name = id)}
-  if(is.null(linelist$code)){ linelist = linelist %>% mutate(code = id)}
+  if(is.null(linelist$name)){ linelist %<>% mutate(name = id)}
+  if(is.null(linelist$code)){ linelist %<>% mutate(code = id)}
   
   #check links are feasible
   contacts = check_exposure_timeline(linelist, contacts, input)
