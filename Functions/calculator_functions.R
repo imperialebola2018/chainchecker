@@ -92,25 +92,6 @@ fun_import_adjust = function(input,
 ##function to create clusters and calculate size, then add to linelist###
 cluster_add_func <- function(linelist, contacts, input) {
 
-  # caseIds = select(linelist, "id")$id
-  # caseIds_source = select(linelist, "caseId_source")$caseId_source
-  # 
-  # overlap = Reduce(intersect, list(caseIds, caseIds_source))
-  # 
-  # if(length(overlap) == 0){
-  #   stop(safeError("Please ensure data has Case ID of Source entered for at least one record"))
-  # }
-  # 
-  # links = select(filter(linelist, caseId_source != ""), "id")$id
-  # links = levels(droplevels(links))
-  # 
-  # case_ids = c(overlap, links)
-  # case_ids = sort(unique(case_ids))
-  # 
-  # contacts = check_contacts_upload(linelist)
-  # 
-  # linelist <- linelist[linelist$id %in% case_ids,]
-  # contacts <- contacts[contacts$id %in% case_ids,]
   
   x <- epicontacts::make_epicontacts(linelist, contacts)
   xClust <- subset(x, cs_min = 0, cs_max = 300)
@@ -157,6 +138,10 @@ cluster_add_func <- function(linelist, contacts, input) {
   x$linelist <-
     merge(x$linelist, lookup, by.x = "clMembership", by.y = "clMembership")
   x$linelist <- x$linelist[, -1]
+  
+  #rename the NA so they have a number
+  x$linelist$cluster_number[x$linelist$cluster_number == "cl_NA"] = paste0("cl_", length(unique(x$linelist$cluster_number)))
+  
   
   return(x$linelist)
 }
