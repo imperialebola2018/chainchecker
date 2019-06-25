@@ -199,6 +199,10 @@ function(input, output) {
     linelist = fun_import_adjust(input,
                                  default_to_death_date = input$adjust_tree)
     
+    contacts = check_contacts_upload(input$file_contact)
+    
+    #add the clusters
+    linelist = cluster_add_func(linelist, contacts, input)
     
     #adjust for epicontacts
     names(linelist)[names(linelist) == 'onset_date'] = 'onset'
@@ -289,6 +293,20 @@ function(input, output) {
   })
   
   output$networkTable = DT::renderDataTable({fun_make_tree(input,type = "table")})
+  
+  # CLUSTER DOWNLOAD #
+  output$cluster_download = downloadHandler(
+    filename = function(){ 
+      paste0("Clusters_", Sys.Date(), ".html")
+    },
+    content = function(file){
+      
+      p = fun_make_tree(input, type = "network")
+      
+      htmlwidgets::saveWidget(as.widget(p), file)
+      
+    }
+  )
 }
 
 
