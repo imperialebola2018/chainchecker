@@ -20,6 +20,9 @@ vis_epicontacts_ggplot = function(x,
   rank_contacts = out$rank_contacts
   linelist = out$linelist
   
+  if(nrow(rank_contacts)==0){
+    stop(safeError("Contact links all have missing onset dates, try with estimated onset dates instead."))
+  }
   #start plot
   g = ggplot()
   
