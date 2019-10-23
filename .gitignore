@@ -18,3 +18,4 @@ logs_230119.csv
 *.pptx
 logs*
 www/
+tmp_files

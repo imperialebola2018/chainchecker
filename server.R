@@ -254,6 +254,22 @@ function(input, output) {
     }
   )
   
+  # DOWNLOAD #
+  output$tree_download_png = downloadHandler(
+    filename = function(){ 
+      paste0("Transmission_Tree_", Sys.Date(), ".png")
+    },
+    content = function(file){
+      
+      p = fun_make_tree(input)
+      
+      htmlwidgets::saveWidget(as.widget(p), "tmp.html", selfcontained = FALSE)
+      
+      webshot::webshot("tmp.html", file)
+      
+    }
+  )
+  
   # CONTACT DOWNLOAD #
   output$contact_download = downloadHandler(
     filename = function(){

@@ -143,6 +143,8 @@ navbarPage(title = "chainchecker",
                       br(),br(),
                       downloadButton("tree_download", "Download Tree as HTML"),
                       br(),br(),
+                      downloadButton("tree_download_png", "Download Tree as png (for Internet Explorer users)"),
+                      br(),br(),
                       downloadButton("contact_download", 
                                      "Download contact inconsistencies as .csv",
                                      style="white-space: normal;
