@@ -130,6 +130,7 @@ navbarPage(title = "chainchecker",
                     ),
                     mainPanel(plotlyOutput("onset_plot") %>% withSpinner(type = 5, color = "orange"))
            ),
+           
            tabPanel("Transmission tree for uploaded linelist and contacts",
                     sidebarPanel(
                       checkboxInput("adjust_tree", 
@@ -143,8 +144,6 @@ navbarPage(title = "chainchecker",
                       br(),br(),
                       downloadButton("tree_download", "Download Tree as HTML"),
                       br(),br(),
-                      downloadButton("tree_download_png", "Download Tree as png (for Internet Explorer users)"),
-                      br(),br(),
                       downloadButton("contact_download", 
                                      "Download contact inconsistencies as .csv",
                                      style="white-space: normal;
@@ -154,6 +153,7 @@ navbarPage(title = "chainchecker",
                     ),
                     mainPanel(  plotlyOutput("tree") %>% withSpinner(type = 5, color = "orange") )
            ),
+           
            tabPanel("Cluster plots",
                     
                     sidebarPanel(
