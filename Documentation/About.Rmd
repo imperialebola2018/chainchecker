@@ -17,11 +17,11 @@ This app was developed to produce estimates of exposure dates for Ebola cases. I
 
 Authors: 
 
-* Mary Choi developed the calculator logic.
-
 * Katy Gaythorpe developed the app. 
 
 * Aaron Morris developed the cluster analysis.
+
+* Mary Choi developed the calculator logic.
 
 * Miles Stewart developed the VHF app version. 
 

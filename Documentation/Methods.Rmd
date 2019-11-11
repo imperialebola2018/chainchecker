@@ -45,6 +45,10 @@ The calculator uses the following steps to estimate onset and exposure dates.
 5. **Earliest exposure date = estimated onset - maximum incubation period**.
 6. **Latest exposure date = estimated onset - minimum incubation period**.
 
+# Inconsistencies
+
+Links labelled as **INCONSISTENT** are contact links that have been flagged for further checking by the user because the exposure window of the infectee does not overlap with the infectious period of the infector. This could be because the onset date of infector is after that of infectee or perhaps the infector died before the infectee was exposed (although this could of course be funeral transmission).
+
 # Defaults
 
 There are a few default values set for the periods of interest. These are taken from the literature and we detail the ranges below.

@@ -2,6 +2,7 @@ library(shiny)
 library(shinythemes)
 library(plotly)
 library(shinycssloaders)
+library(shinyBS)
 
   
 navbarPage(title = "chainchecker",
@@ -81,8 +82,14 @@ navbarPage(title = "chainchecker",
                       downloadButton("download_ltemplate", "Download linelist template"),
                       br(),br(),
                       downloadButton("download_ctemplate", "Download contacts template"),
-                      fileInput("file_line", h3("Upload linelist")),
-                      fileInput("file_contact", h3("Upload contacts"))),
+                      fileInput("file_line", 
+                                label = h3("Upload linelist"), 
+                                accept = ".csv",
+                                placeholder = "No data will be stored after your session ends"),
+                      fileInput("file_contact", 
+                                label =  h3("Upload contacts"), 
+                                accept = ".csv",
+                                placeholder = "No data will be stored after your session ends")),
                     
                     mainPanel(includeMarkdown("Documentation/Upload_Guidelines.md"))
            ),

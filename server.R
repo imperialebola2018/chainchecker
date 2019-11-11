@@ -17,7 +17,7 @@ source('Functions/calculator_functions.R')
 source('Functions/internals.R')
 
 ### SERVER ###
-function(input, output) {
+function(input, output, session) {
   
   ### TIMELINE ###-----------------------------------------------------------------------------------
   

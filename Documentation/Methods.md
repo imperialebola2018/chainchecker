@@ -16,13 +16,13 @@ Authors:
 -   Miles Stewart developed the VHF app version.
 
 Feedback and requests for the app should be sent to k.gaythorpe AT
-imperial.ac.uk
+imperial.ac.uk or aaron.morris10 AT imperial.ac.uk
 
 Desktop/ portable chainchecker for use with VHF database
 --------------------------------------------------------
 
 Is available form the GitHub repository at
-<https://github.com/imperialebola2018/chainchecker/releases>
+<a href="https://github.com/imperialebola2018/chainchecker/releases" class="uri">https://github.com/imperialebola2018/chainchecker/releases</a>
 
 Calculator logic
 ================
@@ -45,6 +45,16 @@ dates.
 6.  **Latest exposure date = estimated onset - minimum incubation
     period**.
 
+Inconsistencies
+===============
+
+Links labelled as **INCONSISTENT** are contact links that have been
+flagged for further checking by the user because the exposure window of
+the infectee does not overlap with the infectious period of the
+infector. This could be because the onset date of infector is after that
+of infectee or perhaps the infector died before the infectee was exposed
+(although this could of course be funeral transmission).
+
 Defaults
 ========
 
@@ -56,7 +66,7 @@ are taken from the literature and we detail the ranges below.
 We take the default maximum incubation period to be 21 days and the
 minimum to be 4 days. This has been estimated in numerous studies;
 selected reading includes, **Eichner, Dowell & Firese, 2011**, **Bull.
-WHO, 1978**, **Bwaka et al. 1999** and **Ebola virus disease, WHO,
+WHO, 1978**, **Bwaka et al. 1999** and **Ebola virus disease, WHO,
 2018**.
 
 ### Developing symptoms
@@ -65,14 +75,14 @@ There are two correction factors, one for bleeding^& and one for
 diarrhea with defaults 6 and 4 days respectively. These denote the
 average time to develop each symptom after disease onset. There are
 multiple studies detailing the development of Ebola symptoms;
-**Valasquez et al. 2015** produced a systematic review on the time from
+**Valasquez et al. 2015** produced a systematic review on the time from
 infection to disease.
 
 ### Time from onset to death
 
 If an individual does not recover, we set the default time from symptom
 onset to death at 9 days. This value usually falls within the range of 8
-to 10 days with further discussion found in **Valasquez et al. 2015**.
+to 10 days with further discussion found in **Valasquez et al. 2015**.
 
 Definitions
 ===========
