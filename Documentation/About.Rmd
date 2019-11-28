@@ -30,3 +30,7 @@ Feedback and requests for the app should be sent to k.gaythorpe AT imperial.ac.u
 ## Desktop/ portable chainchecker for use with VHF database
 
 Is available form the GitHub repository at https://github.com/imperialebola2018/chainchecker/releases 
+
+## Citation
+
+Gaythorpe, K. A. M. and Morris, A. and Imai, N. and Stewart, M. and Freeman, J. and Choi M. "chainchecker", 2019, [https://shiny.dide.imperial.ac.uk/chainchecker/] 

@@ -23,3 +23,10 @@ Desktop/ portable chainchecker for use with VHF database
 
 Is available form the GitHub repository at
 <a href="https://github.com/imperialebola2018/chainchecker/releases" class="uri">https://github.com/imperialebola2018/chainchecker/releases</a>
+
+Citation
+--------
+
+Gaythorpe, K. A. M. and Morris, A. and Imai, N. and Stewart, M. and
+Freeman, J. and Choi M. “chainchecker”, 2019,
+\[<a href="https://shiny.dide.imperial.ac.uk/chainchecker/" class="uri">https://shiny.dide.imperial.ac.uk/chainchecker/</a>\]
