@@ -2,7 +2,6 @@ library(shiny)
 library(shinythemes)
 library(plotly)
 library(shinycssloaders)
-library(shinyBS)
 
   
 navbarPage(title = "chainchecker",
