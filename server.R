@@ -15,12 +15,73 @@ library(network)
 source('Functions/vis_epicontacts_ggplot.R')
 source('Functions/calculator_functions.R')
 source('Functions/internals.R')
+source('Functions/UI_functions.R')
 
 load("translation.bin")
 ### SERVER ###
 function(input, output, session) {
   
-
+  #--------------------------------------------------------------------------------------------------
+  #--------------------------------------------------------------------------------------------------
+  # LANGUAGE SWITCHING #
+  
+  # TIMELINE #
+  
+  output$min_incubUI <- renderUI( #standard inputs
+    numericInput01("min_incubation", "min_incub", 4, input)
+  )
+  
+  output$max_incubUI <- renderUI(
+    numericInput01("max_incubation", "max_incub", 21, input)
+  )
+  
+  output$onset_deathUI <- renderUI(
+    numericInput01("days_onset_to_death", "onset_death", 9, input)
+  )
+  
+  output$idUI <- renderUI(
+    textInput("id",
+              translation[["id"]][[input$language]],
+              value = "EG1")
+  )
+  
+  output$dod_avail_checkUI <- renderUI(
+    checkboxInput01("death_avail", "dod_avail_check", input)
+  )
+  
+  output$dodUI <- renderUI(
+    dateInput("death_date",
+              label = translation[["dod"]][[input$language]],
+              value = Sys.Date())
+  )
+  
+  output$dosoUI <- renderUI(
+    dateInput("reported_onset_date",
+              label = translation[["doso"]][[input$language]],
+              value = Sys.Date()-7)
+  )
+  
+  output$bleeding_checkUI <- renderUI(
+    checkboxInput01("bleeding_at_reported_onset", "bleeding_check", input)
+  )
+  
+  output$onset_bleedingUI <- renderUI(
+    numericInput01("days_onset_to_bleeding", "onset_bleeding", 6, input)
+  )
+  
+  output$diarrhea_checkUI <- renderUI(
+    checkboxInput01("diarrhea_at_reported_onset", "diarrhea_check", input)
+  )
+  
+  output$onset_diarrheaUI <- renderUI(
+    numericInput01("days_onset_to_diarrhea", "onset_diarrhea", 4, input)
+  )
+  
+  output$hoverUI <- renderUI(
+    span(translation[["hover"]][[input$language]], style="color:blue")
+  )
+  #--------------------------------------------------------------------------------------------------
+  
   ### TIMELINE ###-----------------------------------------------------------------------------------
   
   # PLOT #

@@ -11,6 +11,7 @@ navbarPage(title = "chainchecker",
           
            
            tabPanel("Home",
+                    icon = icon("home"),
                     radioButtons(inputId = "language", 
                                  label = "",
                                  choiceValues = c("en", "fr"),
@@ -22,61 +23,52 @@ navbarPage(title = "chainchecker",
            
            # Sidebar with a slider input for number of bins 
            tabPanel("Timeline",
+                    
+                    icon = icon("stream"),
+                    
                     sidebarPanel(
                       
-                      #standard inputs
-                      numericInput("min_incubation",
-                                   "Minimum incubation period (days):",
-                                   value = 4, min = 0, max = 365),
-                      numericInput("max_incubation",
-                                   "Maximum incubation period (days):",
-                                   value = 21, min = 0, max = 365),
-                      numericInput("days_onset_to_death",
-                                   "Mean period from onset to death (days):",
-                                   value = 9, min = 0, max = 365),
+                      uiOutput("min_incubUI"),
                       
-                      textInput("id",
-                                "Identifier:",
-                                value = "EG1"),
+                      uiOutput("max_incubUI"),
+                      
+                      uiOutput("onset_deathUI"),
+                      
+                      uiOutput("idUI"),
                       
                       #conditions
-                      checkboxInput("death_avail", 
-                                    "Check box if the date of death is available", 
-                                    value = TRUE), 
+                      uiOutput("dod_avail_checkUI"),
+                      
                       conditionalPanel(
                         condition = "input.death_avail == true",
-                        dateInput("death_date",
-                                  "Date of death:",
-                                  value = Sys.Date())
-                      ), 
+                        uiOutput("dodUI")
+                      ),
+                      
                       conditionalPanel(
                         condition = "input.death_avail == false",
-                        dateInput("reported_onset_date",
-                                  "Reported date of symptom onset:",
-                                  value = Sys.Date()-7),
-                        checkboxInput("bleeding_at_reported_onset", 
-                                      "Check box if the individual was bleeding when onset was reported*.", 
-                                      value = TRUE),
+                        
+                        uiOutput("dosoUI"),
+                        
+                        uiOutput("bleeding_checkUI"),
+                        
                         conditionalPanel(
                           condition = "input.bleeding_at_reported_onset == true",
-                          numericInput("days_onset_to_bleeding",
-                                       "Mean time from symptom onset to bleeding (days):",
-                                       value = 6, min = 0, max = 365)
-                        ),
+                          
+                          uiOutput("onset_bleedingUI")),
+                        
                         conditionalPanel(
                           condition = "input.bleeding_at_reported_onset == false",
-                          checkboxInput("diarrhea_at_reported_onset", 
-                                        "Check box if the individual had diarrhea when onset was reported."),
+                          
+                          uiOutput("diarrhea_checkUI"),
+                          
                           conditionalPanel(
                             condition = "input.diarrhea_at_reported_onset == true",
-                            numericInput("days_onset_to_diarrhea",
-                                         "Mean time from symptom onset to diarrhea (days):",
-                                         value = 4, min = 0, max = 365)
-                          )
+                            
+                            uiOutput("onset_diarrheaUI"))
                         )
                       ),
                       
-                      span("Hover over the plot for more information on each point.", style="color:blue")
+                      uiOutput("hoverUI")
                       
                     ),
                     mainPanel(plotlyOutput("exposure_plot"),
@@ -84,6 +76,9 @@ navbarPage(title = "chainchecker",
                               textOutput("exposure_window"))
            ),
            tabPanel("Upload",
+                    
+                    icon = icon("upload"),
+                    
                     sidebarPanel(
                       downloadButton("download_ltemplate", "Download linelist template"),
                       br(),br(),
@@ -99,7 +94,9 @@ navbarPage(title = "chainchecker",
                     
                     mainPanel(includeMarkdown("Documentation/Upload_Guidelines.md"))
            ),
-           tabPanel("Exposure windows for uploaded linelist",
+           tabPanel("Exposure windows",
+                    
+                    icon = icon("poll-h"),
                     
                     sidebarPanel(
                       checkboxInput("dates_as_reported", 
@@ -144,15 +141,16 @@ navbarPage(title = "chainchecker",
                     mainPanel(plotlyOutput("onset_plot") %>% withSpinner(type = 5, color = "orange"))
            ),
            
-           tabPanel("Transmission tree for uploaded linelist and contacts",
+           tabPanel("Transmission tree",
+                    
+                    icon = icon("link"),
+                    
                     sidebarPanel(
                       checkboxInput("adjust_tree", 
                                     "Show tree with estimated onset dates."),
                       uiOutput("linelist_group"),
                       uiOutput("contact_group"),
                       uiOutput("tooltip_options"),
-                      span("Hover over the plot for more information on each point.", 
-                           style="color:blue"),
                       
                       br(),br(),
                       downloadButton("tree_download", "Download Tree as HTML"),
@@ -169,6 +167,8 @@ navbarPage(title = "chainchecker",
            
            tabPanel("Cluster plots",
                     
+                    icon = icon("project-diagram"),
+                    
                     sidebarPanel(
                       span("Hover over the plot for more information on each point.", 
                            style="color:blue"),
@@ -180,9 +180,15 @@ navbarPage(title = "chainchecker",
                                 withSpinner(type = 5, color = "orange"))),
            
            tabPanel("Cluster Information",
+                    
+                    icon = icon("table"),
+                    
                     DT::dataTableOutput("networkTable")
            ),
            tabPanel("Method and definitions",
+                    
+                    icon = icon("book"),
+                    
                     includeMarkdown('Documentation/Methods.md')
            )
            
