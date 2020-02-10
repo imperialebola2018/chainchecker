@@ -1,0 +1,35 @@
+key,en,fr
+home,Home,Accueil
+timeline,Timeline,Chronologie
+upload,Upload,Télécharger
+exposure,Exposure windows,Fenêtres d'exposition
+tree,Transmission tree,Arbre de transmission
+cluster_plots,Cluster plots,Tracés en grappes
+cluster_info,Cluster information,Analyse de grappes
+method,Method and Definitions,Méthode et définitions
+min_incub,Minimum incubation period (days):,Période d'incubation minimale (jours):
+max_incub,Maximum incubation period (days):,Période d'incubation maximale (jours):
+onset_death,Mean period from onset to death (days):,Période moyenne du début à la mort (jours):
+id,Identifier:,Identifiant:
+dod_avail_check,Check box if the date of death is available,Cochez la case si la date du décès est disponible
+dod ,Date of death:,Date de décès:
+hover,Hover over the plot for more information on each point.,Passez la souris sur l'intrigue pour plus d'informations sur chaque point.
+doso,Reported date of symptom onset:,Date signalée d'apparition des symptômes:
+bleeding_check,Check box if the individual was bleeding when onset was reported*.,Cochez la case si la personne saignait au moment du signalement *.
+onset_bleeding,Mean time from symptom onset to bleeding (days):,Temps moyen entre l'apparition des symptômes et le saignement (jours):
+diarrhea_check,Check box if the individual had diarrhea when onset was reported.,Cochez la case si la personne souffrait de diarrhée au début du signalement.
+onset_diarrhea,Mean time from symptom onset to diarrhea (days):,Temps moyen entre l'apparition des symptômes et la diarrhée (jours):
+down_l,Download linelist template,Télécharger le modèle de liste
+down_c,Download contacts template,Télécharger le modèle de contacts
+upload_l,Upload linelist,Télécharger le modèle de liste
+upload_c,Upload contacts,Télécharger le modèle de contacts
+calc_exp_check,Calculate exposure window from onset dates as reported.,"Calculez la fenêtre d'exposition à partir des dates de début, comme indiqué."
+dod_incon,Dates of death that are inconsistent with reported onset date are denoted with a square.,Les dates de décès qui ne correspondent pas à la date de début déclarée sont indiquées par un carré.
+id_compare,Enter a pair of identifiers to compare,Entrez une paire d'identifiants à comparer
+down_results,Download results,Télécharger les résultats
+error_no_line,No linelist file uploaded yet.,Aucun fichier de liste n'a encore été téléchargé.
+show_tree,Show tree with estimated onset dates.,Afficher l'arbre avec les dates de début estimées.
+down_c_incon,Download contact inconsistencies,Télécharger les incohérences des contacts
+enter_plot_char,Enter a characteristic to show on the plot:,Entrez une caractéristique à afficher sur le graphique:
+enter_trans,Enter a transmission type to show on the plot:,Entrez un type de transmission à afficher sur le tracé:
+enter_char,Enter (up to 5) characteristics to show on hover:,Entrez (jusqu'à 5) les caractéristiques à afficher en survol:
