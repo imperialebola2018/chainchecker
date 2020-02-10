@@ -8,8 +8,15 @@ navbarPage(title = "chainchecker",
            selected = "Home",
            
            theme = shinytheme("cerulean"),
+          
            
            tabPanel("Home",
+                    radioButtons(inputId = "language", 
+                                 label = "",
+                                 choiceValues = c("en", "fr"),
+                                 choiceNames = c("English", "Français"),
+                                 selected = "en",
+                                 inline = TRUE),
                     includeMarkdown('Documentation/About.md')
            ),
            

@@ -16,9 +16,11 @@ source('Functions/vis_epicontacts_ggplot.R')
 source('Functions/calculator_functions.R')
 source('Functions/internals.R')
 
+load("translation.bin")
 ### SERVER ###
 function(input, output, session) {
   
+
   ### TIMELINE ###-----------------------------------------------------------------------------------
   
   # PLOT #
@@ -42,7 +44,7 @@ function(input, output, session) {
   output$exposure_window = renderText({
     paste0("The exposure window for these parameters is ", 
            format(fun_get_onset(input)$exposure_date_min, format = "%d %B"), 
-           " to ",
+           " - ",
            format(fun_get_onset(input)$exposure_date_max, format = "%d %B"),
            ".")
   })
@@ -169,10 +171,13 @@ function(input, output, session) {
                    "death_avail")
     vec = vec[!vec %in% added_cols]
     
-    selectInput("group", 
-                "Enter a characteristic to show on the plot: ", 
-                vec)
+    print(input$language)
+    
+    selectInput(inputId = "group", 
+                label = translation[["enter_plot_char"]][[input$language]], 
+                choices = vec)
   })
+  
   
   # DROP DOWN MENU CONTACT #
   output$contact_group = renderUI({
@@ -190,8 +195,8 @@ function(input, output, session) {
     contacts = check_exposure_timeline(linelist, contacts, input)
     
     selectInput("groupcontact", 
-                "Enter a transmission type to show on the plot: ", 
-                names(contacts), selected = "INCONSISTENT" )
+                translation[["enter_trans"]][[input$language]], 
+                names(contacts), selected = translation[["incon"]][[input$language]] )
   })
   
   output$tooltip_options = renderUI({
@@ -218,7 +223,7 @@ function(input, output, session) {
     vec = vec[!vec %in% added_cols]
     
     selectizeInput("tooltip", 
-                   "Enter (up to 5) characteristics to show on hover: ", 
+                   translation[["enter_char"]][[input$language]], 
                    vec,
                    multiple = TRUE,
                    options = list(maxItems = 5))

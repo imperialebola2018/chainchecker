@@ -33,3 +33,6 @@ down_c_incon,Download contact inconsistencies,Télécharger les incohérences des c
 enter_plot_char,Enter a characteristic to show on the plot:,Entrez une caractéristique à afficher sur le graphique:
 enter_trans,Enter a transmission type to show on the plot:,Entrez un type de transmission à afficher sur le tracé:
 enter_char,Enter (up to 5) characteristics to show on hover:,Entrez (jusqu'à 5) les caractéristiques à afficher en survol:
+estimated_onset,Estimated onset of symptoms for these parameters is ,Le début estimé des symptômes de ces paramètres est 
+estimated_window,The exposure window for these parameters is ,La fenêtre d'exposition de ces paramètres est 
+incon,inconsistent,inconsistant
