@@ -7,11 +7,11 @@ fun_get_onset = function(input,
                          default_to_death_date = TRUE){
   
   df = tibble("id" = input$id)
-  
+
   if(default_to_death_date){
     #then add other dates
-    if(input$death_avail){ #if there is a death date
-      
+    if(input$death_avail==TRUE | is.null(input$death_avail)){ #if there is a death date
+
       df %<>% add_column(death_date = input$death_date,
                          onset_date = as.Date(input$death_date - input$days_onset_to_death),
                          reported_onset_date = input$reported_onset_date)

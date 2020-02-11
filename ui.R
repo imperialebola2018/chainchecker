@@ -41,24 +41,41 @@ navbarPage(title = "chainchecker",
                       #conditions
                       uiOutput("dod_avail_checkUI"),
                       
-                      uiOutput("dodUI"),
+                      conditionalPanel(
+                        condition = "input.death_avail == true",
+                        uiOutput("dodUI")
+                      ),
                       
-                      uiOutput("dosoUI"),
-                      
-                      uiOutput("bleeding_checkUI"),
-                      
-                      uiOutput("onset_bleedingUI"),
-                      
-                      uiOutput("diarrhea_checkUI"),
-                      
-                      uiOutput("onset_diarrheaUI"),
-                      
+                      conditionalPanel(
+                        condition = "input.death_avail == false",
+                        
+                        uiOutput("dosoUI"),
+                        
+                        uiOutput("bleeding_checkUI"),
+                        
+                        conditionalPanel(
+                          condition = "input.bleeding_at_reported_onset == true",
+                          
+                          uiOutput("onset_bleedingUI")),
+                        
+                        conditionalPanel(
+                          condition = "input.bleeding_at_reported_onset == false",
+                          
+                          uiOutput("diarrhea_checkUI"),
+                          
+                          conditionalPanel(
+                            condition = "input.diarrhea_at_reported_onset == true",
+                            
+                            uiOutput("onset_diarrheaUI"))
+                        )
+                      ),
                       uiOutput("hoverUI")
                       
                     ),
                     mainPanel(plotlyOutput("exposure_plot"),
                               textOutput("estimated_onset"),
-                              textOutput("exposure_window"))
+                              textOutput("exposure_window"),
+                              actionButton("button", "Calculate"))
            ),
            tabPanel("Upload",
                     
@@ -117,19 +134,15 @@ navbarPage(title = "chainchecker",
                     icon = icon("link"),
                     
                     sidebarPanel(
-                      checkboxInput("adjust_tree", 
-                                    "Show tree with estimated onset dates."),
+                      uiOutput("adjust_treeUI"),
                       uiOutput("linelist_group"),
                       uiOutput("contact_group"),
                       uiOutput("tooltip_options"),
                       
                       br(),br(),
-                      downloadButton("tree_download", "Download Tree as HTML"),
+                      uiOutput("tree_downloadUI"),
                       br(),br(),
-                      downloadButton("contact_download", 
-                                     "Download contact inconsistencies as .csv",
-                                     style="white-space: normal;
-                                            text-align:left;"),
+                      uiOutput("contact_downloadUI"),
                       br(),br(),
                       plotOutput("link_legend", height = "100px")
                     ),

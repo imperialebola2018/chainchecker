@@ -3,6 +3,7 @@
 ### SERVER ###
 function(input, output, session) {
   
+
   #--------------------------------------------------------------------------------------------------
   #--------------------------------------------------------------------------------------------------
   # LANGUAGE SWITCHING #
@@ -106,11 +107,11 @@ function(input, output, session) {
   )
   
   output$onset_bleeding_allUI <- renderUI(
-    numericInput01("days_onset_to_bleeding", "onset_bleeding", 6, input)
+    numericInput01("days_onset_to_bleeding_all", "onset_bleeding", 6, input)
   )
   
   output$onset_diarrhea_allUI <- renderUI(
-    numericInput01("days_onset_to_diarrhea", "onset_diarrhea", 4, input)
+    numericInput01("days_onset_to_diarrhea_all", "onset_diarrhea", 4, input)
   )
   
   output$enter_id1UI <- renderUI(
@@ -128,6 +129,20 @@ function(input, output, session) {
   )
   
   # TRANSMISSION TREE #
+  output$adjust_treeUI <- renderUI(
+    checkboxInput01("adjust_tree", "show_tree", input)
+  )
+  
+  output$tree_downloadUI <- renderUI(
+    downloadButton("tree_download", translation[["down_results"]][[input$language]])
+  )
+  
+  output$contact_downloadUI <- renderUI(
+    downloadButton("contact_download", 
+                   translation[["down_c_incon"]][[input$language]],
+                   style="white-space: normal;
+                                            text-align:left;")
+  )
   
   # CLUSTER PLOTS #
   
@@ -138,6 +153,10 @@ function(input, output, session) {
     includeMarkdown(paste0("Documentation/Methods_", input$language,".md"))
   )
   
+  
+  outputOptions(output, "dosoUI", suspendWhenHidden = FALSE)
+  outputOptions(output, "diarrhea_checkUI", suspendWhenHidden = FALSE)
+  outputOptions(output, "bleeding_checkUI", suspendWhenHidden = FALSE)
   #--------------------------------------------------------------------------------------------------
   #--------------------------------------------------------------------------------------------------
   
@@ -146,6 +165,8 @@ function(input, output, session) {
   # PLOT #
   output$exposure_plot <- renderPlotly({
     
+    req(input$button)
+
     df = fun_get_onset(input, default_to_death_date = TRUE)
     
     df = check_date_order(df)
@@ -221,6 +242,8 @@ function(input, output, session) {
   # PLOT #
   output$onset_plot = renderPlotly({
     
+    req(input$days_onset_to_bleeding_all, input$days_onset_to_diarrhea_all)
+    
     df_out = fun_import_adjust(input,
                                default_to_death_date = ifelse(input$dates_as_reported,
                                                               FALSE,
@@ -291,7 +314,7 @@ function(input, output, session) {
                    "death_avail")
     vec = vec[!vec %in% added_cols]
     
-    print(input$language)
+
     
     selectInput(inputId = "group", 
                 label = translation[["enter_plot_char"]][[input$language]], 
