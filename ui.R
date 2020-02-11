@@ -74,8 +74,7 @@ navbarPage(title = "chainchecker",
                     ),
                     mainPanel(plotlyOutput("exposure_plot"),
                               textOutput("estimated_onset"),
-                              textOutput("exposure_window"),
-                              actionButton("button", "Calculate"))
+                              textOutput("exposure_window"))
            ),
            tabPanel("Upload",
                     

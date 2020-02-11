@@ -171,8 +171,6 @@ function(input, output, session) {
   
   # PLOT #
   output$exposure_plot <- renderPlotly({
-    
-    req(input$button)
 
     df = fun_get_onset(input, default_to_death_date = TRUE)
     
