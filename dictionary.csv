@@ -36,3 +36,4 @@ enter_char,Enter (up to 5) characteristics to show on hover:,Entrez (jusqu'à 5) 
 estimated_onset,Estimated onset of symptoms for these parameters is ,Le début estimé des symptômes de ces paramètres est 
 estimated_window,The exposure window for these parameters is ,La fenêtre d'exposition de ces paramètres est 
 incon,inconsistent,inconsistant
+no_data,No data will be stored after your session ends,Aucune donnée ne sera stockée après la fin de votre session

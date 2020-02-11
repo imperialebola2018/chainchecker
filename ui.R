@@ -80,17 +80,12 @@ navbarPage(title = "chainchecker",
                     icon = icon("upload"),
                     
                     sidebarPanel(
-                      downloadButton("download_ltemplate", "Download linelist template"),
+                      uiOutput("download_lUI"),
                       br(),br(),
-                      downloadButton("download_ctemplate", "Download contacts template"),
-                      fileInput("file_line", 
-                                label = h3("Upload linelist"), 
-                                accept = ".csv",
-                                placeholder = "No data will be stored after your session ends"),
-                      fileInput("file_contact", 
-                                label =  h3("Upload contacts"), 
-                                accept = ".csv",
-                                placeholder = "No data will be stored after your session ends")),
+                      uiOutput("download_cUI"),
+                      
+                      uiOutput("upload_lUI"),
+                      uiOutput("upload_cUI")),
                     
                     mainPanel(includeMarkdown("Documentation/Upload_Guidelines.md"))
            ),

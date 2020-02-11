@@ -1,23 +1,5 @@
 #
-# dependencies
-library(plotly)
-library(ggplot2)
-library(epicontacts)
-library(tibble)
-library(dplyr)
-library(lubridate)
-library(data.table)
-library(magrittr)
-library(igraph)
-library(DT)
-library(GGally)
-library(network)
-source('Functions/vis_epicontacts_ggplot.R')
-source('Functions/calculator_functions.R')
-source('Functions/internals.R')
-source('Functions/UI_functions.R')
 
-load("translation.bin")
 ### SERVER ###
 function(input, output, session) {
   
@@ -79,6 +61,22 @@ function(input, output, session) {
   
   output$hoverUI <- renderUI(
     span(translation[["hover"]][[input$language]], style="color:blue")
+  )
+  
+  output$download_lUI <- renderUI(
+    downloadButton("download_ltemplate", translation[["down_l"]][[input$language]])
+  )
+  
+  output$download_cUI <- renderUI(
+    downloadButton("download_ctemplate", translation[["down_c"]][[input$language]])
+  )
+  
+  output$upload_lUI <- renderUI(
+    fileInput01("file_line", "upload_l", input)
+  )
+  
+  output$upload_cUI <- renderUI(
+    fileInput01("file_contact", "upload_c", input)
   )
   #--------------------------------------------------------------------------------------------------
   

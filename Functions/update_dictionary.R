@@ -4,7 +4,7 @@
 
 # https://github.com/chrislad/multilingualShinyApp/blob/master/updateTranslation.R
 
-library(plyr)
+
 translationContent <- read.delim("dictionary.csv", header = TRUE, sep = ",", as.is = TRUE) 
 translation <- dlply(translationContent ,.(key), function(s) key = as.list(s))
 
