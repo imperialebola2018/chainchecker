@@ -100,36 +100,29 @@ navbarPage(title = "chainchecker",
                       uiOutput("check_dates_reportedUI"),
                       
                       #standard inputs
-                      numericInput("min_incubation_all",
-                                   "Minimum incubation period (days):",
-                                   value = 4, min = 0, max = 365),
-                      numericInput("max_incubation_all",
-                                   "Maximum incubation period (days):",
-                                   value = 21, min = 0, max = 365),
-                      numericInput("days_onset_to_death_all",
-                                   "Mean period from onset to death (days):",
-                                   value = 9, min = 0, max = 365),
-                      numericInput("days_onset_to_bleeding_all",
-                                   "Mean time from symptom onset to bleeding (days):",
-                                   value = 6, min = 0, max = 365),
-                      numericInput("days_onset_to_diarrhea_all",
-                                   "Mean time from symptom onset to diarrhea (days):",
-                                   value = 4, min = 0, max = 365),
-                      textInput("ID1_onset_window",
-                                "Enter a pair of identifiers to compare",
-                                placeholder = "EG1"),
+                      uiOutput("min_incub_allUI"),
+                      
+                      uiOutput("max_incub_allUI"),
+                      
+                      uiOutput("onset_death_allUI"),
+                      
+                      uiOutput("onset_bleeding_allUI"),
+                      
+                      uiOutput("onset_diarrhea_allUI"),
+                      
+                      uiOutput("enter_id1UI"),
+                      
                       textInput("ID2_onset_window",
                                 "", placeholder = "EG2"),
                       
                       
                       br(),br(),
                       
-                      downloadButton("download_window", "Download results as .csv"),
+                      uiOutput("download_windowUI"),
                       
                       br(),br(),
-                      span("Dates of death that are inconsistent with reported onset date
-                           are denoted with a square.", 
-                           style="color:red")
+                      
+                      uiOutput("dates_of_deathUI")
                       
                     ),
                     mainPanel(plotlyOutput("onset_plot") %>% withSpinner(type = 5, color = "orange"))

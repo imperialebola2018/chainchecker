@@ -87,9 +87,44 @@ function(input, output, session) {
   output$upload_guideUI <- renderUI(
     includeMarkdown(paste0("Documentation/Upload_Guidelines_", input$language,".md"))
   )
+  
   # EXPOSURE WINDOWS #
   output$check_dates_reportedUI <- renderUI(
     checkboxInput01("dates_as_reported", "calc_exp_check", input)
+  )
+  
+  output$min_incub_allUI <- renderUI( #standard inputs
+    numericInput01("min_incubation_all", "min_incub", 4, input)
+  )
+  
+  output$max_incub_allUI <- renderUI(
+    numericInput01("max_incubation_all", "max_incub", 21, input)
+  )
+  
+  output$onset_death_allUI <- renderUI(
+    numericInput01("days_onset_to_death_all", "onset_death", 9, input)
+  )
+  
+  output$onset_bleeding_allUI <- renderUI(
+    numericInput01("days_onset_to_bleeding", "onset_bleeding", 6, input)
+  )
+  
+  output$onset_diarrhea_allUI <- renderUI(
+    numericInput01("days_onset_to_diarrhea", "onset_diarrhea", 4, input)
+  )
+  
+  output$enter_id1UI <- renderUI(
+    textInput("ID1_onset_window",
+              translation[["id_compare"]][[input$language]],
+              placeholder = "EG1")
+  )
+  
+  output$download_windowUI <- renderUI(
+    downloadButton("download_window", translation[["down_results"]][[input$language]])
+  )
+  
+  output$dates_of_deathUI <- renderUI(
+    span(translation[["dod_incon"]][[input$language]], style="color:red")
   )
   
   # TRANSMISSION TREE #
