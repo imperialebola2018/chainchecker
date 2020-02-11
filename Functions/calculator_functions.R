@@ -52,7 +52,7 @@ fun_import_adjust = function(input,
                              default_to_death_date = TRUE){
   
   #import and check
-  df = check_line_upload(input$file_line)
+  df = check_line_upload(input$file_line, input)
   
   #format
   df %<>% add_column( days_onset_to_bleeding = input$days_onset_to_bleeding_all,
@@ -153,7 +153,7 @@ fun_make_tree = function(input, type = "timeline"){
   linelist = fun_import_adjust(input,
                                default_to_death_date = input$adjust_tree)
   
-  contacts = check_contacts_upload(input$file_contact)
+  contacts = check_contacts_upload(input$file_contact, input)
   
   
   linelist = cluster_add_func(linelist,contacts, input)

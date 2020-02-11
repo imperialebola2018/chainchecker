@@ -37,3 +37,9 @@ estimated_onset,Estimated onset of symptoms for these parameters is ,Le début es
 estimated_window,The exposure window for these parameters is ,La fenêtre d'exposition de ces paramètres est 
 incon,inconsistent,inconsistant
 no_data,No data will be stored after your session ends,Aucune donnée ne sera stockée après la fin de votre session
+error_filetype,"Wrong file type uploaded, file should be a .csv .","Type de fichier incorrect téléchargé pour la liste de fichiers, le fichier doit être un .csv."
+error_duplicate,There are duplicate id's in the linelist.,Il y a des identifiants en double dans la liste.
+error_contact,No contacts file uploaded yet.,Aucun fichier de contacts n'a encore été téléchargé.
+error_id_missing,Column `id` is missing from linelist.,La colonne «id» est manquante dans la liste de lignes.
+error_report_missing,Column `reported_onset_date` is missing from linelist.,La colonne «reported_onset_date» est manquante dans la liste de lignes.
+error_death_missing,Column `death_date` is missing from linelist.,La colonne «death_date» est manquante dans la liste de lignes.

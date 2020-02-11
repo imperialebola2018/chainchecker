@@ -3,15 +3,16 @@ library(shinythemes)
 library(plotly)
 library(shinycssloaders)
 
-  
+
 navbarPage(title = "chainchecker",
            selected = "Home",
            
            theme = shinytheme("cerulean"),
-          
+           
            
            tabPanel("Home",
                     icon = icon("home"),
+                    
                     radioButtons(inputId = "language", 
                                  label = "",
                                  choiceValues = c("en", "fr"),
@@ -40,34 +41,17 @@ navbarPage(title = "chainchecker",
                       #conditions
                       uiOutput("dod_avail_checkUI"),
                       
-                      conditionalPanel(
-                        condition = "input.death_avail == true",
-                        uiOutput("dodUI")
-                      ),
+                      uiOutput("dodUI"),
                       
-                      conditionalPanel(
-                        condition = "input.death_avail == false",
-                        
-                        uiOutput("dosoUI"),
-                        
-                        uiOutput("bleeding_checkUI"),
-                        
-                        conditionalPanel(
-                          condition = "input.bleeding_at_reported_onset == true",
-                          
-                          uiOutput("onset_bleedingUI")),
-                        
-                        conditionalPanel(
-                          condition = "input.bleeding_at_reported_onset == false",
-                          
-                          uiOutput("diarrhea_checkUI"),
-                          
-                          conditionalPanel(
-                            condition = "input.diarrhea_at_reported_onset == true",
-                            
-                            uiOutput("onset_diarrheaUI"))
-                        )
-                      ),
+                      uiOutput("dosoUI"),
+                      
+                      uiOutput("bleeding_checkUI"),
+                      
+                      uiOutput("onset_bleedingUI"),
+                      
+                      uiOutput("diarrhea_checkUI"),
+                      
+                      uiOutput("onset_diarrheaUI"),
                       
                       uiOutput("hoverUI")
                       

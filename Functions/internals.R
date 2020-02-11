@@ -39,16 +39,16 @@ assert_TF = function(vec){
 }
 
 #### ----------------------------------------------------------------------------------- ####
-check_line_upload = function(file_upload){
+check_line_upload = function(file_upload, input){
   
   #if empty upload
   if(is.null(file_upload)){
-    stop(safeError("No linelist file uploaded yet."))
+    stop(safeError(translation[["error_no_line"]][[input$language]]))
   }
   
   #check correct file type. This works for both comma separated and semicolon separated Csv
   if(sum(grep(".csv", file_upload$datapath))==0){
-    stop(safeError("Wrong file type uploaded for linelist, file should be a .csv ."))
+    stop(safeError(translation[["error_filetype"]][[input$language]]))
   }
   
   #import
@@ -58,11 +58,11 @@ check_line_upload = function(file_upload){
   df = df[!is.na(df$id),]
   
   #check names
-  check_line_names(df)
+  check_line_names(df, input)
   
   #check id's are unique
   if(length(unique(df$id))<nrow(df)){
-    stop(safeError("There are duplicate id's in the linelist."))
+    stop(safeError(translation[["error_duplicate"]][[input$language]]))
   }
   
   #make sure id is first column
@@ -78,16 +78,16 @@ check_line_upload = function(file_upload){
 }
 
 #### ----------------------------------------------------------------------------------- ####
-check_contacts_upload = function(file_upload){
+check_contacts_upload = function(file_upload, input){
   
   #if empty upload
   if(is.null(file_upload)){
-    stop(safeError("No contacts file uploaded yet."))
+    stop(safeError(translation[["error_contact"]][[input$language]]))
   }
   
   #check correct file type. This works for both comma separated and semicolon separated Csv
   if(sum(grep(".csv", file_upload$datapath))==0){
-    stop(safeError("Wrong file type uploaded for contacts, file should be a .csv ."))
+    stop(safeError(translation[["error_filetype"]][[input$language]]))
   }
   
   #import
@@ -118,18 +118,18 @@ check_contacts_upload = function(file_upload){
 
 #### ----------------------------------------------------------------------------------- ####
 ### check the names are correct ###
-check_line_names = function(linelist){
+check_line_names = function(linelist, input){
   # must include `id`, `reported_onset_date` and `death_date`
   if(!"id" %in% names(linelist)){
-    stop(safeError("Column `id` is missing from linelist."))
+    stop(safeError(translation[["error_id_missing"]][[input$language]]))
   }
   
   if(!"reported_onset_date" %in% names(linelist)){
-    stop(safeError("Column `reported_onset_date` is missing from linelist."))
+    stop(safeError(translation[["error_report_missing"]][[input$language]]))
   }
   
   if(!"death_date" %in% names(linelist)){
-    stop(safeError("Column `death_date` is missing from linelist."))
+    stop(safeError(translation[["error_death_missing"]][[input$language]]))
   }
   
 }
