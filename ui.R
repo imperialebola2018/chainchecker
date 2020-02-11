@@ -18,7 +18,8 @@ navbarPage(title = "chainchecker",
                                  choiceNames = c("English", "Français"),
                                  selected = "en",
                                  inline = TRUE),
-                    includeMarkdown('Documentation/About.md')
+                    
+                    uiOutput("aboutUI")
            ),
            
            # Sidebar with a slider input for number of bins 
@@ -87,7 +88,9 @@ navbarPage(title = "chainchecker",
                       uiOutput("upload_lUI"),
                       uiOutput("upload_cUI")),
                     
-                    mainPanel(includeMarkdown("Documentation/Upload_Guidelines.md"))
+                    mainPanel(
+                      uiOutput("upload_guideUI")
+                    )
            ),
            tabPanel("Exposure windows",
                     
@@ -184,7 +187,7 @@ navbarPage(title = "chainchecker",
                     
                     icon = icon("book"),
                     
-                    includeMarkdown('Documentation/Methods.md')
+                    uiOutput("methodUI")
            )
            
 )

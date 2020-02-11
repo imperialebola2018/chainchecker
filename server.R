@@ -7,8 +7,12 @@ function(input, output, session) {
   #--------------------------------------------------------------------------------------------------
   # LANGUAGE SWITCHING #
   
-  # TIMELINE #
+  # HOME #
+  output$aboutUI <- renderUI(
+    includeMarkdown(paste0("Documentation/About_", input$language,".md"))
+  )
   
+  # TIMELINE #
   output$min_incubUI <- renderUI( #standard inputs
     numericInput01("min_incubation", "min_incub", 4, input)
   )
@@ -63,6 +67,7 @@ function(input, output, session) {
     span(translation[["hover"]][[input$language]], style="color:blue")
   )
   
+  # UPLOAD #
   output$download_lUI <- renderUI(
     downloadButton("download_ltemplate", translation[["down_l"]][[input$language]])
   )
@@ -78,6 +83,23 @@ function(input, output, session) {
   output$upload_cUI <- renderUI(
     fileInput01("file_contact", "upload_c", input)
   )
+  
+  output$upload_guideUI <- renderUI(
+    includeMarkdown(paste0("Documentation/Upload_Guidelines_", input$language,".md"))
+  )
+  # EXPOSURE WINDOWS #
+  
+  # TRANSMISSION TREE #
+  
+  # CLUSTER PLOTS #
+  
+  # CLUSTER INFORMATION
+  
+  # METHOD #
+  output$methodUI <- renderUI(
+    includeMarkdown(paste0("Documentation/Methods_", input$language,".md"))
+  )
+  
   #--------------------------------------------------------------------------------------------------
   
   ### TIMELINE ###-----------------------------------------------------------------------------------
@@ -95,13 +117,13 @@ function(input, output, session) {
   })
   
   output$estimated_onset = renderText({
-    paste0("Estimated onset of symptoms for these parameters is ", 
+    paste0(translation[["estimated_onset"]][[input$language]], 
            format(fun_get_onset(input)$onset_date, format = "%d %B"), 
            ".")
   })
   
   output$exposure_window = renderText({
-    paste0("The exposure window for these parameters is ", 
+    paste0(translation[["estimated_window"]][[input$language]], 
            format(fun_get_onset(input)$exposure_date_min, format = "%d %B"), 
            " - ",
            format(fun_get_onset(input)$exposure_date_max, format = "%d %B"),
