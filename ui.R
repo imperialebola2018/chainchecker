@@ -97,9 +97,7 @@ navbarPage(title = "chainchecker",
                     icon = icon("poll-h"),
                     
                     sidebarPanel(
-                      checkboxInput("dates_as_reported", 
-                                               "Calculate exposure window from onset dates as reported.",
-                                    value = TRUE),
+                      uiOutput("check_dates_reportedUI"),
                       
                       #standard inputs
                       numericInput("min_incubation_all",
@@ -123,8 +121,6 @@ navbarPage(title = "chainchecker",
                       textInput("ID2_onset_window",
                                 "", placeholder = "EG2"),
                       
-                      span("Hover over the plot for more information on each point.", 
-                           style="color:blue"),
                       
                       br(),br(),
                       

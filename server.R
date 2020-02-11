@@ -88,6 +88,9 @@ function(input, output, session) {
     includeMarkdown(paste0("Documentation/Upload_Guidelines_", input$language,".md"))
   )
   # EXPOSURE WINDOWS #
+  output$check_dates_reportedUI <- renderUI(
+    checkboxInput01("dates_as_reported", "calc_exp_check", input)
+  )
   
   # TRANSMISSION TREE #
   
@@ -100,6 +103,7 @@ function(input, output, session) {
     includeMarkdown(paste0("Documentation/Methods_", input$language,".md"))
   )
   
+  #--------------------------------------------------------------------------------------------------
   #--------------------------------------------------------------------------------------------------
   
   ### TIMELINE ###-----------------------------------------------------------------------------------
