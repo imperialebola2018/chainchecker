@@ -145,6 +145,13 @@ function(input, output, session) {
   )
   
   # CLUSTER PLOTS #
+  output$hover2UI <- renderUI(
+    span(translation[["hover"]][[input$language]], style="color:blue")
+  )
+  
+  output$download_clUI <- renderUI(
+    downloadButton("cluster_download", translation[["down_cl"]][[input$language]])
+  )
   
   # CLUSTER INFORMATION
   
@@ -153,13 +160,13 @@ function(input, output, session) {
     includeMarkdown(paste0("Documentation/Methods_", input$language,".md"))
   )
   
+  sapply(names(outputOptions(output)),
+         FUN = function(x){outputOptions(output, x, suspendWhenHidden = FALSE)})
+
   
-  outputOptions(output, "dosoUI", suspendWhenHidden = FALSE)
-  outputOptions(output, "diarrhea_checkUI", suspendWhenHidden = FALSE)
-  outputOptions(output, "bleeding_checkUI", suspendWhenHidden = FALSE)
   #--------------------------------------------------------------------------------------------------
   #--------------------------------------------------------------------------------------------------
-  
+
   ### TIMELINE ###-----------------------------------------------------------------------------------
   
   # PLOT #

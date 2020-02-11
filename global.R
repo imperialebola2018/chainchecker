@@ -20,3 +20,4 @@ source('Functions/UI_functions.R')
 source('Functions/update_dictionary.R')
 
 load("translation.bin")
+

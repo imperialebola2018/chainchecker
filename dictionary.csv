@@ -43,3 +43,4 @@ error_contact,No contacts file uploaded yet.,Aucun fichier de contacts n'a encor
 error_id_missing,Column `id` is missing from linelist.,La colonne «id» est manquante dans la liste de lignes.
 error_report_missing,Column `reported_onset_date` is missing from linelist.,La colonne «reported_onset_date» est manquante dans la liste de lignes.
 error_death_missing,Column `death_date` is missing from linelist.,La colonne «death_date» est manquante dans la liste de lignes.
+down_cl,Download Clusters,Télécharger les clusters

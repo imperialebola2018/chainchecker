@@ -154,10 +154,9 @@ navbarPage(title = "chainchecker",
                     icon = icon("project-diagram"),
                     
                     sidebarPanel(
-                      span("Hover over the plot for more information on each point.", 
-                           style="color:blue"),
+                      uiOutput("hover2UI"),
                       br(),br(),
-                      downloadButton("cluster_download", "Download Clusters as HTML")
+                      uiOutput("download_clUI")
                       
                     ),
                     mainPanel(plotlyOutput("network",width="1200px",height="800px") %>% 
