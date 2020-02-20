@@ -1,0 +1,34 @@
+TO DO
+
+check the dates in translations
+
+upload linelist -  KEEP THE SAME NAME THROUGHOUT
+
+liste de contact
+
+in reported onset date/ death data, date is feminine so:
+Il - > Elle 
+entre - > entree
+
+Autre
+Les dates douvent avoir
+
+contacts **from** et **to** ne doivent prendre que la valeur de la colonne **id** presente dans la linelist et **id** doit garder la meme format
+
+end line: dans cet example
+
+a propos de -> a propos
+
+check "chainchecker" name is not changed
+
+Version portable/ de bureau de chainchecker compatible avec la base de donnees VHF
+
+date de deces -> date du deces
+
+pour la diarhee, avec des valeurs par defaut de 6 et 4 jours respectivement
+
+une discusssino plus approfondie le trouve dans
+
+site de ponction -> site de prelevement
+
+ADD MARA TO AUTHORS

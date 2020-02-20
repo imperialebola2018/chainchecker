@@ -11,9 +11,9 @@ knitr::opts_chunk$set(echo = TRUE)
 options(knitr.table.format = 'markdown')
 ```
 
-# À propos de
+# À propos
 
-Cette application a été développée pour produire des estimations des dates d'exposition pour les cas d'Ebola. Il peut également produire des estimations de la date à laquelle les symptômes se sont développés si nous avons des informations sur les symptômes ou la date de décès.
+Cette application a été développée pour produire des estimations des dates d'exposition pour les cas d'Ebola. Elle peut également produire des estimations de la date à laquelle les symptômes se sont développés si nous avons des informations sur les symptômes ou la date de décès.
 
 Auteurs:
 
