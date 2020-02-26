@@ -15,6 +15,8 @@ Authors:
 
 -   Miles Stewart developed the VHF app version.
 
+-   Mara Kont helped with the translation.
+
 Feedback and requests for the app should be sent to k.gaythorpe AT
 imperial.ac.uk or aaron.morris10 AT imperial.ac.uk
 

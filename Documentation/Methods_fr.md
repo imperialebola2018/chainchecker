@@ -1,10 +1,10 @@
-À propos de
-===========
+À propos
+========
 
 Cette application a été développée pour produire des estimations des
-dates d’exposition pour les cas d’Ebola. Il peut également produire des
-estimations de la date à laquelle les symptômes se sont développés si
-nous avons des informations sur les symptômes ou la date de décès.
+dates d’exposition pour les cas d’Ebola. Elle peut également produire
+des estimations de la date à laquelle les symptômes se sont développés
+si nous avons des informations sur les symptômes ou la date du décès.
 
 Auteurs:
 
@@ -16,11 +16,13 @@ Auteurs:
 
 -   Miles Stewart a développé la version de l’application VHF.
 
+-   Mara Kont aidé à la traduction.
+
 Les commentaires et les demandes pour l’application doivent être envoyés
 à k.gaythorpe AT imperial.ac.uk ou aaron.morris10 AT imperial.ac.uk
 
-Contrôleur de chaîne portable / de bureau à utiliser avec la base de données VHF
---------------------------------------------------------------------------------
+Version portable/de bureau de chainchecker compatible avec la base de données VHF
+---------------------------------------------------------------------------------
 
 Est disponible depuis le référentiel GitHub sur
 <a href="https://github.com/imperialebola2018/chainchecker/releases" class="uri">https://github.com/imperialebola2018/chainchecker/releases</a>
@@ -76,19 +78,19 @@ virus disease, WHO, 2018**.
 ### Développer des symptômes
 
 Il existe deux facteurs de correction, un pour les saignements ^ et un
-pour la diarrhée avec des défauts de 6 et 4 jours respectivement.
-Celles-ci indiquent le temps moyen pour développer chaque symptôme après
-le début de la maladie. Il existe plusieurs études détaillant le
-développement des symptômes d’Ebola; \*\* Valasquez et al. 2015 \*\* a
-produit une revue systématique du temps écoulé entre l’infection et la
-maladie.
+pour la diarrhée avec des valeurs par défaut de 6 et 4 jours
+respectivement. Celles-ci indiquent le temps moyen pour développer
+chaque symptôme après le début de la maladie. Il existe plusieurs études
+détaillant le développement des symptômes d’Ebola; \*\* Valasquez et
+al. 2015 \*\* a produit une revue systématique du temps écoulé entre
+l’infection et la maladie.
 
 ### Temps entre le début et la mort
 
 Si une personne ne se rétablit pas, nous fixons le délai par défaut
 entre l’apparition des symptômes et la mort à 9 jours. Cette valeur se
 situe généralement dans l’intervalle de 8 à 10 jours, une discussion
-plus approfondie se trouvant dans \*\* Valasquez et al. 2015 \*\*.
+plus approfondie se trouve dans \*\* Valasquez et al. 2015 \*\*.
 
 Définitions
 ===========
@@ -96,4 +98,4 @@ Définitions
 ^ & Les saignements sont définis comme \*\* des saignements de nez, des
 saignements de la bouche / des gencives, du sang dans leurs
 vomissements, du sang dans leurs selles et / ou des saignements des
-sites de ponction \*\* -au moment du début signalé-.
+sites de prelevement \*\* -au moment du début signalé-.

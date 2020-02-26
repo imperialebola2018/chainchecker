@@ -1,10 +1,10 @@
-À propos de
-===========
+À propos
+========
 
 Cette application a été développée pour produire des estimations des
-dates d’exposition pour les cas d’Ebola. Il peut également produire des
-estimations de la date à laquelle les symptômes se sont développés si
-nous avons des informations sur les symptômes ou la date de décès.
+dates d’exposition pour les cas d’Ebola. Elle peut également produire
+des estimations de la date à laquelle les symptômes se sont développés
+si nous avons des informations sur les symptômes ou la date de décès.
 
 Auteurs:
 
@@ -16,11 +16,13 @@ Auteurs:
 
 -   Miles Stewart a développé la version de l’application VHF.
 
+-   Mara Kont aidé à la traduction.
+
 Les commentaires et demandes pour l’application doivent être envoyés à
 k.gaythorpe AT imperial.ac.uk ou aaron.morris10 AT imperial.ac.uk
 
-Contrôleur de chaîne portable / de bureau à utiliser avec la base de données VHF
---------------------------------------------------------------------------------
+Version portable/de bureau de chainchecker compatible avec la base de données VHF
+---------------------------------------------------------------------------------
 
 Est disponible depuis le référentiel GitHub sur
 <a href="https://github.com/imperialebola2018/chainchecker/releases" class="uri">https://github.com/imperialebola2018/chainchecker/releases</a>

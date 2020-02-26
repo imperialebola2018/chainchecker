@@ -12,7 +12,7 @@ max_incub,Maximum incubation period (days):,Période d'incubation maximale (jours
 onset_death,Mean period from symptom onset to death (days):,Période moyenne entre l'apparition des symptômes et le décès (jours):
 id,Identifier:,Identifiant:
 dod_avail_check,Check box if the date of death is available,Cochez la case si la date du décès est disponible
-dod,Date of death:,Date de décès:
+dod,Date of death:,Date du décès:
 hover,Hover over the plot for more information on each point.,Passez la souris sur le graphique pour plus d'informations sur chaque point.
 doso,Reported date of symptom onset:,Date signalée d'apparition des symptômes:
 bleeding_check,Check box if the individual was bleeding when onset was reported*.,Cochez la case si la personne saignait au moment du signalement *.
@@ -21,13 +21,13 @@ diarrhea_check,Check box if the individual had diarrhea when symptom onset was r
 onset_diarrhea,Mean time from symptom onset to diarrhea (days):,Temps moyen entre l'apparition des symptômes et la diarrhée (jours):
 down_l,Download linelist template,Télécharger le modèle de liste
 down_c,Download contacts template,Télécharger le modèle de contacts
-upload_l,Upload linelist,Télécharger le modèle de liste
-upload_c,Upload contacts,Télécharger le modèle de contacts
+upload_l,Upload linelist,Télécharger le linelist
+upload_c,Upload contacts,Télécharger le liste de contact
 calc_exp_check,Calculate exposure window from onset dates as reported.,"Calculez la fenêtre de transmission à partir des dates de début, comme indiqué."
 dod_incon,Dates of death that are inconsistent with reported onset date are denoted with a square.,Les dates de décès qui ne correspondent pas à la date de début déclarée sont indiquées par un carré.
 id_compare,Enter a pair of identifiers to compare,Entrez une paire d'identifiants à comparer
 down_results,Download results,Télécharger les résultats
-error_no_line,No linelist file uploaded yet.,Aucun fichier de liste n'a encore été téléchargé.
+error_no_line,No linelist file uploaded yet.,Aucun linelist n'a encore été téléchargé.
 show_tree,Show tree with estimated onset dates.,Afficher l'arbre avec les dates de début estimées.
 down_c_incon,Download contact inconsistencies,Télécharger les incohérences des contacts
 enter_plot_char,Enter a characteristic to show on the plot:,Entrez une caractéristique à afficher sur le graphique:
@@ -38,7 +38,7 @@ estimated_window,The exposure window for these parameters is ,La fenêtre de tran
 incon,inconsistent,inconsistant
 no_data,No data will be stored after your session ends,Aucune donnée ne sera stockée après la fin de votre session
 error_filetype,"Wrong file type uploaded, file should be a .csv .","Type de fichier incorrect téléchargé pour la liste de fichiers, le fichier doit être un .csv."
-error_duplicate,There are duplicate id's in the linelist.,Il y a des identifiants en double dans la liste.
+error_duplicate,There are duplicate id's in the linelist.,Il y a des identifiants en double dans la linelist.
 error_contact,No contacts file uploaded yet.,Aucun fichier de contacts n'a encore été téléchargé.
 error_id_missing,Column `id` is missing from linelist.,La colonne «id» est manquante dans la liste.
 error_report_missing,Column `reported_onset_date` is missing from linelist.,La colonne «reported_onset_date» est manquante dans la liste.
