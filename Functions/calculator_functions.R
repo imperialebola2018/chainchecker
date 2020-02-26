@@ -7,26 +7,26 @@ fun_get_onset = function(input,
                          default_to_death_date = TRUE){
   
   df = tibble("id" = input$id)
-  
+
   if(default_to_death_date){
     #then add other dates
-    if(input$death_avail){ #if there is a death date
-      
+    if(input$death_avail==TRUE | is.null(input$death_avail)){ #if there is a death date
+
       df %<>% add_column(death_date = input$death_date,
-                             onset_date = as.Date(input$death_date - input$days_onset_to_death),
-                             reported_onset_date = input$reported_onset_date)
+                         onset_date = as.Date(input$death_date - input$days_onset_to_death),
+                         reported_onset_date = input$reported_onset_date)
       
     } else { #no death date
       df %<>% add_column(death_date = input$death_date,
-                             reported_onset_date = input$reported_onset_date)
+                         reported_onset_date = input$reported_onset_date)
       
       if(input$bleeding_at_reported_onset){ #with bleeding
         df %<>% add_column( onset_date = as.Date(df$reported_onset_date - 
-                                                       input$days_onset_to_bleeding))
+                                                   input$days_onset_to_bleeding))
         
       } else if(input$diarrhea_at_reported_onset){ #with diarrhea
         df %<>% add_column( onset_date = as.Date(df$reported_onset_date - 
-                                                       input$days_onset_to_diarrhea))
+                                                   input$days_onset_to_diarrhea))
         
       } else { #no wet symptoms
         df %<>% add_column( onset_date = df$reported_onset_date)
@@ -34,13 +34,13 @@ fun_get_onset = function(input,
     }
   } else {
     df %<>% add_column( onset_date = input$reported_onset_date,
-                            death_date = input$death_date,
-                            reported_onset_date = input$reported_onset_date)
+                        death_date = input$death_date,
+                        reported_onset_date = input$reported_onset_date)
   }
   
   #calculate exposure period
   df %<>% add_column( exposure_date_min = as.Date(df$onset_date - input$max_incubation),
-                          exposure_date_max = as.Date(df$onset_date - input$min_incubation))
+                      exposure_date_max = as.Date(df$onset_date - input$min_incubation))
   
   
   return(df)
@@ -52,15 +52,15 @@ fun_import_adjust = function(input,
                              default_to_death_date = TRUE){
   
   #import and check
-  df = check_line_upload(input$file_line)
+  df = check_line_upload(input$file_line, input)
   
   #format
   df %<>% add_column( days_onset_to_bleeding = input$days_onset_to_bleeding_all,
-                          days_onset_to_diarrhea = input$days_onset_to_diarrhea_all,
-                          max_incubation = input$max_incubation_all,
-                          min_incubation = input$min_incubation_all,
-                          days_onset_to_death = input$days_onset_to_death_all,
-                          death_avail = !is.na(df$death_date))
+                      days_onset_to_diarrhea = input$days_onset_to_diarrhea_all,
+                      max_incubation = input$max_incubation_all,
+                      min_incubation = input$min_incubation_all,
+                      days_onset_to_death = input$days_onset_to_death_all,
+                      death_avail = !is.na(df$death_date))
   
   if(is.null(df$bleeding_at_reported_onset)){
     df %<>% add_column(bleeding_at_reported_onset = FALSE)
@@ -91,7 +91,7 @@ fun_import_adjust = function(input,
 #### ----------------------------------------------------------------------------------- ####
 ##function to create clusters and calculate size, then add to linelist###
 cluster_add_func <- function(linelist, contacts, input) {
-
+  
   
   x <- epicontacts::make_epicontacts(linelist, contacts)
   xClust <- subset(x, cs_min = 0, cs_max = 300)
@@ -153,13 +153,13 @@ fun_make_tree = function(input, type = "timeline"){
   linelist = fun_import_adjust(input,
                                default_to_death_date = input$adjust_tree)
   
-  contacts = check_contacts_upload(input$file_contact)
+  contacts = check_contacts_upload(input$file_contact, input)
   
   
   linelist = cluster_add_func(linelist,contacts, input)
   
   
- #covering extras for vis_epicontacts_ggplot
+  #covering extras for vis_epicontacts_ggplot
   if(is.null(linelist$name)){ linelist %<>% mutate(name = id)}
   if(is.null(linelist$code)){ linelist %<>% mutate(code = id)}
   
@@ -176,14 +176,14 @@ fun_make_tree = function(input, type = "timeline"){
   x = epicontacts::make_epicontacts(linelist, contacts)
   
   if(type=="timeline"){
-  #visualise
-  p = vis_epicontacts_ggplot(x,
-                             group = input$group, 
-                             contactsgroup = input$groupcontact,
-                             tooltip = unlist(strsplit(paste(input$tooltip), ","))) %>% 
-    layout(height = 700)
-
-  return(p)
+    #visualise
+    p = vis_epicontacts_ggplot(x,
+                               group = input$group, 
+                               contactsgroup = input$groupcontact,
+                               tooltip = unlist(strsplit(paste(input$tooltip), ","))) %>% 
+      layout(height = 700)
+    
+    return(p)
   }
   
   #visualise
@@ -192,11 +192,11 @@ fun_make_tree = function(input, type = "timeline"){
     x1<- as.igraph(x)
     
     p =  ggnet2(x1,
-                        node.color = "white",
-                        size="degree",
-                        alpha = 0.75, 
-                        edge.alpha = 0.5,
-                        legend.position  ="none")
+                node.color = "white",
+                size="degree",
+                alpha = 0.75, 
+                edge.alpha = 0.5,
+                legend.position  ="none")
     
     p$data<-merge(p$data,x$linelist,by.x="label",by.y="id")#ggnet is a pain, so need to add cluster degree size details manually to get a filled circle...
     p$data$size<-3+(p$data$size / max(p$data$size)) * 10##scale sizes so they are relative
@@ -232,10 +232,10 @@ fun_make_tree = function(input, type = "timeline"){
   if (type =="table") {
     return(datatable(linelist[,c(names(linelist))],rownames = FALSE, extensions = c('Buttons'),
                      filter = 'top', options = list(
-      dom = 'Bfrtip',
-      scrollX = TRUE,
-      buttons = I("colvis")
-    )
+                       dom = 'Bfrtip',
+                       scrollX = TRUE,
+                       buttons = I("colvis")
+                     )
     ) )
   }
   

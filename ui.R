@@ -3,73 +3,73 @@ library(shinythemes)
 library(plotly)
 library(shinycssloaders)
 
-  
+
 navbarPage(title = "chainchecker",
            selected = "Home",
            
            theme = shinytheme("cerulean"),
            
+           
            tabPanel("Home",
-                    includeMarkdown('Documentation/About.md')
+                    icon = icon("home"),
+                    
+                    radioButtons(inputId = "language", 
+                                 label = "",
+                                 choiceValues = c("en", "fr"),
+                                 choiceNames = c("English", "Français"),
+                                 selected = "en",
+                                 inline = TRUE),
+                    
+                    uiOutput("aboutUI")
            ),
            
            # Sidebar with a slider input for number of bins 
            tabPanel("Timeline",
+                    
+                    icon = icon("stream"),
+                    
                     sidebarPanel(
                       
-                      #standard inputs
-                      numericInput("min_incubation",
-                                   "Minimum incubation period (days):",
-                                   value = 4, min = 0, max = 365),
-                      numericInput("max_incubation",
-                                   "Maximum incubation period (days):",
-                                   value = 21, min = 0, max = 365),
-                      numericInput("days_onset_to_death",
-                                   "Mean period from onset to death (days):",
-                                   value = 9, min = 0, max = 365),
+                      uiOutput("min_incubUI"),
                       
-                      textInput("id",
-                                "Identifier:",
-                                value = "EG1"),
+                      uiOutput("max_incubUI"),
+                      
+                      uiOutput("onset_deathUI"),
+                      
+                      uiOutput("idUI"),
                       
                       #conditions
-                      checkboxInput("death_avail", 
-                                    "Check box if the date of death is available", 
-                                    value = TRUE), 
+                      uiOutput("dod_avail_checkUI"),
+                      
                       conditionalPanel(
                         condition = "input.death_avail == true",
-                        dateInput("death_date",
-                                  "Date of death:",
-                                  value = Sys.Date())
-                      ), 
-                      conditionalPanel(
-                        condition = "input.death_avail == false",
-                        dateInput("reported_onset_date",
-                                  "Reported date of symptom onset:",
-                                  value = Sys.Date()-7),
-                        checkboxInput("bleeding_at_reported_onset", 
-                                      "Check box if the individual was bleeding when onset was reported*.", 
-                                      value = TRUE),
-                        conditionalPanel(
-                          condition = "input.bleeding_at_reported_onset == true",
-                          numericInput("days_onset_to_bleeding",
-                                       "Mean time from symptom onset to bleeding (days):",
-                                       value = 6, min = 0, max = 365)
-                        ),
-                        conditionalPanel(
-                          condition = "input.bleeding_at_reported_onset == false",
-                          checkboxInput("diarrhea_at_reported_onset", 
-                                        "Check box if the individual had diarrhea when onset was reported."),
-                          conditionalPanel(
-                            condition = "input.diarrhea_at_reported_onset == true",
-                            numericInput("days_onset_to_diarrhea",
-                                         "Mean time from symptom onset to diarrhea (days):",
-                                         value = 4, min = 0, max = 365)
-                          )
-                        )
+                        uiOutput("dodUI")
                       ),
                       
-                      span("Hover over the plot for more information on each point.", style="color:blue")
+                      conditionalPanel(
+                        condition = "input.death_avail == false",
+                        
+                        uiOutput("dosoUI"),
+                        
+                        uiOutput("bleeding_checkUI"),
+                        
+                        conditionalPanel(
+                          condition = "input.bleeding_at_reported_onset == true",
+                          
+                          uiOutput("onset_bleedingUI")),
+                        
+                        conditionalPanel(
+                          condition = "input.bleeding_at_reported_onset == false",
+                          
+                          uiOutput("diarrhea_checkUI"),
+                          
+                          conditionalPanel(
+                            condition = "input.diarrhea_at_reported_onset == true",
+                            
+                            uiOutput("onset_diarrheaUI"))
+                        )
+                      ),
+                      uiOutput("hoverUI")
                       
                     ),
                     mainPanel(plotlyOutput("exposure_plot"),
@@ -77,83 +77,71 @@ navbarPage(title = "chainchecker",
                               textOutput("exposure_window"))
            ),
            tabPanel("Upload",
+                    
+                    icon = icon("upload"),
+                    
                     sidebarPanel(
-                      downloadButton("download_ltemplate", "Download linelist template"),
+                      uiOutput("download_lUI"),
                       br(),br(),
-                      downloadButton("download_ctemplate", "Download contacts template"),
-                      fileInput("file_line", 
-                                label = h3("Upload linelist"), 
-                                accept = ".csv",
-                                placeholder = "No data will be stored after your session ends"),
-                      fileInput("file_contact", 
-                                label =  h3("Upload contacts"), 
-                                accept = ".csv",
-                                placeholder = "No data will be stored after your session ends")),
+                      uiOutput("download_cUI"),
+                      
+                      uiOutput("upload_lUI"),
+                      uiOutput("upload_cUI")),
                     
-                    mainPanel(includeMarkdown("Documentation/Upload_Guidelines.md"))
+                    mainPanel(
+                      uiOutput("upload_guideUI")
+                    )
            ),
-           tabPanel("Exposure windows for uploaded linelist",
+           tabPanel("Exposure windows",
+                    
+                    icon = icon("poll-h"),
                     
                     sidebarPanel(
-                      checkboxInput("dates_as_reported", 
-                                               "Calculate exposure window from onset dates as reported.",
-                                    value = TRUE),
+                      uiOutput("check_dates_reportedUI"),
                       
                       #standard inputs
-                      numericInput("min_incubation_all",
-                                   "Minimum incubation period (days):",
-                                   value = 4, min = 0, max = 365),
-                      numericInput("max_incubation_all",
-                                   "Maximum incubation period (days):",
-                                   value = 21, min = 0, max = 365),
-                      numericInput("days_onset_to_death_all",
-                                   "Mean period from onset to death (days):",
-                                   value = 9, min = 0, max = 365),
-                      numericInput("days_onset_to_bleeding_all",
-                                   "Mean time from symptom onset to bleeding (days):",
-                                   value = 6, min = 0, max = 365),
-                      numericInput("days_onset_to_diarrhea_all",
-                                   "Mean time from symptom onset to diarrhea (days):",
-                                   value = 4, min = 0, max = 365),
-                      textInput("ID1_onset_window",
-                                "Enter a pair of identifiers to compare",
-                                placeholder = "EG1"),
+                      uiOutput("min_incub_allUI"),
+                      
+                      uiOutput("max_incub_allUI"),
+                      
+                      uiOutput("onset_death_allUI"),
+                      
+                      uiOutput("onset_bleeding_allUI"),
+                      
+                      uiOutput("onset_diarrhea_allUI"),
+                      
+                      uiOutput("enter_id1UI"),
+                      
                       textInput("ID2_onset_window",
                                 "", placeholder = "EG2"),
                       
-                      span("Hover over the plot for more information on each point.", 
-                           style="color:blue"),
                       
                       br(),br(),
                       
-                      downloadButton("download_window", "Download results as .csv"),
+                      uiOutput("download_windowUI"),
                       
                       br(),br(),
-                      span("Dates of death that are inconsistent with reported onset date
-                           are denoted with a square.", 
-                           style="color:red")
+                      
+                      uiOutput("dates_of_deathUI")
                       
                     ),
                     mainPanel(plotlyOutput("onset_plot") %>% withSpinner(type = 5, color = "orange"))
            ),
            
-           tabPanel("Transmission tree for uploaded linelist and contacts",
+           tabPanel("Transmission tree",
+                    
+                    icon = icon("link"),
+                    
                     sidebarPanel(
-                      checkboxInput("adjust_tree", 
-                                    "Show tree with estimated onset dates."),
+                      uiOutput("adjust_treeUI"),
                       uiOutput("linelist_group"),
                       uiOutput("contact_group"),
                       uiOutput("tooltip_options"),
-                      span("Hover over the plot for more information on each point.", 
-                           style="color:blue"),
                       
                       br(),br(),
-                      downloadButton("tree_download", "Download Tree as HTML"),
+                      uiOutput("tree_downloadUI"),
                       br(),br(),
-                      downloadButton("contact_download", 
-                                     "Download contact inconsistencies as .csv",
-                                     style="white-space: normal;
-                                            text-align:left;"),
+                      uiOutput("contact_downloadUI"),
                       br(),br(),
                       plotOutput("link_legend", height = "100px")
                     ),
@@ -162,21 +150,28 @@ navbarPage(title = "chainchecker",
            
            tabPanel("Cluster plots",
                     
+                    icon = icon("project-diagram"),
+                    
                     sidebarPanel(
-                      span("Hover over the plot for more information on each point.", 
-                           style="color:blue"),
+                      uiOutput("hover2UI"),
                       br(),br(),
-                      downloadButton("cluster_download", "Download Clusters as HTML")
+                      uiOutput("download_clUI")
                       
                     ),
                     mainPanel(plotlyOutput("network",width="1200px",height="800px") %>% 
                                 withSpinner(type = 5, color = "orange"))),
            
            tabPanel("Cluster Information",
+                    
+                    icon = icon("table"),
+                    
                     DT::dataTableOutput("networkTable")
            ),
            tabPanel("Method and definitions",
-                    includeMarkdown('Documentation/Methods.md')
+                    
+                    icon = icon("book"),
+                    
+                    uiOutput("methodUI")
            )
            
 )

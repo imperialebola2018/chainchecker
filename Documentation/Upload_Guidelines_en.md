@@ -20,7 +20,7 @@ upload.**
 
 This is the **unique** identifier of each individual. It should match
 exactly with their entry (if they have one) in the contacts list. For
-example, the identifier could have the form "EG1".
+example, the identifier could have the form “EG1”.
 
 #### reported\_onset\_date
 
@@ -82,45 +82,45 @@ occurred at a funeral. All additional columns must have entries
 **TRUE**, **FALSE** or be left empty; empty cells are interpreted as
 **FALSE**. A more specific example is as follows.
 
-<table style="width:64%;">
+<table style="width:65%;">
 <colgroup>
-<col width="9%" />
-<col width="8%" />
-<col width="18%" />
-<col width="27%" />
+<col style="width: 9%" />
+<col style="width: 8%" />
+<col style="width: 18%" />
+<col style="width: 29%" />
 </colgroup>
 <thead>
 <tr class="header">
-<th align="center">from</th>
-<th align="center">to</th>
-<th align="center">in_funeral</th>
-<th align="center">in_health_facility</th>
+<th style="text-align: center;">from</th>
+<th style="text-align: center;">to</th>
+<th style="text-align: center;">in_funeral</th>
+<th style="text-align: center;">in_health_facility</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="center">EG1</td>
-<td align="center">EG2</td>
-<td align="center">TRUE</td>
-<td align="center">FALSE</td>
+<td style="text-align: center;">EG1</td>
+<td style="text-align: center;">EG2</td>
+<td style="text-align: center;">TRUE</td>
+<td style="text-align: center;">FALSE</td>
 </tr>
 <tr class="even">
-<td align="center">EG1</td>
-<td align="center">EG4</td>
-<td align="center">FALSE</td>
-<td align="center">FALSE</td>
+<td style="text-align: center;">EG1</td>
+<td style="text-align: center;">EG4</td>
+<td style="text-align: center;">FALSE</td>
+<td style="text-align: center;">FALSE</td>
 </tr>
 <tr class="odd">
-<td align="center">EG2</td>
-<td align="center">EG5</td>
-<td align="center">FALSE</td>
-<td align="center">TRUE</td>
+<td style="text-align: center;">EG2</td>
+<td style="text-align: center;">EG5</td>
+<td style="text-align: center;">FALSE</td>
+<td style="text-align: center;">TRUE</td>
 </tr>
 <tr class="even">
-<td align="center">EG3</td>
-<td align="center">EG6</td>
-<td align="center">FALSE</td>
-<td align="center">FALSE</td>
+<td style="text-align: center;">EG3</td>
+<td style="text-align: center;">EG6</td>
+<td style="text-align: center;">FALSE</td>
+<td style="text-align: center;">FALSE</td>
 </tr>
 </tbody>
 </table>

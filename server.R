@@ -1,29 +1,177 @@
 #
-# dependencies
-library(plotly)
-library(ggplot2)
-library(epicontacts)
-library(tibble)
-library(dplyr)
-library(lubridate)
-library(data.table)
-library(magrittr)
-library(igraph)
-library(DT)
-library(GGally)
-library(network)
-source('Functions/vis_epicontacts_ggplot.R')
-source('Functions/calculator_functions.R')
-source('Functions/internals.R')
 
 ### SERVER ###
 function(input, output, session) {
   
+
+  #--------------------------------------------------------------------------------------------------
+  #--------------------------------------------------------------------------------------------------
+  # LANGUAGE SWITCHING #
+  
+  # HOME #
+  output$aboutUI <- renderUI(
+    includeMarkdown(paste0("Documentation/About_", input$language,".md"))
+  )
+  
+  # TIMELINE #
+  output$min_incubUI <- renderUI( #standard inputs
+    numericInput01("min_incubation", "min_incub", 4, input)
+  )
+  
+  output$max_incubUI <- renderUI(
+    numericInput01("max_incubation", "max_incub", 21, input)
+  )
+  
+  output$onset_deathUI <- renderUI(
+    numericInput01("days_onset_to_death", "onset_death", 9, input)
+  )
+  
+  output$idUI <- renderUI(
+    textInput("id",
+              translation[["id"]][[input$language]],
+              value = "EG1")
+  )
+  
+  output$dod_avail_checkUI <- renderUI(
+    checkboxInput01("death_avail", "dod_avail_check", input)
+  )
+  
+  output$dodUI <- renderUI(
+    dateInput("death_date",
+              label = translation[["dod"]][[input$language]],
+              value = Sys.Date())
+  )
+  
+  output$dosoUI <- renderUI(
+    dateInput("reported_onset_date",
+              label = translation[["doso"]][[input$language]],
+              value = Sys.Date()-7)
+  )
+  
+  output$bleeding_checkUI <- renderUI(
+    checkboxInput01("bleeding_at_reported_onset", "bleeding_check", input)
+  )
+  
+  output$onset_bleedingUI <- renderUI(
+    numericInput01("days_onset_to_bleeding", "onset_bleeding", 6, input)
+  )
+  
+  output$diarrhea_checkUI <- renderUI(
+    checkboxInput01("diarrhea_at_reported_onset", "diarrhea_check", input)
+  )
+  
+  output$onset_diarrheaUI <- renderUI(
+    numericInput01("days_onset_to_diarrhea", "onset_diarrhea", 4, input)
+  )
+  
+  output$hoverUI <- renderUI(
+    span(translation[["hover"]][[input$language]], style="color:blue")
+  )
+  
+  # UPLOAD #
+  output$download_lUI <- renderUI(
+    downloadButton("download_ltemplate", translation[["down_l"]][[input$language]])
+  )
+  
+  output$download_cUI <- renderUI(
+    downloadButton("download_ctemplate", translation[["down_c"]][[input$language]])
+  )
+  
+  output$upload_lUI <- renderUI(
+    fileInput01("file_line", "upload_l", input)
+  )
+  
+  output$upload_cUI <- renderUI(
+    fileInput01("file_contact", "upload_c", input)
+  )
+  
+  output$upload_guideUI <- renderUI(
+    includeMarkdown(paste0("Documentation/Upload_Guidelines_", input$language,".md"))
+  )
+  
+  # EXPOSURE WINDOWS #
+  output$check_dates_reportedUI <- renderUI(
+    checkboxInput01("dates_as_reported", "calc_exp_check", input)
+  )
+  
+  output$min_incub_allUI <- renderUI( #standard inputs
+    numericInput01("min_incubation_all", "min_incub", 4, input)
+  )
+  
+  output$max_incub_allUI <- renderUI(
+    numericInput01("max_incubation_all", "max_incub", 21, input)
+  )
+  
+  output$onset_death_allUI <- renderUI(
+    numericInput01("days_onset_to_death_all", "onset_death", 9, input)
+  )
+  
+  output$onset_bleeding_allUI <- renderUI(
+    numericInput01("days_onset_to_bleeding_all", "onset_bleeding", 6, input)
+  )
+  
+  output$onset_diarrhea_allUI <- renderUI(
+    numericInput01("days_onset_to_diarrhea_all", "onset_diarrhea", 4, input)
+  )
+  
+  output$enter_id1UI <- renderUI(
+    textInput("ID1_onset_window",
+              translation[["id_compare"]][[input$language]],
+              placeholder = "EG1")
+  )
+  
+  output$download_windowUI <- renderUI(
+    downloadButton("download_window", translation[["down_results"]][[input$language]])
+  )
+  
+  output$dates_of_deathUI <- renderUI(
+    span(translation[["dod_incon"]][[input$language]], style="color:red")
+  )
+  
+  # TRANSMISSION TREE #
+  output$adjust_treeUI <- renderUI(
+    checkboxInput01("adjust_tree", "show_tree", input)
+  )
+  
+  output$tree_downloadUI <- renderUI(
+    downloadButton("tree_download", translation[["down_results"]][[input$language]])
+  )
+  
+  output$contact_downloadUI <- renderUI(
+    downloadButton("contact_download", 
+                   translation[["down_c_incon"]][[input$language]],
+                   style="white-space: normal;
+                                            text-align:left;")
+  )
+  
+  # CLUSTER PLOTS #
+  output$hover2UI <- renderUI(
+    span(translation[["hover"]][[input$language]], style="color:blue")
+  )
+  
+  output$download_clUI <- renderUI(
+    downloadButton("cluster_download", translation[["down_cl"]][[input$language]])
+  )
+  
+  # CLUSTER INFORMATION
+  
+  # METHOD #
+  output$methodUI <- renderUI(
+    includeMarkdown(paste0("Documentation/Methods_", input$language,".md"))
+  )
+  
+  sapply(names(outputOptions(output)),
+         FUN = function(x){outputOptions(output, x, suspendWhenHidden = FALSE)})
+
+  
+  #--------------------------------------------------------------------------------------------------
+  #--------------------------------------------------------------------------------------------------
+
   ### TIMELINE ###-----------------------------------------------------------------------------------
   
   # PLOT #
   output$exposure_plot <- renderPlotly({
-    
+
     df = fun_get_onset(input, default_to_death_date = TRUE)
     
     df = check_date_order(df)
@@ -34,15 +182,15 @@ function(input, output, session) {
   })
   
   output$estimated_onset = renderText({
-    paste0("Estimated onset of symptoms for these parameters is ", 
+    paste0(translation[["estimated_onset"]][[input$language]], 
            format(fun_get_onset(input)$onset_date, format = "%d %B"), 
            ".")
   })
   
   output$exposure_window = renderText({
-    paste0("The exposure window for these parameters is ", 
+    paste0(translation[["estimated_window"]][[input$language]], 
            format(fun_get_onset(input)$exposure_date_min, format = "%d %B"), 
-           " to ",
+           " - ",
            format(fun_get_onset(input)$exposure_date_max, format = "%d %B"),
            ".")
   })
@@ -98,6 +246,8 @@ function(input, output, session) {
   
   # PLOT #
   output$onset_plot = renderPlotly({
+    
+    req(input$days_onset_to_bleeding_all, input$days_onset_to_diarrhea_all)
     
     df_out = fun_import_adjust(input,
                                default_to_death_date = ifelse(input$dates_as_reported,
@@ -169,10 +319,13 @@ function(input, output, session) {
                    "death_avail")
     vec = vec[!vec %in% added_cols]
     
-    selectInput("group", 
-                "Enter a characteristic to show on the plot: ", 
-                vec)
+
+    
+    selectInput(inputId = "group", 
+                label = translation[["enter_plot_char"]][[input$language]], 
+                choices = vec)
   })
+  
   
   # DROP DOWN MENU CONTACT #
   output$contact_group = renderUI({
@@ -190,8 +343,8 @@ function(input, output, session) {
     contacts = check_exposure_timeline(linelist, contacts, input)
     
     selectInput("groupcontact", 
-                "Enter a transmission type to show on the plot: ", 
-                names(contacts), selected = "INCONSISTENT" )
+                translation[["enter_trans"]][[input$language]], 
+                names(contacts), selected = translation[["incon"]][[input$language]] )
   })
   
   output$tooltip_options = renderUI({
@@ -218,7 +371,7 @@ function(input, output, session) {
     vec = vec[!vec %in% added_cols]
     
     selectizeInput("tooltip", 
-                   "Enter (up to 5) characteristics to show on hover: ", 
+                   translation[["enter_char"]][[input$language]], 
                    vec,
                    multiple = TRUE,
                    options = list(maxItems = 5))
