@@ -1,18 +1,18 @@
 key,en,fr
 home,Home,Accueil
 timeline,Timeline,Chronologie
-upload,Upload,Télécharger
-exposure,Exposure windows,Fenêtres de transmission
+upload,Upload,Telecharger
+exposure,Exposure windows,Fenetres de transmission
 tree,Transmission tree,Arbre de transmission
-cluster_plots,Cluster plots,Tracés en grappes
+cluster_plots,Cluster plots,Traces en grappes
 cluster_info,Cluster information,Analyse de grappes
-method,Method and Definitions,Méthode et définitions
-min_incub,Minimum incubation period (days):,Période d'incubation minimale (jours):
-max_incub,Maximum incubation period (days):,Période d'incubation maximale (jours):
-onset_death,Mean period from symptom onset to death (days):,Période moyenne entre l'apparition des symptômes et le décès (jours):
+method,Method and Definitions,Methode et definitions
+min_incub,Minimum incubation period (days):,Periode d'incubation minimale (jours):
+max_incub,Maximum incubation period (days):,Periode d'incubation maximale (jours):
+onset_death,Mean period from symptom onset to death (days):,Periode moyenne entre l'apparition des symptomes et le deces (jours):
 id,Identifier:,Identifiant:
-dod_avail_check,Check box if the date of death is available,Cochez la case si la date du décès est disponible
-dod,Date of death:,Date du décès:
+dod_avail_check,Check box if the date of death is available,Cochez la case si la date du deces est disponsible
+dod,Date of death:,Date du deces:
 hover,Hover over the plot for more information on each point.,Passez la souris sur le graphique pour plus d'informations sur chaque point.
 doso,Reported date of symptom onset:,Date signalée d'apparition des symptômes:
 bleeding_check,Check box if the individual was bleeding when onset was reported*.,Cochez la case si la personne saignait au moment du signalement *.

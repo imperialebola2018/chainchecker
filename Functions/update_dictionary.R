@@ -6,6 +6,9 @@
 
 
 translationContent <- read.delim("dictionary.csv", header = TRUE, sep = ",", as.is = TRUE) 
+
+translationContent %<>% mutate(fr = stringi::stri_trans_general(fr,"Latin-ASCII"))
+
 translation <- dlply(translationContent ,.(key), function(s) key = as.list(s))
 
 save(translation, file = "translation.bin")
