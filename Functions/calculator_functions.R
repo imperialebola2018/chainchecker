@@ -7,11 +7,11 @@ fun_get_onset = function(input,
                          default_to_death_date = TRUE){
   
   df = tibble("id" = input$id)
-
+  
   if(default_to_death_date){
     #then add other dates
     if(input$death_avail==TRUE | is.null(input$death_avail)){ #if there is a death date
-
+      
       df %<>% add_column(death_date = input$death_date,
                          onset_date = as.Date(input$death_date - input$days_onset_to_death),
                          reported_onset_date = input$reported_onset_date)
@@ -140,7 +140,8 @@ cluster_add_func <- function(linelist, contacts, input) {
   x$linelist <- x$linelist[, -1]
   
   #rename the NA so they have a number
-  x$linelist$cluster_number[x$linelist$cluster_number == "cl_NA"] = paste0("cl_", length(unique(x$linelist$cluster_number)))
+  x$linelist$cluster_number[x$linelist$cluster_number == "cl_NA"] = 
+    paste0("cl_", length(unique(x$linelist$cluster_number)))
   
   
   return(x$linelist)
@@ -201,32 +202,44 @@ fun_make_tree = function(input, type = "timeline"){
     p$data<-merge(p$data,x$linelist,by.x="label",by.y="id")#ggnet is a pain, so need to add cluster degree size details manually to get a filled circle...
     p$data$size<-3+(p$data$size / max(p$data$size)) * 10##scale sizes so they are relative
     
-    cols<-grDevices::rainbow(length(unique(p$data$cluster_number)))#get cluster names for colours
-    colPal<-setNames(cols, unique(p$data$cluster_number))#set colour pallet
-    colPal[]<-ifelse(names(colPal)=="cl_NA","lightgrey",colPal)#change cl_na to grey
-    
+    # cols<-grDevices::rainbow(length(unique(linelist[, input$group])))#get cluster names for colours
+    # colPal<-setNames(cols, linelist[, input$group])#set colour pallet
+    # colPal[]<-ifelse(names(colPal) %in% c("cl_NA", NA),"lightgrey",colPal)#change cl_na to grey
+    # 
     group_name=as.vector(p$data$cluster_number)
     id=as.vector(p$data$label)
     onset=as.vector(p$data$reported_onset_date)
-    #HCW=as.vector(p$data$HCW)
-    #sex=as.vector(p$data$Gender)
-    #age=as.vector(p$data$Age)
-    #caseId_source=as.vector(p$data$caseId_source)
-    group=input$group
+    
+    if(!is.null(input$group)){
+      if(input$group=="onset"){
+        ind <- grep("cluster_number", names(p$data))
+      } else {
+        ind <- grep(input$group, names(p$data))
+      }
+    } else {
+      ind <- grep("cluster_number", names(p$data))
+    }
+    
+    
+    Colour = as.character(p$data[, ind])
     
     p=p+geom_point(aes(x = p$data$x,
                        y = p$data$y,
-                       fill=group_name,
+                       fill=Colour,
                        id=id,
-                       onset=onset), size = p$data$size, alpha = 0.7,color="black",shape=21)+
-      scale_fill_manual(values = colPal)+
+                       onset=onset,
+                       Group=Colour), 
+                   size = p$data$size, 
+                   alpha = 0.7,
+                   color="black",shape=21)+
+      # scale_fill_manual(values = colPal)+
       theme(axis.title.x=element_blank(),
             axis.text.x=element_blank(),
             axis.ticks.x=element_blank(),
             axis.title.y=element_blank(),
             axis.text.y=element_blank(),
             axis.ticks.y=element_blank())
-    return(ggplotly(p,tooltip=c("id","onset","sex","age","caseId_source","fill","HCW",group)))
+    return(ggplotly(p,tooltip=c("id","onset","sex","age","caseId_source","HCW","Group")))
   }
   
   if (type =="table") {
